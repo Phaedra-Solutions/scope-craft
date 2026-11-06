@@ -535,7 +535,7 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
                     {feat.description}
                   </p>
                   <div className="flex items-center justify-between pt-1 border-t border-slate-100 text-[11px]">
-                    <span className="capitalize text-slate-400">{feat.complexity} complexity</span>
+                    <span className="capitalize text-slate-400">{feat.category.replace('_', ' ')}</span>
                     <div className={`w-4 h-4 rounded border flex items-center justify-center ${active ? 'bg-blue-600 border-blue-600 text-white' : 'border-slate-300'}`}>
                       {active && <Check className="w-3 h-3" />}
                     </div>
@@ -566,7 +566,7 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
                   >
                     <div>
                       <div className="text-xs font-bold text-slate-900">{addon.name}</div>
-                      <div className="text-[10px] text-slate-500 mt-0.5">${addon.monthlyCost}/mo est.</div>
+                      <div className="text-[10px] text-slate-500 mt-0.5">${addon.monthlyEstimate}/mo est.</div>
                     </div>
                     <div className={`w-4 h-4 rounded border flex items-center justify-center ${active ? 'bg-blue-600 border-blue-600 text-white' : 'border-slate-300'}`}>
                       {active && <Check className="w-3 h-3" />}
@@ -677,7 +677,7 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
                     </div>
                     <div className="flex items-center space-x-3 flex-shrink-0">
                       <span className="text-xs font-semibold text-slate-600">
-                        ${Math.round(role.baseHourlyRate * 0.3)}/hr
+                        ${Math.round(role.defaultHourlyRate * 0.3)}/hr
                       </span>
                       <div className="flex items-center space-x-1.5 bg-slate-100 border border-slate-200 rounded-lg p-1">
                         <button

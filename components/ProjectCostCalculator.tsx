@@ -500,7 +500,7 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
           <div className="space-y-2">
             {SAAS_ADDONS.map((saas) => {
               const active = state.selectedSaaSAddons.includes(saas.id);
-              const estCost = Math.round(saas.monthlyCost * exchangeRate);
+              const estCost = Math.round(saas.monthlyEstimate * exchangeRate);
               return (
                 <div
                   key={saas.id}
