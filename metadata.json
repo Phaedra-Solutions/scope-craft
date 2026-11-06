@@ -1,0 +1,8 @@
+{
+  "name": "Remix Software Cost \u0026 Team Estimator",
+  "description": "Estimate comprehensive development project costs, team requirements, tech stack specs, and timeline breakdowns in a single unified interface.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

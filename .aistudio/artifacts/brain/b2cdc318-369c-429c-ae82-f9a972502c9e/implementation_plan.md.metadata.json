@@ -1,0 +1,6 @@
+{
+  "summary": "Updated implementation plan detailing the multi-step guided estimation wizard. Visitors configure their Project Scope, Platforms, Complexity, Feature Modules, Team Roster, and Regional Benchmark first. At the final step, a reassuring lead capture form unlocks the full calculation. Submitting the form pushes the lead contact details, custom fields, and complete itemized project scope into GoHighLevel (GHL) CRM, then immediately reveals the full interactive studio with live sliders and PDF export.",
+  "updatedAt": "2026-11-05T14:05:36.892970892Z",
+  "requestFeedback": true,
+  "userFacing": true
+}
