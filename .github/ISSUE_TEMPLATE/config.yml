@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security Vulnerability Reports
+    url: https://github.com/scopecraft/scopecraft/security/advisories/new
+    about: Please report security vulnerabilities privately rather than opening a public issue.
+  - name: Community Discussions
+    url: https://github.com/scopecraft/scopecraft/discussions
+    about: Ask questions, share your custom rate benchmarks, and discuss software scoping best practices.

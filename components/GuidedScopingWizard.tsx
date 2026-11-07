@@ -197,8 +197,8 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
     try {
       await sendLeadToGHL(leadProfile, updatedState, estimate, 'lead_created', 'guided_wizard_reveal');
       try {
-        localStorage.setItem('phaedra_lead_profile', JSON.stringify(leadProfile));
-        localStorage.setItem('phaedra_unlocked_lead', 'true');
+        localStorage.setItem('scopecraft_lead_profile', JSON.stringify(leadProfile));
+        localStorage.setItem('scopecraft_unlocked_lead', 'true');
       } catch {
         // storage quota fallback
       }

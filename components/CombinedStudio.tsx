@@ -3,6 +3,7 @@
 import React from 'react';
 import { ProjectState, EstimateResult } from '@/types/estimator';
 import { CostCharts } from './CostCharts';
+import { GanttTimelineBreakdown } from './GanttTimelineBreakdown';
 import { FEATURE_CATALOG, TEAM_ROLES, REGIONS } from '@/lib/estimator-data';
 import { generateRecommendedTeam } from '@/lib/estimator-engine';
 import {
@@ -204,7 +205,15 @@ export const CombinedStudio: React.FC<CombinedStudioProps> = ({
         </div>
       </div>
 
-      {/* 3. Scope & Team Summary Grid */}
+      {/* 3. Engineering Timeline & Module Phase GANTT Breakdown */}
+      <GanttTimelineBreakdown
+        state={state}
+        estimate={estimate}
+        currencySymbol={currencySymbol}
+        exchangeRate={exchangeRate}
+      />
+
+      {/* 4. Scope & Team Summary Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         
         {/* Left: Active Scope */}

@@ -56,24 +56,24 @@ export async function POST(req: NextRequest) {
     const lastName = nameParts.slice(1).join(' ') || firstName;
 
     // Build automated tags array
-    const tags: string[] = ['phaedra-estimator-lead', 'complimentary-scope', 'website-inbound'];
+    const tags: string[] = ['scopecraft-estimator-lead', 'complimentary-scope', 'website-inbound'];
     if (triggerAction === 'export_sow' || triggerAction === 'download_pdf') {
-      tags.push('phaedra-scope-exported');
+      tags.push('scopecraft-scope-exported');
     }
     if (triggerAction === 'request_architect_review' || leadProfile.wantsOptionalPaidReview) {
-      tags.push('phaedra-architect-vetting-requested');
+      tags.push('scopecraft-architect-vetting-requested');
     }
 
     // Format human-readable Scope Breakdown Note for GoHighLevel Activity Note
     let scopeNote = scopeSnapshot?.formattedScopeNote || '';
     if (!scopeNote && scopeSnapshot) {
-      scopeNote = `PHAEDRA SOLUTIONS ESTIMATOR SCOPE SUMMARY:\n` +
+      scopeNote = `SCOPECRAFT ESTIMATOR SCOPE SUMMARY:\n` +
         `• Project: ${scopeSnapshot.projectName || 'Software Development Project'}\n` +
         `• Client: ${leadProfile.company || leadProfile.fullName}\n` +
         `• Total Investment Quote: ${scopeSnapshot.currency || '$'}${scopeSnapshot.estimatedGrandTotal?.toLocaleString() || 'N/A'}\n` +
         `• Timeline: ${scopeSnapshot.estimatedTimelineWeeks || 'N/A'} Weeks (~${scopeSnapshot.estimatedTotalHours || 0} Hours)\n` +
         `• Monthly Team Burn: ${scopeSnapshot.currency || '$'}${scopeSnapshot.monthlyTeamBurn?.toLocaleString() || 'N/A'}/mo\n` +
-        `• Location Benchmark: ${scopeSnapshot.regionName || 'Phaedra Solutions (default) (30%)'}\n` +
+        `• Location Benchmark: ${scopeSnapshot.regionName || 'ScopeCraft Squad (default) (30%)'}\n` +
         `• Target Platforms: ${(scopeSnapshot.platforms || []).join(', ') || 'Web'}\n` +
         `• Technical Complexity: ${scopeSnapshot.complexity?.toUpperCase() || 'STANDARD'}\n` +
         `• Design Tier: ${scopeSnapshot.designLevel || 'Standard UI'} | QA Tier: ${scopeSnapshot.qaLevel || 'Standard'}\n` +
@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
 
     // Standardized GoHighLevel Inbound Webhook Payload
     const ghlPayload = {
-      source: 'Phaedra Solutions Software Estimator',
+      source: 'ScopeCraft Software Estimator',
       eventType,
       triggerAction: triggerAction || 'wizard_lead_submission',
       submittedAt: leadProfile.submittedAt || new Date().toISOString(),
@@ -110,7 +110,7 @@ export async function POST(req: NextRequest) {
         estimated_total_hours: scopeSnapshot?.estimatedTotalHours || 0,
         monthly_team_burn: scopeSnapshot?.monthlyTeamBurn || 0,
         selected_platforms: (scopeSnapshot?.platforms || []).join(', '),
-        region_benchmark: scopeSnapshot?.regionName || 'Phaedra Solutions (default) (30%)',
+        region_benchmark: scopeSnapshot?.regionName || 'ScopeCraft Squad (default) (30%)',
         wants_paid_architect_review: Boolean(leadProfile.wantsOptionalPaidReview),
         marketing_consent: Boolean(leadProfile.marketingConsent),
         privacy_policy_accepted: Boolean(leadProfile.privacyAccepted)
@@ -129,28 +129,22 @@ export async function POST(req: NextRequest) {
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'User-Agent': 'Phaedra-Estimator-Hook/1.0'
+            'User-Agent': 'ScopeCraft-Estimator-Hook/1.0'
           },
           body: JSON.stringify(ghlPayload)
         });
 
         if (ghlResponse.ok) {
           forwardedToGHL = true;
-          console.log('[GHL Sync] Successfully posted lead to GoHighLevel webhook:', leadProfile.email);
+          console.log('[GHL Sync] Successfully posted lead to GoHighLevel webhook.');
         } else {
-          console.warn('[GHL Sync] Webhook returned non-200 status:', ghlResponse.status, await ghlResponse.text().catch(() => ''));
+          console.warn('[GHL Sync] Webhook returned non-200 status:', ghlResponse.status);
         }
       } catch (err) {
         console.error('[GHL Sync] Network error while forwarding to GoHighLevel:', err);
       }
     } else {
-      console.log('[GHL Sync] GHL_WEBHOOK_URL is not configured. Logging payload server-side (Mock Mode):', {
-        email: leadProfile.email,
-        name: leadProfile.fullName,
-        company: leadProfile.company,
-        budget: leadProfile.budgetRange,
-        grandTotal: scopeSnapshot?.estimatedGrandTotal
-      });
+      console.log('[GHL Sync] GHL_WEBHOOK_URL is not configured (Mock Mode).');
     }
 
     return NextResponse.json({

@@ -1,0 +1,25 @@
+version: 2
+updates:
+  # Maintain dependencies for npm
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "scopecraft-maintainers"
+    commit-message:
+      prefix: "chore(deps)"
+
+  # Maintain GitHub Actions workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(ci)"

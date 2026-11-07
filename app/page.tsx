@@ -29,7 +29,7 @@ let cachedUnlockedBool: boolean = false;
 function getStoredLeadUnlockedSnapshot(): boolean {
   if (typeof window === 'undefined') return false;
   try {
-    const raw = localStorage.getItem('phaedra_unlocked_lead');
+    const raw = localStorage.getItem('scopecraft_unlocked_lead') || localStorage.getItem('phaedra_unlocked_lead');
     if (raw === cachedRawUnlocked) {
       return cachedUnlockedBool;
     }
@@ -55,7 +55,7 @@ let cachedProfileObj: LeadProfile | null = null;
 function getStoredLeadProfileSnapshot(): LeadProfile | null {
   if (typeof window === 'undefined') return null;
   try {
-    const raw = localStorage.getItem('phaedra_lead_profile');
+    const raw = localStorage.getItem('scopecraft_lead_profile') || localStorage.getItem('phaedra_lead_profile');
     if (raw === cachedRawProfile) {
       return cachedProfileObj;
     }

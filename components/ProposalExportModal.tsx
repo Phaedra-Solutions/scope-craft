@@ -519,6 +519,9 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
                 <p>
                   This estimate is valid for 30 days. Final contract statement of work will include detailed sprint deliverables, code repository transfer rights, and SLA bug-fix commitments.
                 </p>
+                <p className="text-[10px] text-zinc-400 dark:text-zinc-500 pt-1 text-center">
+                  &copy; {new Date().getFullYear()} Phaedra Solutions. All rights reserved. Generated with ScopeCraft.
+                </p>
               </div>
 
             </div>

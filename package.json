@@ -1,7 +1,28 @@
 {
-  "name": "ai-studio-applet",
+  "name": "scopecraft",
   "version": "0.1.0",
-  "private": true,
+  "description": "Open-source software scoping, engineering team headcount, velocity planning, and architecture estimation studio.",
+  "license": "GPL-3.0-or-later",
+  "author": "Phaedra Solutions",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/scopecraft/scopecraft.git"
+  },
+  "homepage": "https://github.com/scopecraft/scopecraft#readme",
+  "bugs": {
+    "url": "https://github.com/scopecraft/scopecraft/issues"
+  },
+  "keywords": [
+    "software-cost-estimator",
+    "scoping-tool",
+    "gantt-chart",
+    "software-architecture",
+    "headcount-calculator",
+    "open-source",
+    "nextjs",
+    "typescript",
+    "tailwind-css"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",

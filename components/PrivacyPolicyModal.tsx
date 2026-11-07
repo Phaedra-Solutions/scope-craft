@@ -95,8 +95,17 @@ export const PrivacyPolicyModal: React.FC<PrivacyPolicyModalProps> = ({ isOpen, 
             </p>
             <div className="flex items-center space-x-2 text-xs text-blue-600 font-medium pt-1">
               <Mail className="w-4 h-4" />
-              <span>privacy@phaedrasolutions.com</span>
+              <span>privacy@scopecraft.dev</span>
             </div>
+          </section>
+
+          <section className="space-y-2 pt-2 border-t border-slate-100">
+            <h3 className="font-bold text-slate-900 text-sm">
+              5. Open Source Software License & Copyright
+            </h3>
+            <p className="text-xs">
+              ScopeCraft is open-source software licensed under the <strong>GNU General Public License v3.0 (GPLv3)</strong>. Copyright &copy; {new Date().getFullYear()} Phaedra Solutions. All rights reserved. You are free to inspect, run, modify, and redistribute the application under the terms of the GNU GPLv3.
+            </p>
           </section>
 
         </div>

@@ -3,15 +3,6 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY || '',
-  httpOptions: {
-    headers: {
-      'User-Agent': 'aistudio-build'
-    }
-  }
-});
-
 export async function POST(req: NextRequest) {
   try {
     const { prompt } = await req.json();
@@ -23,6 +14,15 @@ export async function POST(req: NextRequest) {
     if (!process.env.GEMINI_API_KEY) {
       return NextResponse.json({ error: 'GEMINI_API_KEY environment variable is missing.' }, { status: 500 });
     }
+
+    const ai = new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY,
+      httpOptions: {
+        headers: {
+          'User-Agent': 'aistudio-build'
+        }
+      }
+    });
 
     const systemInstruction = `You are a Senior Software Solutions Architect & Engineering Project Estimator.
 Analyze the user's software project idea or requirements prompt.

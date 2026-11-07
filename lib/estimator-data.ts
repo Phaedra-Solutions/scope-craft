@@ -21,11 +21,11 @@ export const CURRENCIES: CurrencyConfig[] = [
 export const REGIONS: RegionConfig[] = [
   {
     id: 'phaedra',
-    name: 'Phaedra Solutions (default)',
+    name: 'ScopeCraft Squad (default)',
     flag: '⚡',
     rateMultiplier: 0.30,
     avgSeniorRate: 33,
-    description: 'Phaedra Solutions dedicated agile engineering teams & high-velocity delivery (30% benchmark)'
+    description: 'ScopeCraft dedicated agile engineering teams & high-velocity delivery (30% benchmark)'
   },
   {
     id: 'us_canada',
