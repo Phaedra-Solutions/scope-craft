@@ -22,10 +22,10 @@ interface CostChartsProps {
 }
 
 const CATEGORY_COLORS: Record<RoleCategory, string> = {
-  engineering: '#2563eb', // royal blue
-  design: '#0ea5e9', // sky blue
-  management: '#6366f1', // indigo
-  qa_devops: '#059669' // emerald
+  engineering: '#6366f1', // indigo-500
+  design: '#38bdf8', // sky-400
+  management: '#818cf8', // indigo-400
+  qa_devops: '#10b981' // emerald-500
 };
 
 const CATEGORY_NAMES: Record<RoleCategory, string> = {
@@ -68,27 +68,26 @@ export const CostCharts: React.FC<CostChartsProps> = ({ estimate, currencySymbol
   if (!isClient) {
     return (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs animate-pulse h-80" />
-        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs animate-pulse h-80" />
+        <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700/50 shadow-xl animate-pulse h-80" />
+        <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700/50 shadow-xl animate-pulse h-80" />
       </div>
     );
   }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      
       {/* Role Breakdown Pie Chart */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs">
+      <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700/50 shadow-xl">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="font-bold text-slate-900 text-sm">
+            <h3 className="font-bold text-slate-100 text-sm">
               Cost Allocation by Discipline
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-400">
               Distribution across development team specializations
             </p>
           </div>
-          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+          <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-slate-900/70 text-emerald-500 border border-slate-700/50">
             {formatMoney(Math.round(estimate.baseLaborCost * exchangeRate))} Base Labor
           </span>
         </div>
@@ -105,41 +104,43 @@ export const CostCharts: React.FC<CostChartsProps> = ({ estimate, currencySymbol
                   outerRadius={90}
                   paddingAngle={4}
                   dataKey="value"
+                  stroke="none"
                 >
                   {pieData.map((entry) => (
                     <Cell key={entry.category} fill={CATEGORY_COLORS[entry.category]} />
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value: any) => [formatMoney(Number(value)), 'Estimated Cost']}
+                  formatter={(value: unknown) => [formatMoney(Number(value)), 'Estimated Cost']}
                   contentStyle={{
-                    backgroundColor: '#ffffff',
-                    borderColor: '#e2e8f0',
-                    borderRadius: '8px',
-                    color: '#0f172a',
-                    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                    backgroundColor: '#0f172a',
+                    borderColor: '#334155',
+                    borderRadius: '10px',
+                    color: '#f1f5f9',
+                    boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.4)',
                     fontSize: '12px'
                   }}
+                  itemStyle={{ color: '#10b981', fontWeight: 700 }}
                 />
               </PieChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-full flex items-center justify-center text-xs text-slate-400">
+            <div className="h-full flex items-center justify-center text-xs text-slate-500">
               No active team roles assigned
             </div>
           )}
         </div>
 
         {/* Legend */}
-        <div className="grid grid-cols-2 gap-2 mt-2 pt-3 border-t border-slate-100">
+        <div className="grid grid-cols-2 gap-2 mt-2 pt-3 border-t border-slate-700/50">
           {pieData.map((item) => (
             <div key={item.category} className="flex items-center space-x-2 text-xs">
               <span
                 className="w-2.5 h-2.5 rounded-full flex-shrink-0"
                 style={{ backgroundColor: CATEGORY_COLORS[item.category] }}
               />
-              <span className="text-slate-600 truncate">{item.name}:</span>
-              <span className="font-bold text-slate-900 ml-auto">
+              <span className="text-slate-400 truncate">{item.name}:</span>
+              <span className="font-bold text-emerald-500 ml-auto">
                 {formatMoney(item.value)}
               </span>
             </div>
@@ -148,17 +149,17 @@ export const CostCharts: React.FC<CostChartsProps> = ({ estimate, currencySymbol
       </div>
 
       {/* Phase Milestone Bar Chart */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs">
+      <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700/50 shadow-xl">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="font-bold text-slate-900 text-sm">
+            <h3 className="font-bold text-slate-100 text-sm">
               Milestone Payment Schedule
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-400">
               Project delivery phases and billing milestones
             </p>
           </div>
-          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+          <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-slate-900/70 text-emerald-500 border border-slate-700/50">
             {estimate.totalHours} Dev Hours
           </span>
         </div>
@@ -166,47 +167,48 @@ export const CostCharts: React.FC<CostChartsProps> = ({ estimate, currencySymbol
         <div className="h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={barData} margin={{ top: 10, right: 10, left: -20, bottom: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" />
               <XAxis
                 dataKey="name"
-                tick={{ fontSize: 11, fill: '#64748b' }}
+                tick={{ fontSize: 11, fill: '#94a3b8' }}
                 interval={0}
                 angle={-15}
                 textAnchor="end"
-                stroke="#cbd5e1"
+                stroke="#475569"
               />
               <YAxis
-                tick={{ fontSize: 11, fill: '#64748b' }}
+                tick={{ fontSize: 11, fill: '#94a3b8' }}
                 tickFormatter={(val) => `${currencySymbol}${(val / 1000).toFixed(0)}k`}
-                stroke="#cbd5e1"
+                stroke="#475569"
               />
               <Tooltip
-                formatter={(value: any) => [formatMoney(Number(value)), 'Phase Allocation']}
+                formatter={(value: unknown) => [formatMoney(Number(value)), 'Phase Allocation']}
                 contentStyle={{
-                  backgroundColor: '#ffffff',
-                  borderColor: '#e2e8f0',
-                  borderRadius: '8px',
-                  color: '#0f172a',
-                  boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                  backgroundColor: '#0f172a',
+                  borderColor: '#334155',
+                  borderRadius: '10px',
+                  color: '#f1f5f9',
+                  boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.4)',
                   fontSize: '12px'
                 }}
+                itemStyle={{ color: '#10b981', fontWeight: 700 }}
+                cursor={{ fill: 'rgba(99, 102, 241, 0.1)' }}
               />
-              <Bar dataKey="cost" fill="#2563eb" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="cost" fill="#6366f1" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
         {/* Phase Summary Strip */}
-        <div className="grid grid-cols-4 gap-2 mt-2 pt-3 border-t border-slate-100 text-[11px] text-center">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2 pt-3 border-t border-slate-700/50 text-[11px] text-center">
           {barData.map((phase) => (
-            <div key={phase.name} className="p-1 rounded bg-slate-50">
-              <span className="text-slate-500 block truncate">{phase.name}</span>
-              <span className="font-bold text-slate-900">{formatMoney(phase.cost)}</span>
+            <div key={phase.name} className="p-1.5 rounded-lg bg-slate-900/60 border border-slate-800">
+              <span className="text-slate-400 block truncate">{phase.name}</span>
+              <span className="font-bold text-emerald-500">{formatMoney(phase.cost)}</span>
             </div>
           ))}
         </div>
       </div>
-
     </div>
   );
 };

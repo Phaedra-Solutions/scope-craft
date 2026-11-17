@@ -18,7 +18,6 @@ import {
   ArrowRight,
   ArrowLeft,
   CheckCircle2,
-  Lock,
   Unlock,
   ShieldCheck,
   Globe2,
@@ -35,13 +34,13 @@ import {
   DollarSign,
   Plus,
   Minus,
-  Check,
-  Info
+  Check
 } from 'lucide-react';
 
 interface GuidedScopingWizardProps {
   initialState: ProjectState;
   onComplete: (lead: LeadProfile, updatedState: ProjectState) => void;
+  onStateChange?: (updated: Partial<ProjectState>) => void;
   currencySymbol: string;
   exchangeRate: number;
 }
@@ -49,15 +48,18 @@ interface GuidedScopingWizardProps {
 export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
   initialState,
   onComplete,
+  onStateChange,
   currencySymbol,
   exchangeRate
 }) => {
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
-  const [state, setState] = useState<ProjectState>(initialState);
+  const [internalState, setInternalState] = useState<ProjectState>(initialState);
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const state = onStateChange ? initialState : internalState;
 
   // Lead Form State
   const [leadForm, setLeadForm] = useState<{
@@ -84,7 +86,11 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
 
   // Helper to update wizard project state
   const updateState = (updates: Partial<ProjectState>) => {
-    setState((prev) => ({ ...prev, ...updates }));
+    if (onStateChange) {
+      onStateChange(updates);
+    } else {
+      setInternalState((prev) => ({ ...prev, ...updates }));
+    }
   };
 
   // Toggle platform selection
@@ -93,7 +99,7 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
     const exists = current.includes(platform);
     let updated: ProjectPlatform[];
     if (exists) {
-      if (current.length === 1) return; // Keep at least one
+      if (current.length === 1) return;
       updated = current.filter((p) => p !== platform);
     } else {
       updated = [...current, platform];
@@ -228,39 +234,40 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
     { id: 'security_compliance', name: 'Security & SLA' }
   ];
 
+  const activeRegion = REGIONS.find((r) => r.id === state.regionId) || REGIONS[0];
+
   return (
     <div className="max-w-5xl mx-auto py-6 px-4 sm:px-6">
-      
-      {/* Top Wizard Banner & Progress Steps */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-xs mb-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+      {/* Top Wizard Banner & Flat Minimalist Multi-Step Navigation */}
+      <div className="bg-slate-800 border border-slate-700/50 rounded-2xl p-6 sm:p-8 shadow-xl mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-700/50">
           <div>
-            <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200 mb-2">
-              <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+            <div className="inline-flex items-center space-x-1.5 text-xs font-semibold text-indigo-400 mb-2">
+              <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
               <span>ScopeCraft Precision Scoping</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-100 tracking-tight">
               Software Cost & Team Estimator
             </h1>
-            <p className="text-sm text-slate-500 mt-1">
-              Select your project parameters to calculate development hours, team composition, and transparent budget estimates.
+            <p className="text-sm text-slate-400 mt-1">
+              Configure your architecture, modules, and engineering squad to compute transparent project costs.
             </p>
           </div>
 
           <div className="flex items-center space-x-2 self-start sm:self-auto">
-            <span className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 border border-slate-200">
+            <span className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-900/80 text-slate-300 border border-slate-700/50">
               Step {currentStep} of 4
             </span>
           </div>
         </div>
 
-        {/* 4 Clean Step Tabs */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6">
+        {/* Rule 1: Multi-Step Navigation (Flat Minimalism) */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6">
           {[
-            { step: 1, label: '1. Foundations', desc: 'Platforms & Scale' },
-            { step: 2, label: '2. Modules', desc: 'Core Functionality' },
-            { step: 3, label: '3. Team & Rates', desc: 'Headcount & Rates' },
-            { step: 4, label: '4. Unlock Estimate', desc: 'Full Calculation' }
+            { step: 1, label: '01. Foundations', desc: 'Platforms & Scale' },
+            { step: 2, label: '02. Modules', desc: 'Core Functionality' },
+            { step: 3, label: '03. Team & Rates', desc: 'Squad & Benchmarks' },
+            { step: 4, label: '04. Unlock SOW', desc: 'Full Calculation' }
           ].map((item) => {
             const isPassed = currentStep > item.step;
             const isCurrent = currentStep === item.step;
@@ -274,31 +281,27 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
                   }
                 }}
                 disabled={item.step > currentStep}
-                className={`text-left p-3 rounded-xl border transition ${
+                className={`text-left pb-3 pt-1 border-b-2 transition-all duration-200 ${
                   isCurrent
-                    ? 'border-blue-600 bg-blue-50/60 shadow-xs ring-1 ring-blue-500'
+                    ? 'border-indigo-500 text-slate-100'
                     : isPassed
-                    ? 'border-emerald-200 bg-emerald-50/40 hover:bg-emerald-50 cursor-pointer'
-                    : 'border-slate-200 bg-slate-50/60 opacity-60 cursor-not-allowed'
+                    ? 'border-emerald-500 text-emerald-400 hover:text-emerald-300 cursor-pointer active:scale-[0.98]'
+                    : 'border-slate-800 text-slate-500 cursor-not-allowed'
                 }`}
               >
-                <div className="flex items-center space-x-2 mb-1">
-                  <div
-                    className={`w-5 h-5 rounded-full text-[11px] font-bold flex items-center justify-center ${
-                      isPassed
-                        ? 'bg-emerald-600 text-white'
-                        : isCurrent
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-slate-300 text-slate-700'
+                <div className="flex items-center justify-between mb-1">
+                  <span
+                    className={`text-xs font-bold tracking-tight ${
+                      isCurrent ? 'text-slate-100' : isPassed ? 'text-emerald-400' : 'text-slate-500'
                     }`}
                   >
-                    {isPassed ? <Check className="w-3 h-3" /> : item.step}
-                  </div>
-                  <span className={`text-xs font-bold ${isCurrent ? 'text-blue-900' : isPassed ? 'text-emerald-900' : 'text-slate-600'}`}>
                     {item.label}
                   </span>
+                  {isPassed && <Check className="w-3.5 h-3.5 text-emerald-500" />}
                 </div>
-                <p className="text-[11px] text-slate-500 pl-7 leading-tight">{item.desc}</p>
+                <p className={`text-[11px] leading-tight ${isCurrent ? 'text-slate-300' : 'text-slate-500'}`}>
+                  {item.desc}
+                </p>
               </button>
             );
           })}
@@ -307,21 +310,21 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
 
       {/* STEP 1: Foundations & Platforms */}
       {currentStep === 1 && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-xs space-y-8 animate-fade-in">
+        <div className="bg-slate-800 border border-slate-700/50 rounded-2xl p-6 sm:p-8 shadow-xl space-y-8">
           <div>
-            <h2 className="text-xl font-bold text-slate-900 flex items-center space-x-2">
-              <Layers className="w-5 h-5 text-blue-600" />
+            <h2 className="text-xl font-bold text-slate-100 flex items-center space-x-2">
+              <Layers className="w-5 h-5 text-indigo-400" />
               <span>Project Foundations & Deployment Platforms</span>
             </h2>
-            <p className="text-xs text-slate-500 mt-1">
-              Specify your project identification and target client platforms.
+            <p className="text-xs text-slate-400 mt-1">
+              Specify your project identification, target platforms, architecture scale, and design fidelity.
             </p>
           </div>
 
           {/* Project & Client Inputs */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
                 Project Title
               </label>
               <input
@@ -329,11 +332,11 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
                 value={state.projectName}
                 onChange={(e) => updateState({ projectName: e.target.value })}
                 placeholder="e.g. Enterprise SaaS Platform"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition shadow-2xs"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-700/50 bg-slate-900/70 text-slate-100 placeholder:text-slate-500 text-sm focus:outline-none focus:border-indigo-500 transition-all duration-200"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
                 Company / Organization
               </label>
               <input
@@ -341,23 +344,23 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
                 value={state.clientName}
                 onChange={(e) => updateState({ clientName: e.target.value })}
                 placeholder="e.g. Acme Corporation"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition shadow-2xs"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-700/50 bg-slate-900/70 text-slate-100 placeholder:text-slate-500 text-sm focus:outline-none focus:border-indigo-500 transition-all duration-200"
               />
             </div>
           </div>
 
-          {/* Target Platforms Cards */}
+          {/* Target Platforms Matrix Cards (Rule 2: No raw checkboxes/radios) */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-2.5">
+            <label className="block text-xs font-semibold text-slate-300 mb-3">
               Select Target Platforms (Multi-Select)
             </label>
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[
-                { id: 'web' as ProjectPlatform, name: 'Web Application', icon: Laptop, desc: 'Responsive Web / Cloud' },
-                { id: 'ios' as ProjectPlatform, name: 'iOS Native', icon: Smartphone, desc: 'Swift & SwiftUI' },
-                { id: 'android' as ProjectPlatform, name: 'Android Native', icon: Smartphone, desc: 'Kotlin & Jetpack' },
-                { id: 'cross_platform' as ProjectPlatform, name: 'Cross-Platform', icon: Code2, desc: 'React Native / Flutter' },
-                { id: 'desktop' as ProjectPlatform, name: 'Desktop Suite', icon: Laptop, desc: 'Electron / Tauri' }
+                { id: 'web' as ProjectPlatform, name: 'Web Application', icon: Laptop, desc: 'Responsive SaaS & Cloud Portal' },
+                { id: 'ios' as ProjectPlatform, name: 'iOS Native', icon: Smartphone, desc: 'Swift, SwiftUI & Apple App Store' },
+                { id: 'android' as ProjectPlatform, name: 'Android Native', icon: Smartphone, desc: 'Kotlin, Jetpack & Google Play' },
+                { id: 'cross_platform' as ProjectPlatform, name: 'Cross-Platform Mobile', icon: Code2, desc: 'React Native / Flutter Shared Core' },
+                { id: 'desktop' as ProjectPlatform, name: 'Desktop Suite', icon: Laptop, desc: 'Electron / Tauri Native Binary' }
               ].map((p) => {
                 const active = state.platforms.includes(p.id);
                 const Icon = p.icon;
@@ -365,22 +368,35 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
                   <button
                     key={p.id}
                     type="button"
+                    aria-pressed={active}
                     onClick={() => handleTogglePlatform(p.id)}
-                    className={`p-4 rounded-xl border text-left transition flex flex-col justify-between space-y-3 ${
+                    className={`p-4 rounded-xl text-left flex items-center justify-between gap-3 transition-all duration-200 active:scale-[0.98] cursor-pointer ${
                       active
-                        ? 'border-blue-600 bg-blue-50/70 ring-2 ring-blue-500/20 shadow-xs'
-                        : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
+                        ? 'bg-slate-800/80 border-2 border-indigo-500 shadow-md shadow-indigo-500/5'
+                        : 'bg-slate-800/40 border-2 border-slate-800 hover:border-slate-700'
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <Icon className={`w-5 h-5 ${active ? 'text-blue-600' : 'text-slate-400'}`} />
-                      <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${active ? 'bg-blue-600 border-blue-600' : 'border-slate-300'}`}>
-                        {active && <Check className="w-3 h-3 text-white" />}
+                    <div className="flex items-center space-x-3.5">
+                      <div
+                        className={`p-2.5 rounded-lg border ${
+                          active
+                            ? 'bg-indigo-500/15 border-indigo-500/40 text-indigo-400'
+                            : 'bg-slate-900/60 border-slate-700/50 text-slate-400'
+                        }`}
+                      >
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-sm text-slate-100">{p.name}</div>
+                        <div className="text-xs text-slate-400 mt-0.5 leading-tight">{p.desc}</div>
                       </div>
                     </div>
-                    <div>
-                      <div className="font-semibold text-sm text-slate-900">{p.name}</div>
-                      <div className="text-[11px] text-slate-500 mt-0.5 leading-tight">{p.desc}</div>
+                    <div
+                      className={`w-5 h-5 rounded-md border flex items-center justify-center flex-shrink-0 transition-all duration-200 ${
+                        active ? 'bg-indigo-600 border-indigo-500 text-white' : 'border-slate-700 bg-slate-900/50'
+                      }`}
+                    >
+                      {active && <Check className="w-3.5 h-3.5" />}
                     </div>
                   </button>
                 );
@@ -388,83 +404,104 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
             </div>
           </div>
 
-          {/* Complexity Tier & Design Level */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {/* Architecture Complexity Matrix Cards (Rule 2: No raw radio inputs) */}
+          <div className="space-y-6">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-2">
+              <label className="block text-xs font-semibold text-slate-300 mb-3">
                 Architecture Complexity
               </label>
-              <div className="space-y-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" role="radiogroup" aria-label="Architecture Complexity">
                 {[
-                  { id: 'mvp' as ComplexityLevel, title: 'MVP / Fast Prototype', desc: 'Core feature validation, rapid market launch.' },
-                  { id: 'standard' as ComplexityLevel, title: 'Production Standard', desc: 'Full multi-tenant architecture, robust API suite.' },
-                  { id: 'enterprise' as ComplexityLevel, title: 'Enterprise Scaled', desc: 'High concurrency, compliance, automated QA pipelines.' }
-                ].map((tier) => (
-                  <label
-                    key={tier.id}
-                    className={`flex items-start p-3 rounded-xl border cursor-pointer transition ${
-                      state.complexity === tier.id
-                        ? 'border-blue-600 bg-blue-50/60 ring-1 ring-blue-500 shadow-2xs'
-                        : 'border-slate-200 hover:bg-slate-50'
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="complexity"
-                      checked={state.complexity === tier.id}
-                      onChange={() => updateState({ complexity: tier.id })}
-                      className="mt-0.5 text-blue-600 focus:ring-blue-500"
-                    />
-                    <div className="ml-3">
-                      <div className="text-xs font-bold text-slate-900">{tier.title}</div>
-                      <div className="text-[11px] text-slate-500 leading-tight">{tier.desc}</div>
-                    </div>
-                  </label>
-                ))}
+                  { id: 'mvp' as ComplexityLevel, title: 'MVP / Fast Prototype', mult: '0.90x', desc: 'Core feature validation, rapid market launch.' },
+                  { id: 'standard' as ComplexityLevel, title: 'Production Standard', mult: '1.18x', desc: 'Full multi-tenant architecture, robust API suite.' },
+                  { id: 'enterprise' as ComplexityLevel, title: 'Enterprise Scaled', mult: '1.55x', desc: 'High concurrency, compliance, automated QA pipelines.' }
+                ].map((tier) => {
+                  const active = state.complexity === tier.id;
+                  return (
+                    <button
+                      key={tier.id}
+                      type="button"
+                      role="radio"
+                      aria-checked={active}
+                      onClick={() => updateState({ complexity: tier.id })}
+                      className={`p-4 rounded-xl text-left transition-all duration-200 active:scale-[0.98] cursor-pointer flex items-start justify-between gap-3 ${
+                        active
+                          ? 'bg-slate-800/80 border-2 border-indigo-500 shadow-md shadow-indigo-500/5'
+                          : 'bg-slate-800/40 border-2 border-slate-800 hover:border-slate-700'
+                      }`}
+                    >
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm font-bold text-slate-100">{tier.title}</span>
+                          <span className="text-[11px] font-semibold text-emerald-500">{tier.mult}</span>
+                        </div>
+                        <div className="text-xs text-slate-400 leading-relaxed mt-1">{tier.desc}</div>
+                      </div>
+                      <div
+                        className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                          active ? 'border-indigo-500 bg-indigo-500/20' : 'border-slate-700'
+                        }`}
+                      >
+                        {active && <div className="w-2 h-2 rounded-full bg-indigo-400" />}
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
+            {/* Design & UI/UX Fidelity Matrix Cards (Rule 2: No raw radio inputs) */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-2">
+              <label className="block text-xs font-semibold text-slate-300 mb-3">
                 Design & UI/UX Fidelity
               </label>
-              <div className="space-y-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" role="radiogroup" aria-label="Design and UI/UX Fidelity">
                 {[
-                  { id: 'wireframe' as DesignLevel, title: 'Wireframes / System UI', desc: 'Functional component library, clean system patterns.' },
-                  { id: 'standard_ui' as DesignLevel, title: 'Polished Brand UI', desc: 'Custom iconography, responsive components & brand styling.' },
-                  { id: 'custom_bespoke' as DesignLevel, title: 'Bespoke Luxury Experience', desc: 'Custom micro-interactions, motion design & Figma library.' }
-                ].map((tier) => (
-                  <label
-                    key={tier.id}
-                    className={`flex items-start p-3 rounded-xl border cursor-pointer transition ${
-                      state.designLevel === tier.id
-                        ? 'border-blue-600 bg-blue-50/60 ring-1 ring-blue-500 shadow-2xs'
-                        : 'border-slate-200 hover:bg-slate-50'
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="designLevel"
-                      checked={state.designLevel === tier.id}
-                      onChange={() => updateState({ designLevel: tier.id })}
-                      className="mt-0.5 text-blue-600 focus:ring-blue-500"
-                    />
-                    <div className="ml-3">
-                      <div className="text-xs font-bold text-slate-900">{tier.title}</div>
-                      <div className="text-[11px] text-slate-500 leading-tight">{tier.desc}</div>
-                    </div>
-                  </label>
-                ))}
+                  { id: 'wireframe' as DesignLevel, title: 'Wireframes / System UI', mult: '+8%', desc: 'Functional component library, clean system patterns.' },
+                  { id: 'standard_ui' as DesignLevel, title: 'Polished Brand UI', mult: '+18%', desc: 'Custom iconography, responsive components & brand styling.' },
+                  { id: 'custom_bespoke' as DesignLevel, title: 'Bespoke Luxury Experience', mult: '+30%', desc: 'Custom micro-interactions, motion design & Figma library.' }
+                ].map((tier) => {
+                  const active = state.designLevel === tier.id;
+                  return (
+                    <button
+                      key={tier.id}
+                      type="button"
+                      role="radio"
+                      aria-checked={active}
+                      onClick={() => updateState({ designLevel: tier.id })}
+                      className={`p-4 rounded-xl text-left transition-all duration-200 active:scale-[0.98] cursor-pointer flex items-start justify-between gap-3 ${
+                        active
+                          ? 'bg-slate-800/80 border-2 border-indigo-500 shadow-md shadow-indigo-500/5'
+                          : 'bg-slate-800/40 border-2 border-slate-800 hover:border-slate-700'
+                      }`}
+                    >
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm font-bold text-slate-100">{tier.title}</span>
+                          <span className="text-[11px] font-semibold text-emerald-500">{tier.mult}</span>
+                        </div>
+                        <div className="text-xs text-slate-400 leading-relaxed mt-1">{tier.desc}</div>
+                      </div>
+                      <div
+                        className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                          active ? 'border-indigo-500 bg-indigo-500/20' : 'border-slate-700'
+                        }`}
+                      >
+                        {active && <div className="w-2 h-2 rounded-full bg-indigo-400" />}
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
 
           {/* Step 1 Actions */}
-          <div className="flex justify-end pt-4 border-t border-slate-100">
+          <div className="flex justify-end pt-4 border-t border-slate-700/50">
             <button
               type="button"
               onClick={() => setCurrentStep(2)}
-              className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition"
+              className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-500 shadow-md shadow-indigo-500/20 transition-all duration-200 active:scale-[0.98]"
             >
               <span>Continue to Modules (Step 2)</span>
               <ArrowRight className="w-4 h-4" />
@@ -475,33 +512,33 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
 
       {/* STEP 2: Feature Modules Catalog */}
       {currentStep === 2 && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-xs space-y-6 animate-fade-in">
+        <div className="bg-slate-800 border border-slate-700/50 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
-              <h2 className="text-xl font-bold text-slate-900 flex items-center space-x-2">
-                <Code2 className="w-5 h-5 text-blue-600" />
+              <h2 className="text-xl font-bold text-slate-100 flex items-center space-x-2">
+                <Code2 className="w-5 h-5 text-indigo-400" />
                 <span>Select Feature Modules & Add-ons</span>
               </h2>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-slate-400 mt-1">
                 Choose the technical features required for your platform.
               </p>
             </div>
-            <div className="px-3 py-1 rounded-lg bg-blue-50 text-blue-800 font-semibold text-xs border border-blue-200 self-start sm:self-auto">
-              {state.selectedFeatureIds.length} Modules Selected
+            <div className="px-3 py-1 rounded-lg bg-indigo-500/10 text-indigo-300 font-semibold text-xs border border-indigo-500/30 self-start sm:self-auto">
+              <span className="text-emerald-500 font-bold">{state.selectedFeatureIds.length}</span> Modules Selected
             </div>
           </div>
 
-          {/* Category Filter Tabs */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+          {/* Category Filter Tabs (Flat Minimalism) */}
+          <div className="flex items-center gap-3 overflow-x-auto pb-1 border-b border-slate-800 no-scrollbar">
             {categories.map((cat) => (
               <button
                 key={cat.id}
                 type="button"
                 onClick={() => setActiveCategory(cat.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition ${
+                className={`pb-2.5 text-xs font-semibold whitespace-nowrap border-b-2 transition-all duration-200 active:scale-[0.98] ${
                   activeCategory === cat.id
-                    ? 'bg-blue-600 text-white shadow-2xs'
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                    ? 'border-indigo-500 text-slate-100'
+                    : 'border-transparent text-slate-500 hover:text-slate-300'
                 }`}
               >
                 {cat.name}
@@ -509,66 +546,80 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
             ))}
           </div>
 
-          {/* Feature Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+          {/* Feature Matrix Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {filteredFeatures.map((feat) => {
               const active = state.selectedFeatureIds.includes(feat.id);
               return (
-                <div
+                <button
                   key={feat.id}
+                  type="button"
+                  aria-pressed={active}
                   onClick={() => handleToggleFeature(feat.id)}
-                  className={`p-3.5 rounded-xl border cursor-pointer transition flex flex-col justify-between space-y-2.5 ${
+                  className={`p-4 rounded-xl text-left flex flex-col justify-between space-y-2.5 transition-all duration-200 active:scale-[0.98] cursor-pointer ${
                     active
-                      ? 'border-blue-600 bg-blue-50/60 ring-1 ring-blue-500 shadow-2xs'
-                      : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
+                      ? 'bg-slate-800/80 border-2 border-indigo-500 shadow-md shadow-indigo-500/5'
+                      : 'bg-slate-800/40 border-2 border-slate-800 hover:border-slate-700'
                   }`}
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <span className="font-bold text-xs text-slate-900 leading-snug">
+                  <div className="flex items-start justify-between gap-2 w-full">
+                    <span className="font-bold text-xs text-slate-100 leading-snug">
                       {feat.name}
                     </span>
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 whitespace-nowrap">
+                    <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-slate-900/70 text-emerald-500 border border-slate-700/50 whitespace-nowrap">
                       +{feat.baseHours} hrs
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-500 leading-relaxed line-clamp-2">
+                  <p className="text-[11px] text-slate-400 leading-relaxed line-clamp-2">
                     {feat.description}
                   </p>
-                  <div className="flex items-center justify-between pt-1 border-t border-slate-100 text-[11px]">
-                    <span className="capitalize text-slate-400">{feat.category.replace('_', ' ')}</span>
-                    <div className={`w-4 h-4 rounded border flex items-center justify-center ${active ? 'bg-blue-600 border-blue-600 text-white' : 'border-slate-300'}`}>
+                  <div className="flex items-center justify-between w-full pt-2 border-t border-slate-700/50 text-[11px]">
+                    <span className="capitalize text-slate-500">{feat.category.replace('_', ' ')}</span>
+                    <div
+                      className={`w-4 h-4 rounded border flex items-center justify-center transition-all duration-200 ${
+                        active ? 'bg-indigo-600 border-indigo-500 text-white' : 'border-slate-700 bg-slate-900/50'
+                      }`}
+                    >
                       {active && <Check className="w-3 h-3" />}
                     </div>
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>
 
           {/* Cloud & Managed Infrastructure Services */}
-          <div className="pt-4 border-t border-slate-200">
-            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-3">
+          <div className="pt-4 border-t border-slate-700/50">
+            <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3">
               Optional Cloud Services & Infrastructure Subscriptions
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {SAAS_ADDONS.map((addon) => {
                 const active = state.selectedSaaSAddons.includes(addon.id);
+                const estMonthly = Math.round(addon.monthlyEstimate * exchangeRate);
                 return (
                   <button
                     key={addon.id}
                     type="button"
+                    aria-pressed={active}
                     onClick={() => handleToggleSaaS(addon.id)}
-                    className={`p-3 rounded-xl border text-left transition flex items-center justify-between ${
+                    className={`p-3.5 rounded-xl text-left flex items-center justify-between transition-all duration-200 active:scale-[0.98] cursor-pointer ${
                       active
-                        ? 'border-blue-600 bg-blue-50/60 ring-1 ring-blue-500'
-                        : 'border-slate-200 bg-white hover:bg-slate-50'
+                        ? 'bg-slate-800/80 border-2 border-indigo-500 shadow-md shadow-indigo-500/5'
+                        : 'bg-slate-800/40 border-2 border-slate-800 hover:border-slate-700'
                     }`}
                   >
                     <div>
-                      <div className="text-xs font-bold text-slate-900">{addon.name}</div>
-                      <div className="text-[10px] text-slate-500 mt-0.5">${addon.monthlyEstimate}/mo est.</div>
+                      <div className="text-xs font-bold text-slate-100">{addon.name}</div>
+                      <div className="text-[11px] font-semibold text-emerald-500 mt-0.5">
+                        {currencySymbol}{estMonthly}/mo est.
+                      </div>
                     </div>
-                    <div className={`w-4 h-4 rounded border flex items-center justify-center ${active ? 'bg-blue-600 border-blue-600 text-white' : 'border-slate-300'}`}>
+                    <div
+                      className={`w-4 h-4 rounded border flex items-center justify-center ${
+                        active ? 'bg-indigo-600 border-indigo-500 text-white' : 'border-slate-700 bg-slate-900/50'
+                      }`}
+                    >
                       {active && <Check className="w-3 h-3" />}
                     </div>
                   </button>
@@ -578,11 +629,11 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
           </div>
 
           {/* Navigation Buttons */}
-          <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+          <div className="flex items-center justify-between pt-4 border-t border-slate-700/50">
             <button
               type="button"
               onClick={() => setCurrentStep(1)}
-              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition"
+              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-200 bg-slate-900/60 hover:bg-slate-700 border border-slate-700/50 transition-all duration-200 active:scale-[0.98]"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Back to Foundations</span>
@@ -590,7 +641,7 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
             <button
               type="button"
               onClick={() => setCurrentStep(3)}
-              className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition"
+              className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-500 shadow-md shadow-indigo-500/20 transition-all duration-200 active:scale-[0.98]"
             >
               <span>Continue to Team & Rates (Step 3)</span>
               <ArrowRight className="w-4 h-4" />
@@ -601,52 +652,57 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
 
       {/* STEP 3: Squad Composition & Regional Rate Benchmark */}
       {currentStep === 3 && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-xs space-y-6 animate-fade-in">
+        <div className="bg-slate-800 border border-slate-700/50 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
           <div>
-            <h2 className="text-xl font-bold text-slate-900 flex items-center space-x-2">
-              <Globe2 className="w-5 h-5 text-blue-600" />
+            <h2 className="text-xl font-bold text-slate-100 flex items-center space-x-2">
+              <Globe2 className="w-5 h-5 text-indigo-400" />
               <span>Dedicated Engineering Squad & Regional Rate Benchmarks</span>
             </h2>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-slate-400 mt-1">
               ScopeCraft models senior dedicated technical squads across global rate benchmarks.
             </p>
           </div>
 
-          {/* Dedicated Squad Regional Benchmark Card */}
-          <div className="p-5 rounded-xl bg-blue-50/70 border border-blue-200 space-y-3">
+          {/* Dedicated Squad Regional Benchmark Matrix */}
+          <div className="p-5 rounded-xl bg-slate-900/50 border border-slate-700/50 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
-                <span className="text-xs font-bold text-blue-900 uppercase tracking-wider block">
+                <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider block">
                   Regional Rate Comparison
                 </span>
-                <h3 className="text-base font-bold text-slate-900">
+                <h3 className="text-base font-bold text-slate-100">
                   Select Location Rate Benchmark
                 </h3>
               </div>
-              <div className="text-xs font-semibold px-3 py-1 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-200 self-start sm:self-auto">
+              <div className="text-xs font-semibold px-3 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 self-start sm:self-auto">
                 Dedicated Offshore Benchmark: ~70% Cost Advantage
               </div>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 pt-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
               {REGIONS.map((r) => {
                 const isSelected = state.regionId === r.id;
                 return (
                   <button
                     key={r.id}
                     type="button"
+                    role="radio"
+                    aria-checked={isSelected}
                     onClick={() => updateState({ regionId: r.id })}
-                    className={`p-3 rounded-xl border text-left transition ${
+                    className={`p-3.5 rounded-xl text-left transition-all duration-200 active:scale-[0.98] cursor-pointer ${
                       isSelected
-                        ? 'border-blue-600 bg-white ring-2 ring-blue-500 shadow-xs'
-                        : 'border-slate-200 bg-white/70 hover:bg-white'
+                        ? 'bg-slate-800/80 border-2 border-indigo-500 shadow-md shadow-indigo-500/5'
+                        : 'bg-slate-800/40 border-2 border-slate-800 hover:border-slate-700'
                     }`}
                   >
-                    <div className="text-lg">{r.flag}</div>
-                    <div className="font-bold text-xs text-slate-900 mt-1">{r.name}</div>
-                    <div className="text-[11px] font-semibold text-blue-600">
-                      {(r.rateMultiplier * 100).toFixed(0)}% Rate Index
+                    <div className="flex items-center justify-between">
+                      <span className="text-lg">{r.flag}</span>
+                      <span className="text-xs font-bold text-emerald-500">
+                        {(r.rateMultiplier * 100).toFixed(0)}% Index
+                      </span>
                     </div>
+                    <div className="font-bold text-xs text-slate-100 mt-1.5">{r.name}</div>
+                    <div className="text-[11px] text-slate-400 mt-0.5 line-clamp-1">{r.description}</div>
                   </button>
                 );
               })}
@@ -656,46 +712,47 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
           {/* Team Squad Headcount Table */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center space-x-2">
-                <Users className="w-4 h-4 text-blue-600" />
+              <h3 className="text-sm font-bold text-slate-100 flex items-center space-x-2">
+                <Users className="w-4 h-4 text-indigo-400" />
                 <span>Recommended Engineering Squad Roles</span>
               </h3>
-              <span className="text-xs text-slate-500">
+              <span className="text-xs font-semibold text-emerald-500">
                 Total Team: {state.team.reduce((acc, t) => acc + t.count, 0)} Specialists
               </span>
             </div>
 
-            <div className="border border-slate-200 rounded-xl divide-y divide-slate-100 overflow-hidden bg-white">
+            <div className="border border-slate-700/50 rounded-xl divide-y divide-slate-800 overflow-hidden bg-slate-900/40">
               {TEAM_ROLES.map((role) => {
                 const teamMember = state.team.find((m) => m.roleId === role.id);
                 const count = teamMember ? teamMember.count : 0;
+                const regionalRate = Math.round(role.defaultHourlyRate * activeRegion.rateMultiplier * exchangeRate);
                 return (
-                  <div key={role.id} className="p-3.5 flex items-center justify-between hover:bg-slate-50 transition">
+                  <div key={role.id} className="p-3.5 flex items-center justify-between hover:bg-slate-800/60 transition-all duration-200">
                     <div className="pr-4">
-                      <div className="text-xs font-bold text-slate-900">{role.title}</div>
-                      <div className="text-[11px] text-slate-500">{role.description}</div>
+                      <div className="text-xs font-bold text-slate-100">{role.title}</div>
+                      <div className="text-[11px] text-slate-400">{role.description}</div>
                     </div>
                     <div className="flex items-center space-x-3 flex-shrink-0">
-                      <span className="text-xs font-semibold text-slate-600">
-                        ${Math.round(role.defaultHourlyRate * 0.3)}/hr
+                      <span className="text-xs font-semibold text-emerald-500">
+                        {currencySymbol}{regionalRate}/hr
                       </span>
-                      <div className="flex items-center space-x-1.5 bg-slate-100 border border-slate-200 rounded-lg p-1">
+                      <div className="flex items-center space-x-1.5 bg-slate-800 border border-slate-700/50 rounded-lg p-1">
                         <button
                           type="button"
                           onClick={() => handleUpdateRoleCount(role.id, -1)}
                           disabled={count === 0}
-                          className="p-1 rounded text-slate-600 hover:bg-white disabled:opacity-30 transition"
+                          className="p-1 rounded text-slate-300 hover:bg-slate-700 disabled:opacity-30 transition-all duration-200 active:scale-[0.98]"
                           title="Decrease headcount"
                         >
                           <Minus className="w-3.5 h-3.5" />
                         </button>
-                        <span className="w-6 text-center text-xs font-bold text-slate-900">
+                        <span className="w-6 text-center text-xs font-bold text-slate-100">
                           {count}
                         </span>
                         <button
                           type="button"
                           onClick={() => handleUpdateRoleCount(role.id, 1)}
-                          className="p-1 rounded text-slate-600 hover:bg-white transition"
+                          className="p-1 rounded text-slate-300 hover:bg-slate-700 transition-all duration-200 active:scale-[0.98]"
                           title="Increase headcount"
                         >
                           <Plus className="w-3.5 h-3.5" />
@@ -709,11 +766,11 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
           </div>
 
           {/* Navigation Buttons */}
-          <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+          <div className="flex items-center justify-between pt-4 border-t border-slate-700/50">
             <button
               type="button"
               onClick={() => setCurrentStep(2)}
-              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition"
+              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-200 bg-slate-900/60 hover:bg-slate-700 border border-slate-700/50 transition-all duration-200 active:scale-[0.98]"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Back to Modules</span>
@@ -721,7 +778,7 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
             <button
               type="button"
               onClick={() => setCurrentStep(4)}
-              className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition"
+              className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-500 shadow-md shadow-indigo-500/20 transition-all duration-200 active:scale-[0.98]"
             >
               <span>Continue to Unlock Estimate (Step 4)</span>
               <ArrowRight className="w-4 h-4" />
@@ -732,29 +789,28 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
 
       {/* STEP 4: Complimentary Lead Form & Calculation Reveal */}
       {currentStep === 4 && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-10 shadow-xs space-y-8 animate-fade-in">
-          
+        <div className="bg-slate-800 border border-slate-700/50 rounded-2xl p-6 sm:p-10 shadow-xl space-y-8">
           {/* Trust Guarantee Card */}
-          <div className="p-6 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-md text-xs font-bold text-emerald-800 bg-emerald-100 border border-emerald-200">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+          <div className="p-6 rounded-xl bg-slate-900/60 border border-slate-700/50 space-y-3">
+            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-lg text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
               <span>100% Complimentary · Instant Calculation Unlock</span>
             </div>
 
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-100 tracking-tight">
               Your Customized Project Estimate is Ready
             </h2>
 
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              Submitting your details unlocks the interactive estimation suite, including full dev hour itemizations, monthly team burn schedules, and PDF statement of work export.
+            <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+              Submitting your details unlocks the interactive estimation suite, including full dev hour itemizations, monthly team burn schedules, Gantt phase planning, and PDF statement of work export.
             </p>
 
-            <div className="p-4 rounded-xl bg-white border border-slate-200 text-xs text-slate-600 space-y-1">
-              <div className="font-bold text-slate-900 flex items-center space-x-1.5">
-                <ShieldCheck className="w-4 h-4 text-blue-600" />
+            <div className="p-4 rounded-xl bg-slate-800/80 border border-slate-700/50 text-xs text-slate-300 space-y-1">
+              <div className="font-bold text-slate-100 flex items-center space-x-1.5">
+                <ShieldCheck className="w-4 h-4 text-indigo-400" />
                 <span>ScopeCraft Consultative Transparency:</span>
               </div>
-              <p>
+              <p className="text-slate-400">
                 We capture your business details to save your scoping records and connect you with our solutions engineering team. If you would like your technical specifications formally vetted by a Principal Solutions Architect with a comprehensive delivery roadmap, that paid advisory service is available—completely optional.
               </p>
             </div>
@@ -763,196 +819,204 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
           {/* Form Grid */}
           <form onSubmit={handleSubmitLeadAndReveal} className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              
               {/* Full Name */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label className="block text-xs font-bold text-slate-300 mb-1.5">
                   Full Name *
                 </label>
                 <div className="relative">
-                  <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                  <User className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
                   <input
                     type="text"
                     required
                     value={leadForm.fullName}
                     onChange={(e) => setLeadForm({ ...leadForm, fullName: e.target.value })}
                     placeholder="e.g. Jordan Lee"
-                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition shadow-2xs ${
-                      formErrors.fullName ? 'border-red-500' : 'border-slate-300'
+                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-slate-100 bg-slate-900/70 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 transition-all duration-200 ${
+                      formErrors.fullName ? 'border-red-500' : 'border-slate-700/50'
                     }`}
                   />
                 </div>
-                {formErrors.fullName && <p className="text-[11px] text-red-500 mt-1">{formErrors.fullName}</p>}
+                {formErrors.fullName && <p className="text-[11px] text-red-400 mt-1">{formErrors.fullName}</p>}
               </div>
 
               {/* Work Email */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label className="block text-xs font-bold text-slate-300 mb-1.5">
                   Business Work Email *
                 </label>
                 <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                  <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
                   <input
                     type="email"
                     required
                     value={leadForm.email}
                     onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
                     placeholder="e.g. jordan@company.com"
-                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition shadow-2xs ${
-                      formErrors.email ? 'border-red-500' : 'border-slate-300'
+                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-slate-100 bg-slate-900/70 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 transition-all duration-200 ${
+                      formErrors.email ? 'border-red-500' : 'border-slate-700/50'
                     }`}
                   />
                 </div>
-                {formErrors.email && <p className="text-[11px] text-red-500 mt-1">{formErrors.email}</p>}
+                {formErrors.email && <p className="text-[11px] text-red-400 mt-1">{formErrors.email}</p>}
               </div>
 
               {/* Phone */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label className="block text-xs font-bold text-slate-300 mb-1.5">
                   Phone Number *
                 </label>
                 <div className="relative">
-                  <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                  <Phone className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
                   <input
                     type="tel"
                     required
                     value={leadForm.phone}
                     onChange={(e) => setLeadForm({ ...leadForm, phone: e.target.value })}
                     placeholder="e.g. +1 (555) 019-2834"
-                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition shadow-2xs ${
-                      formErrors.phone ? 'border-red-500' : 'border-slate-300'
+                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-slate-100 bg-slate-900/70 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 transition-all duration-200 ${
+                      formErrors.phone ? 'border-red-500' : 'border-slate-700/50'
                     }`}
                   />
                 </div>
-                {formErrors.phone && <p className="text-[11px] text-red-500 mt-1">{formErrors.phone}</p>}
+                {formErrors.phone && <p className="text-[11px] text-red-400 mt-1">{formErrors.phone}</p>}
               </div>
 
               {/* Company Name */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label className="block text-xs font-bold text-slate-300 mb-1.5">
                   Company / Organization *
                 </label>
                 <div className="relative">
-                  <Building2 className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                  <Building2 className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
                   <input
                     type="text"
                     required
                     value={leadForm.company}
                     onChange={(e) => setLeadForm({ ...leadForm, company: e.target.value })}
                     placeholder="e.g. Acme Innovations Corp"
-                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition shadow-2xs ${
-                      formErrors.company ? 'border-red-500' : 'border-slate-300'
+                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-slate-100 bg-slate-900/70 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 transition-all duration-200 ${
+                      formErrors.company ? 'border-red-500' : 'border-slate-700/50'
                     }`}
                   />
                 </div>
-                {formErrors.company && <p className="text-[11px] text-red-500 mt-1">{formErrors.company}</p>}
+                {formErrors.company && <p className="text-[11px] text-red-400 mt-1">{formErrors.company}</p>}
               </div>
 
               {/* Role / Job Title */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label className="block text-xs font-bold text-slate-300 mb-1.5">
                   Your Primary Role
                 </label>
                 <div className="relative">
-                  <Briefcase className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                  <Briefcase className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
                   <select
                     value={leadForm.role}
                     onChange={(e) => setLeadForm({ ...leadForm, role: e.target.value })}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition shadow-2xs"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-700/50 text-sm text-slate-100 bg-slate-900/70 focus:outline-none focus:border-indigo-500 transition-all duration-200"
                   >
-                    <option value="Founder / C-Level Executive">Founder / C-Level Executive</option>
-                    <option value="VP of Product / Head of Product">VP of Product / Head of Product</option>
-                    <option value="VP of Engineering / CTO">VP of Engineering / CTO</option>
-                    <option value="Technical Project Manager">Technical Project Manager</option>
-                    <option value="Operations / Enterprise Procurement">Operations / Enterprise Procurement</option>
-                    <option value="Other Stakeholder">Other Stakeholder</option>
+                    <option value="Founder / C-Level Executive" className="bg-slate-900">Founder / C-Level Executive</option>
+                    <option value="VP of Product / Head of Product" className="bg-slate-900">VP of Product / Head of Product</option>
+                    <option value="VP of Engineering / CTO" className="bg-slate-900">VP of Engineering / CTO</option>
+                    <option value="Technical Project Manager" className="bg-slate-900">Technical Project Manager</option>
+                    <option value="Operations / Enterprise Procurement" className="bg-slate-900">Operations / Enterprise Procurement</option>
+                    <option value="Other Stakeholder" className="bg-slate-900">Other Stakeholder</option>
                   </select>
                 </div>
               </div>
 
               {/* Planned Budget Range */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label className="block text-xs font-bold text-slate-300 mb-1.5">
                   Planned Budget Range
                 </label>
                 <div className="relative">
-                  <DollarSign className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                  <DollarSign className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
                   <select
                     value={leadForm.budgetRange}
                     onChange={(e) => setLeadForm({ ...leadForm, budgetRange: e.target.value })}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition shadow-2xs"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-700/50 text-sm text-slate-100 bg-slate-900/70 focus:outline-none focus:border-indigo-500 transition-all duration-200"
                   >
-                    <option value="Under $25k">Under $25,000</option>
-                    <option value="$25k - $50k">$25,000 - $50,000</option>
-                    <option value="$50k - $100k">$50,000 - $100,000</option>
-                    <option value="$100k - $250k">$100,000 - $250,000</option>
-                    <option value="$250k+">$250,000+</option>
+                    <option value="Under $25k" className="bg-slate-900">Under $25,000</option>
+                    <option value="$25k - $50k" className="bg-slate-900">$25,000 - $50,000</option>
+                    <option value="$50k - $100k" className="bg-slate-900">$50,000 - $100,000</option>
+                    <option value="$100k - $250k" className="bg-slate-900">$100,000 - $250,000</option>
+                    <option value="$250k+" className="bg-slate-900">$250,000+</option>
                   </select>
                 </div>
               </div>
-
             </div>
 
-            {/* Optional Paid Architect Review Checkbox */}
-            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-slate-50 transition">
-              <label className="flex items-start space-x-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={leadForm.wantsOptionalPaidReview}
-                  onChange={(e) => setLeadForm({ ...leadForm, wantsOptionalPaidReview: e.target.checked })}
-                  className="mt-1 w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
-                />
-                <div>
-                  <div className="text-xs font-bold text-slate-900">
-                    Request Senior Solutions Architect Review (Optional)
-                  </div>
-                  <p className="text-[11px] text-slate-500 leading-normal mt-0.5">
-                    Have an experienced Principal Architect independently vet your technical stack, architecture diagrams, and milestones.
-                  </p>
+            {/* Optional Paid Architect Review Matrix Card */}
+            <button
+              type="button"
+              aria-pressed={leadForm.wantsOptionalPaidReview}
+              onClick={() => setLeadForm({ ...leadForm, wantsOptionalPaidReview: !leadForm.wantsOptionalPaidReview })}
+              className={`w-full p-4 rounded-xl text-left flex items-start space-x-3 transition-all duration-200 active:scale-[0.98] cursor-pointer ${
+                leadForm.wantsOptionalPaidReview
+                  ? 'bg-slate-800/80 border-2 border-indigo-500 shadow-md shadow-indigo-500/5'
+                  : 'bg-slate-800/40 border-2 border-slate-800 hover:border-slate-700'
+              }`}
+            >
+              <div
+                className={`mt-0.5 w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${
+                  leadForm.wantsOptionalPaidReview ? 'bg-indigo-600 border-indigo-500 text-white' : 'border-slate-600 bg-slate-900/60'
+                }`}
+              >
+                {leadForm.wantsOptionalPaidReview && <Check className="w-3 h-3" />}
+              </div>
+              <div>
+                <div className="text-xs font-bold text-slate-100">
+                  Request Senior Solutions Architect Review (Optional)
                 </div>
-              </label>
-            </div>
+                <p className="text-[11px] text-slate-400 leading-normal mt-0.5">
+                  Have an experienced Principal Architect independently vet your technical stack, architecture diagrams, and milestones.
+                </p>
+              </div>
+            </button>
 
-            {/* Mandatory Privacy & Contact Consent Checkbox */}
-            <div className="p-4 rounded-xl border border-slate-200 bg-white">
-              <label className="flex items-start space-x-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  required
-                  checked={leadForm.consentGiven}
-                  onChange={(e) => setLeadForm({ ...leadForm, consentGiven: e.target.checked })}
-                  className="mt-1 w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
-                />
-                <div className="text-xs text-slate-600 leading-normal">
+            {/* Mandatory Privacy & Contact Consent */}
+            <div className="p-4 rounded-xl border border-slate-700/50 bg-slate-900/50">
+              <div className="flex items-start space-x-3">
+                <button
+                  type="button"
+                  role="checkbox"
+                  aria-checked={leadForm.consentGiven}
+                  aria-label="Agree to Privacy Policy"
+                  onClick={() => setLeadForm({ ...leadForm, consentGiven: !leadForm.consentGiven })}
+                  className={`mt-0.5 w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 transition-all duration-200 active:scale-[0.98] cursor-pointer ${
+                    leadForm.consentGiven ? 'bg-indigo-600 border-indigo-500 text-white' : 'border-slate-600 bg-slate-800'
+                  }`}
+                >
+                  {leadForm.consentGiven && <Check className="w-3 h-3" />}
+                </button>
+                <div className="text-xs text-slate-300 leading-normal">
                   <span>I agree to the </span>
                   <button
                     type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setIsPrivacyModalOpen(true);
-                    }}
-                    className="text-blue-600 font-semibold underline hover:text-blue-700"
+                    onClick={() => setIsPrivacyModalOpen(true)}
+                    className="text-indigo-400 font-semibold underline hover:text-indigo-300 transition-all duration-200"
                   >
                     Privacy Policy
                   </button>
                   <span> and understand that using this estimation suite is 100% complimentary. I consent to receiving consultative communications regarding this project estimate.</span>
                 </div>
-              </label>
-              {formErrors.consent && <p className="text-[11px] text-red-500 mt-1 pl-7">{formErrors.consent}</p>}
+              </div>
+              {formErrors.consent && <p className="text-[11px] text-red-400 mt-1.5 pl-7">{formErrors.consent}</p>}
             </div>
 
             {submitError && (
-              <div className="p-3 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-800">
+              <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-xs text-amber-300">
                 {submitError}
               </div>
             )}
 
             {/* Submission Actions */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-slate-100">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-slate-700/50">
               <button
                 type="button"
                 onClick={() => setCurrentStep(3)}
-                className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition order-2 sm:order-1"
+                className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-200 bg-slate-900/60 hover:bg-slate-700 border border-slate-700/50 transition-all duration-200 active:scale-[0.98] order-2 sm:order-1"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Back to Team & Rates</span>
@@ -961,7 +1025,7 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-8 py-3.5 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-md transition disabled:opacity-60 order-1 sm:order-2"
+                className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-8 py-3.5 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-500/20 transition-all duration-200 active:scale-[0.98] disabled:opacity-60 order-1 sm:order-2"
               >
                 {isSubmitting ? (
                   <>
@@ -977,7 +1041,6 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
                 )}
               </button>
             </div>
-
           </form>
         </div>
       )}
@@ -987,7 +1050,6 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
         isOpen={isPrivacyModalOpen}
         onClose={() => setIsPrivacyModalOpen(false)}
       />
-
     </div>
   );
 };

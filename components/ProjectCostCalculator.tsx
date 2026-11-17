@@ -37,7 +37,7 @@ interface ProjectCostCalculatorProps {
   exchangeRate: number;
 }
 
-const CATEGORY_LABELS: Record<FeatureCategory, { label: string; icon: any }> = {
+const CATEGORY_LABELS: Record<FeatureCategory, { label: string; icon: React.ComponentType<{ className?: string }> }> = {
   auth: { label: 'Auth & Access', icon: Lock },
   monetization: { label: 'Monetization & Billing', icon: Zap },
   ai_ml: { label: 'AI & Machine Learning', icon: Sparkles },
@@ -58,13 +58,11 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategoryFilter, setActiveCategoryFilter] = useState<string>('all');
-  
-  // Custom Param Form State
+
   const [newParamName, setNewParamName] = useState('');
   const [newParamType, setNewParamType] = useState<'fixed_cost' | 'hours'>('fixed_cost');
   const [newParamValue, setNewParamValue] = useState<number>(500);
 
-  // Platform Toggle
   const togglePlatform = (p: ProjectPlatform) => {
     let nextPlatforms: ProjectPlatform[];
     if (p === 'cross_platform') {
@@ -80,7 +78,6 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
     onChange({ platforms: nextPlatforms });
   };
 
-  // Feature Toggle
   const toggleFeature = (fId: string) => {
     const isSelected = state.selectedFeatureIds.includes(fId);
     const updated = isSelected
@@ -89,7 +86,6 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
     onChange({ selectedFeatureIds: updated });
   };
 
-  // Add Custom Parameter
   const handleAddCustomParam = () => {
     if (!newParamName.trim()) return;
     const newParam: CustomParam = {
@@ -108,7 +104,6 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
     onChange({ customParams: state.customParams.filter((p) => p.id !== id) });
   };
 
-  // Toggle SaaS Addon
   const toggleSaaS = (id: string) => {
     const isSelected = state.selectedSaaSAddons.includes(id);
     const updated = isSelected
@@ -117,7 +112,6 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
     onChange({ selectedSaaSAddons: updated });
   };
 
-  // Filter Features
   const filteredFeatures = FEATURE_CATALOG.filter((f) => {
     const matchesSearch =
       f.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -128,23 +122,19 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
 
   return (
     <div className="space-y-6">
-      
       {/* 1. Target Platforms & Scope Complexity */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        
-        {/* Platforms */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
-              <Globe className="w-4 h-4 text-blue-600" />
+        {/* Platforms (Rule 2 Matrix Cards) */}
+        <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700/50 shadow-xl">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-bold text-slate-100 text-sm flex items-center space-x-2">
+              <Globe className="w-4 h-4 text-indigo-400" />
               <span>Target Platforms</span>
             </h3>
-            <span className="text-xs text-slate-500">
-              Multi-platform builds
-            </span>
+            <span className="text-xs text-slate-400">Multi-platform builds</span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[
               { id: 'web', label: 'Web Application', icon: Globe, sub: 'Responsive Web' },
               { id: 'ios', label: 'Native iOS', icon: Smartphone, sub: 'Apple App Store' },
@@ -158,38 +148,37 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
                 <button
                   key={item.id}
                   type="button"
+                  aria-pressed={active}
                   onClick={() => togglePlatform(item.id as ProjectPlatform)}
-                  className={`p-3 rounded-xl border text-left transition-all ${
+                  className={`p-3.5 rounded-xl text-left transition-all duration-200 active:scale-[0.98] cursor-pointer ${
                     active
-                      ? 'border-blue-600 bg-blue-50/70 text-blue-900 shadow-xs ring-1 ring-blue-500'
-                      : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 text-slate-700'
+                      ? 'bg-slate-800/80 border-2 border-indigo-500 shadow-md shadow-indigo-500/5'
+                      : 'bg-slate-800/40 border-2 border-slate-800 hover:border-slate-700'
                   }`}
                 >
-                  <div className="flex items-center justify-between mb-1">
-                    <IconComp className={`w-4 h-4 ${active ? 'text-blue-600' : 'text-slate-400'}`} />
-                    {active && <Check className="w-3.5 h-3.5 text-blue-600" />}
+                  <div className="flex items-center justify-between mb-1.5">
+                    <IconComp className={`w-4 h-4 ${active ? 'text-indigo-400' : 'text-slate-400'}`} />
+                    {active && <Check className="w-3.5 h-3.5 text-indigo-400" />}
                   </div>
-                  <div className="font-bold text-xs">{item.label}</div>
-                  <div className="text-[10px] text-slate-500">{item.sub}</div>
+                  <div className="font-bold text-xs text-slate-100">{item.label}</div>
+                  <div className="text-[11px] text-slate-400">{item.sub}</div>
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* Complexity Level */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
-              <Zap className="w-4 h-4 text-amber-500" />
+        {/* Complexity Level (Rule 2 Matrix Cards) */}
+        <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700/50 shadow-xl">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-bold text-slate-100 text-sm flex items-center space-x-2">
+              <Zap className="w-4 h-4 text-indigo-400" />
               <span>Project Complexity Tier</span>
             </h3>
-            <span className="text-xs text-slate-500">
-              Architecture scale multiplier
-            </span>
+            <span className="text-xs text-slate-400">Architecture scale multiplier</span>
           </div>
 
-          <div className="grid grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" role="radiogroup" aria-label="Complexity Level">
             {[
               {
                 id: 'mvp',
@@ -215,40 +204,38 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
                 <button
                   key={item.id}
                   type="button"
+                  role="radio"
+                  aria-checked={active}
                   onClick={() => onChange({ complexity: item.id as ComplexityLevel })}
-                  className={`p-3 rounded-xl border text-left transition-all ${
+                  className={`p-3.5 rounded-xl text-left transition-all duration-200 active:scale-[0.98] cursor-pointer ${
                     active
-                      ? 'border-blue-600 bg-blue-50/70 text-blue-900 shadow-xs ring-1 ring-blue-500'
-                      : 'border-slate-200 bg-white hover:border-slate-300 text-slate-700'
+                      ? 'bg-slate-800/80 border-2 border-indigo-500 shadow-md shadow-indigo-500/5'
+                      : 'bg-slate-800/40 border-2 border-slate-800 hover:border-slate-700'
                   }`}
                 >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-bold text-xs">{item.label}</span>
-                    <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="font-bold text-xs text-slate-100">{item.label}</span>
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-900/80 text-emerald-500 border border-slate-700/50">
                       {item.mult}
                     </span>
                   </div>
-                  <p className="text-[10px] text-slate-500 leading-tight">
-                    {item.desc}
-                  </p>
+                  <p className="text-[11px] text-slate-400 leading-tight">{item.desc}</p>
                 </button>
               );
             })}
           </div>
         </div>
-
       </div>
 
       {/* 2. Design & QA Tiers */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        
         {/* Design Polish */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
-          <h3 className="font-bold text-slate-900 text-sm mb-3 flex items-center space-x-2">
-            <Sparkles className="w-4 h-4 text-blue-600" />
+        <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700/50 shadow-xl">
+          <h3 className="font-bold text-slate-100 text-sm mb-4 flex items-center space-x-2">
+            <Sparkles className="w-4 h-4 text-indigo-400" />
             <span>UI/UX Design Polish Tier</span>
           </h3>
-          <div className="grid grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" role="radiogroup" aria-label="UI/UX Design Polish">
             {[
               { id: 'wireframe', title: 'System Layout', overhead: '+8%', desc: 'Clean functional layout, standard UI components' },
               { id: 'standard_ui', title: 'Custom Brand UI', overhead: '+18%', desc: 'Tailored branding, responsive design system' },
@@ -259,18 +246,20 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
                 <button
                   key={tier.id}
                   type="button"
+                  role="radio"
+                  aria-checked={active}
                   onClick={() => onChange({ designLevel: tier.id as DesignLevel })}
-                  className={`p-3 rounded-xl border text-left transition-all ${
+                  className={`p-3.5 rounded-xl text-left transition-all duration-200 active:scale-[0.98] cursor-pointer ${
                     active
-                      ? 'border-blue-600 bg-blue-50/70 text-blue-900 shadow-xs ring-1 ring-blue-500'
-                      : 'border-slate-200 bg-white hover:border-slate-300 text-slate-700'
+                      ? 'bg-slate-800/80 border-2 border-indigo-500 shadow-md shadow-indigo-500/5'
+                      : 'bg-slate-800/40 border-2 border-slate-800 hover:border-slate-700'
                   }`}
                 >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-bold text-xs">{tier.title}</span>
-                    <span className="text-[10px] text-blue-600 font-semibold">{tier.overhead}</span>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="font-bold text-xs text-slate-100">{tier.title}</span>
+                    <span className="text-[10px] text-emerald-500 font-bold">{tier.overhead}</span>
                   </div>
-                  <p className="text-[10px] text-slate-500 leading-tight">{tier.desc}</p>
+                  <p className="text-[11px] text-slate-400 leading-tight">{tier.desc}</p>
                 </button>
               );
             })}
@@ -278,12 +267,12 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
         </div>
 
         {/* QA & Security Level */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
-          <h3 className="font-bold text-slate-900 text-sm mb-3 flex items-center space-x-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-600" />
+        <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700/50 shadow-xl">
+          <h3 className="font-bold text-slate-100 text-sm mb-4 flex items-center space-x-2">
+            <ShieldCheck className="w-4 h-4 text-emerald-500" />
             <span>QA & Security Testing Level</span>
           </h3>
-          <div className="grid grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" role="radiogroup" aria-label="QA and Security Level">
             {[
               { id: 'basic', title: 'Manual Testing', overhead: '+8%', desc: 'Manual QA validation & basic smoke tests' },
               { id: 'standard', title: 'Automated E2E Suite', overhead: '+18%', desc: 'Playwright automated E2E & unit test coverage' },
@@ -294,60 +283,61 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
                 <button
                   key={tier.id}
                   type="button"
+                  role="radio"
+                  aria-checked={active}
                   onClick={() => onChange({ qaLevel: tier.id as QALevel })}
-                  className={`p-3 rounded-xl border text-left transition-all ${
+                  className={`p-3.5 rounded-xl text-left transition-all duration-200 active:scale-[0.98] cursor-pointer ${
                     active
-                      ? 'border-blue-600 bg-blue-50/70 text-blue-900 shadow-xs ring-1 ring-blue-500'
-                      : 'border-slate-200 bg-white hover:border-slate-300 text-slate-700'
+                      ? 'bg-slate-800/80 border-2 border-indigo-500 shadow-md shadow-indigo-500/5'
+                      : 'bg-slate-800/40 border-2 border-slate-800 hover:border-slate-700'
                   }`}
                 >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-bold text-xs">{tier.title}</span>
-                    <span className="text-[10px] text-emerald-700 font-semibold">{tier.overhead}</span>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="font-bold text-xs text-slate-100">{tier.title}</span>
+                    <span className="text-[10px] text-emerald-500 font-bold">{tier.overhead}</span>
                   </div>
-                  <p className="text-[10px] text-slate-500 leading-tight">{tier.desc}</p>
+                  <p className="text-[11px] text-slate-400 leading-tight">{tier.desc}</p>
                 </button>
               );
             })}
           </div>
         </div>
-
       </div>
 
       {/* 3. Feature Selection Catalog */}
-      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+      <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700/50 shadow-xl">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
           <div>
-            <h3 className="font-bold text-slate-900 text-base flex items-center space-x-2">
-              <Layers className="w-5 h-5 text-blue-600" />
+            <h3 className="font-bold text-slate-100 text-base flex items-center space-x-2">
+              <Layers className="w-5 h-5 text-indigo-400" />
               <span>Project Feature Modules</span>
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-400">
               Select functional components to build your custom software estimate
             </p>
           </div>
 
-          {/* Search Input */}
           <div className="relative w-full sm:w-64">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+            <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search features..."
-              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
+              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-900/70 border border-slate-700/50 rounded-lg text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 transition-all duration-200"
             />
           </div>
         </div>
 
-        {/* Category Filter Badges */}
-        <div className="flex items-center space-x-1.5 overflow-x-auto pb-3 mb-3 no-scrollbar">
+        {/* Category Filter Tabs (Flat Minimalism) */}
+        <div className="flex items-center space-x-3 overflow-x-auto pb-1 mb-4 border-b border-slate-800 no-scrollbar">
           <button
+            type="button"
             onClick={() => setActiveCategoryFilter('all')}
-            className={`px-3 py-1 rounded-lg text-xs font-semibold transition whitespace-nowrap ${
+            className={`pb-2.5 text-xs font-semibold border-b-2 transition-all duration-200 active:scale-[0.98] whitespace-nowrap ${
               activeCategoryFilter === 'all'
-                ? 'bg-blue-600 text-white shadow-2xs'
-                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                ? 'border-indigo-500 text-slate-100'
+                : 'border-transparent text-slate-500 hover:text-slate-300'
             }`}
           >
             All Modules ({FEATURE_CATALOG.length})
@@ -358,11 +348,12 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
             return (
               <button
                 key={catKey}
+                type="button"
                 onClick={() => setActiveCategoryFilter(catKey)}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold transition whitespace-nowrap ${
+                className={`pb-2.5 text-xs font-semibold border-b-2 transition-all duration-200 active:scale-[0.98] whitespace-nowrap ${
                   activeCategoryFilter === catKey
-                    ? 'bg-blue-600 text-white shadow-2xs'
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                    ? 'border-indigo-500 text-slate-100'
+                    : 'border-transparent text-slate-500 hover:text-slate-300'
                 }`}
               >
                 {CATEGORY_LABELS[catKey].label} ({count})
@@ -372,49 +363,51 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
         </div>
 
         {/* Feature Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {filteredFeatures.map((f) => {
             const selected = state.selectedFeatureIds.includes(f.id);
             return (
-              <div
+              <button
                 key={f.id}
+                type="button"
+                aria-pressed={selected}
                 onClick={() => toggleFeature(f.id)}
-                className={`p-3.5 rounded-xl border text-left cursor-pointer transition-all flex flex-col justify-between ${
+                className={`p-4 rounded-xl text-left transition-all duration-200 active:scale-[0.98] cursor-pointer flex flex-col justify-between ${
                   selected
-                    ? 'border-blue-600 bg-blue-50/70 text-slate-900 shadow-xs ring-1 ring-blue-500'
-                    : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 text-slate-700'
+                    ? 'bg-slate-800/80 border-2 border-indigo-500 shadow-md shadow-indigo-500/5'
+                    : 'bg-slate-800/40 border-2 border-slate-800 hover:border-slate-700'
                 }`}
               >
-                <div>
+                <div className="w-full">
                   <div className="flex items-start justify-between gap-2 mb-1.5">
-                    <span className="font-bold text-xs text-slate-900 leading-snug">{f.name}</span>
+                    <span className="font-bold text-xs text-slate-100 leading-snug">{f.name}</span>
                     <div className="flex items-center space-x-1.5 flex-shrink-0">
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-900/70 text-emerald-500 border border-slate-700/50">
                         {f.baseHours} hrs
                       </span>
                       <div
-                        className={`w-4 h-4 rounded flex items-center justify-center border transition ${
+                        className={`w-4 h-4 rounded flex items-center justify-center border transition-all duration-200 ${
                           selected
-                            ? 'bg-blue-600 border-blue-600 text-white'
-                            : 'border-slate-300 bg-white'
+                            ? 'bg-indigo-600 border-indigo-500 text-white'
+                            : 'border-slate-700 bg-slate-900/60'
                         }`}
                       >
                         {selected && <Check className="w-3 h-3 stroke-[3]" />}
                       </div>
                     </div>
                   </div>
-                  <p className="text-[11px] text-slate-500 line-clamp-2 leading-relaxed">
+                  <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">
                     {f.description}
                   </p>
                 </div>
 
-                <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400">
+                <div className="w-full mt-2.5 pt-2 border-t border-slate-700/50 flex items-center justify-between text-[10px] text-slate-500">
                   <span className="uppercase tracking-wider font-semibold">
                     {CATEGORY_LABELS[f.category]?.label || f.category}
                   </span>
                   <span>Est. Dev Effort</span>
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>
@@ -422,32 +415,32 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
 
       {/* 4. Custom Line Items & SaaS Add-ons */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        
         {/* Custom Parameters */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
-          <h3 className="font-bold text-slate-900 text-sm mb-3 flex items-center space-x-2">
-            <Plus className="w-4 h-4 text-blue-600" />
+        <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700/50 shadow-xl">
+          <h3 className="font-bold text-slate-100 text-sm mb-3 flex items-center space-x-2">
+            <Plus className="w-4 h-4 text-indigo-400" />
             <span>Custom Scope Parameters & Add-ons</span>
           </h3>
 
           <div className="space-y-2 mb-4">
             {state.customParams.length === 0 ? (
-              <p className="text-xs text-slate-400 italic">No custom line items added yet.</p>
+              <p className="text-xs text-slate-500 italic">No custom line items added yet.</p>
             ) : (
               state.customParams.map((p) => (
                 <div
                   key={p.id}
-                  className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-xs"
+                  className="flex items-center justify-between p-2.5 rounded-lg bg-slate-900/60 border border-slate-800 text-xs"
                 >
                   <div>
-                    <span className="font-semibold text-slate-800">{p.name}</span>
-                    <span className="ml-2 text-[10px] text-slate-400">
+                    <span className="font-semibold text-slate-100">{p.name}</span>
+                    <span className="ml-2 text-[11px] font-semibold text-emerald-500">
                       ({p.type === 'fixed_cost' ? `${currencySymbol}${p.value}` : `${p.value} Custom Hrs`})
                     </span>
                   </div>
                   <button
+                    type="button"
                     onClick={() => handleRemoveCustomParam(p.id)}
-                    className="p-1 text-red-500 hover:text-red-700 transition"
+                    className="p-1 text-red-400 hover:text-red-300 transition-all duration-200 active:scale-[0.98]"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -456,19 +449,19 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
             )}
           </div>
 
-          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2.5">
+          <div className="p-3.5 bg-slate-900/60 rounded-xl border border-slate-800 space-y-2.5">
             <input
               type="text"
               value={newParamName}
               onChange={(e) => setNewParamName(e.target.value)}
               placeholder="Custom Line Item (e.g. Third-Party Hardware BLE Audit)"
-              className="w-full px-3 py-1.5 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900"
+              className="w-full px-3 py-2 text-xs bg-slate-800 border border-slate-700/50 rounded-lg focus:outline-none focus:border-indigo-500 text-slate-100 placeholder:text-slate-500 transition-all duration-200"
             />
             <div className="flex items-center space-x-2">
               <select
                 value={newParamType}
-                onChange={(e) => setNewParamType(e.target.value as any)}
-                className="px-2.5 py-1.5 text-xs bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none"
+                onChange={(e) => setNewParamType(e.target.value as 'fixed_cost' | 'hours')}
+                className="px-2.5 py-2 text-xs bg-slate-800 border border-slate-700/50 rounded-lg text-slate-100 focus:outline-none focus:border-indigo-500"
               >
                 <option value="fixed_cost">Fixed Cost ({currencySymbol})</option>
                 <option value="hours">Custom Hours (hrs)</option>
@@ -477,12 +470,12 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
                 type="number"
                 value={newParamValue}
                 onChange={(e) => setNewParamValue(Number(e.target.value))}
-                className="w-24 px-2.5 py-1.5 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none text-slate-900"
+                className="w-24 px-2.5 py-2 text-xs bg-slate-800 border border-slate-700/50 rounded-lg focus:outline-none focus:border-indigo-500 text-slate-100"
               />
               <button
                 type="button"
                 onClick={handleAddCustomParam}
-                className="flex-1 py-1.5 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold transition"
+                className="flex-1 py-2 px-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold transition-all duration-200 active:scale-[0.98]"
               >
                 Add Item
               </button>
@@ -491,67 +484,68 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
         </div>
 
         {/* SaaS & Third-Party Infrastructure Estimates */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
-          <h3 className="font-bold text-slate-900 text-sm mb-3 flex items-center space-x-2">
-            <Server className="w-4 h-4 text-emerald-600" />
+        <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700/50 shadow-xl">
+          <h3 className="font-bold text-slate-100 text-sm mb-3 flex items-center space-x-2">
+            <Server className="w-4 h-4 text-emerald-500" />
             <span>Estimated Third-Party SaaS & Infrastructure</span>
           </h3>
 
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             {SAAS_ADDONS.map((saas) => {
               const active = state.selectedSaaSAddons.includes(saas.id);
               const estCost = Math.round(saas.monthlyEstimate * exchangeRate);
               return (
-                <div
+                <button
                   key={saas.id}
+                  type="button"
+                  aria-pressed={active}
                   onClick={() => toggleSaaS(saas.id)}
-                  className={`p-2.5 rounded-xl border text-xs cursor-pointer transition flex items-center justify-between ${
+                  className={`w-full p-3 rounded-xl text-xs cursor-pointer transition-all duration-200 active:scale-[0.98] flex items-center justify-between text-left ${
                     active
-                      ? 'border-emerald-600 bg-emerald-50/60 text-slate-900 ring-1 ring-emerald-500'
-                      : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-600'
+                      ? 'bg-slate-800/80 border-2 border-indigo-500 shadow-md shadow-indigo-500/5'
+                      : 'bg-slate-800/40 border-2 border-slate-800 hover:border-slate-700'
                   }`}
                 >
                   <div className="flex items-center space-x-2.5">
                     <div
                       className={`w-4 h-4 rounded flex items-center justify-center border ${
                         active
-                          ? 'bg-emerald-600 border-emerald-600 text-white'
-                          : 'border-slate-300 bg-white'
+                          ? 'bg-indigo-600 border-indigo-500 text-white'
+                          : 'border-slate-700 bg-slate-900/60'
                       }`}
                     >
                       {active && <Check className="w-3 h-3 stroke-[3]" />}
                     </div>
                     <div>
-                      <div className="font-semibold text-slate-800">{saas.name}</div>
+                      <div className="font-semibold text-slate-100">{saas.name}</div>
                       <div className="text-[10px] text-slate-400">{saas.description}</div>
                     </div>
                   </div>
-                  <span className="font-bold text-emerald-700 flex-shrink-0 pl-2">
+                  <span className="font-bold text-emerald-500 flex-shrink-0 pl-2">
                     ~{currencySymbol}{estCost}/mo
                   </span>
-                </div>
+                </button>
               );
             })}
           </div>
         </div>
-
       </div>
 
       {/* 5. Post-Launch SLA Maintenance Period */}
-      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+      <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700/50 shadow-xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
           <div>
-            <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
-              <ShieldCheck className="w-4 h-4 text-blue-600" />
+            <h3 className="font-bold text-slate-100 text-sm flex items-center space-x-2">
+              <ShieldCheck className="w-4 h-4 text-indigo-400" />
               <span>Post-Launch Maintenance & Support SLA</span>
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-400">
               Ongoing bug fixes, security updates, OS compatibility, and server monitoring
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" role="radiogroup" aria-label="Post-Launch Maintenance SLA">
           {[
             { id: 'none', label: 'No Retainer', desc: 'Standard warranty period' },
             { id: '3_months', label: '3 Months SLA', desc: 'Launch stability coverage' },
@@ -563,21 +557,22 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
               <button
                 key={item.id}
                 type="button"
+                role="radio"
+                aria-checked={active}
                 onClick={() => onChange({ maintenancePeriod: item.id as MaintenancePeriod })}
-                className={`p-3 rounded-xl border text-left transition ${
+                className={`p-3.5 rounded-xl text-left transition-all duration-200 active:scale-[0.98] cursor-pointer ${
                   active
-                    ? 'border-blue-600 bg-blue-50/70 text-blue-900 shadow-xs ring-1 ring-blue-500'
-                    : 'border-slate-200 bg-white hover:border-slate-300 text-slate-700'
+                    ? 'bg-slate-800/80 border-2 border-indigo-500 shadow-md shadow-indigo-500/5'
+                    : 'bg-slate-800/40 border-2 border-slate-800 hover:border-slate-700'
                 }`}
               >
-                <div className="font-bold text-xs mb-1">{item.label}</div>
-                <div className="text-[10px] text-slate-500">{item.desc}</div>
+                <div className="font-bold text-xs text-slate-100 mb-1">{item.label}</div>
+                <div className="text-[11px] text-slate-400">{item.desc}</div>
               </button>
             );
           })}
         </div>
       </div>
-
     </div>
   );
 };

@@ -10,21 +10,40 @@ import { AiEstimatorModal } from '@/components/AiEstimatorModal';
 import { PresetSelectorModal } from '@/components/PresetSelectorModal';
 import { ProposalExportModal } from '@/components/ProposalExportModal';
 import { GuidedScopingWizard } from '@/components/GuidedScopingWizard';
+import { LiveEstimateSidebar } from '@/components/LiveEstimateSidebar';
 
 import { ProjectState, CurrencyConfig, LeadProfile } from '@/types/estimator';
 import { CURRENCIES } from '@/lib/estimator-data';
 import { calculateEstimate, generateRecommendedTeam } from '@/lib/estimator-engine';
 import { motion, AnimatePresence } from 'motion/react';
-import {
-  Sparkles,
-  Clock,
-  FileText
-} from 'lucide-react';
+import { Sparkles, Clock, FileText } from 'lucide-react';
+import Swal from 'sweetalert2';
 
-const emptySubscribe = () => () => {};
+const storageListeners = new Set<() => void>();
+
+function subscribeStorage(callback: () => void) {
+  storageListeners.add(callback);
+  if (typeof window !== 'undefined') {
+    window.addEventListener('storage', callback);
+  }
+  return () => {
+    storageListeners.delete(callback);
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('storage', callback);
+    }
+  };
+}
 
 let cachedRawUnlocked: string | null = null;
 let cachedUnlockedBool: boolean = false;
+
+function notifyStorageListeners() {
+  cachedRawUnlocked = null;
+  cachedUnlockedBool = false;
+  cachedRawProfile = null;
+  cachedProfileObj = null;
+  storageListeners.forEach((cb) => cb());
+}
 
 function getStoredLeadUnlockedSnapshot(): boolean {
   if (typeof window === 'undefined') return false;
@@ -43,7 +62,7 @@ function getStoredLeadUnlockedSnapshot(): boolean {
 
 function useStoredLeadUnlocked(): boolean {
   return useSyncExternalStore(
-    emptySubscribe,
+    subscribeStorage,
     getStoredLeadUnlockedSnapshot,
     () => false
   );
@@ -69,7 +88,7 @@ function getStoredLeadProfileSnapshot(): LeadProfile | null {
 
 function useStoredLeadProfile(): LeadProfile | null {
   return useSyncExternalStore(
-    emptySubscribe,
+    subscribeStorage,
     getStoredLeadProfileSnapshot,
     () => null
   );
@@ -113,7 +132,8 @@ export default function Home() {
     return INITIAL_PROJECT_STATE;
   });
   const [viewMode, setViewMode] = useState<ViewMode>('combined');
-  const [currency, setCurrency] = useState<CurrencyConfig>(CURRENCIES[0]); // USD default
+  const [currency, setCurrency] = useState<CurrencyConfig>(CURRENCIES[0]);
+  const [resetCounter, setResetCounter] = useState(0);
 
   // Modals
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
@@ -122,17 +142,77 @@ export default function Home() {
 
   // Partial State Handler
   const handleUpdateProjectState = (updated: Partial<ProjectState>) => {
-    setProjectState((prev) => {
-      const next = { ...prev, ...updated };
-      return next;
-    });
+    setProjectState((prev) => ({ ...prev, ...updated }));
   };
 
-  // Reset State
-  const handleReset = () => {
-    if (confirm('Reset calculator parameters to default SaaS MVP preset?')) {
-      setProjectState(INITIAL_PROJECT_STATE);
+  // Reset State & Clear All Session/Local Storage
+  const handleReset = async () => {
+    const result = await Swal.fire({
+      title: 'Reset & Start Fresh?',
+      text: 'This destructive action will clear all calculations, selections, session data, and local storage so you can calculate from the start.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Reset Everything',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true,
+      focusCancel: true,
+      background: '#1e293b',
+      color: '#f1f5f9',
+      iconColor: '#f59e0b',
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#334155',
+      customClass: {
+        popup: 'border border-slate-700/50 rounded-2xl shadow-2xl',
+        confirmButton: 'rounded-xl font-bold text-xs px-4 py-2.5',
+        cancelButton: 'rounded-xl font-semibold text-xs px-4 py-2.5'
+      }
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      localStorage.clear();
+    } catch {
+      // ignore storage quota/access errors
     }
+    try {
+      sessionStorage.clear();
+    } catch {
+      // ignore storage quota/access errors
+    }
+
+    notifyStorageListeners();
+    setIsStudioUnlocked(false);
+    setActiveLead(null);
+    setProjectState({
+      ...INITIAL_PROJECT_STATE,
+      team: generateRecommendedTeam(
+        INITIAL_PROJECT_STATE.selectedFeatureIds,
+        INITIAL_PROJECT_STATE.platforms,
+        INITIAL_PROJECT_STATE.complexity,
+        INITIAL_PROJECT_STATE.designLevel
+      ),
+      customParams: []
+    });
+    setViewMode('combined');
+    setCurrency(CURRENCIES[0]);
+    setIsAiModalOpen(false);
+    setIsPresetModalOpen(false);
+    setIsExportModalOpen(false);
+    setResetCounter((prev) => prev + 1);
+
+    void Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: 'success',
+      title: 'Workspace & storage cleared',
+      showConfirmButton: false,
+      timer: 2200,
+      timerProgressBar: true,
+      background: '#1e293b',
+      color: '#f1f5f9',
+      iconColor: '#10b981'
+    });
   };
 
   // Load Preset
@@ -158,10 +238,10 @@ export default function Home() {
   const convertedGrandTotal = Math.round(estimate.grandTotalCost * currency.exchangeRate);
   const convertedMonthlyBurn = Math.round(estimate.teamMonthlyBurnRate * currency.exchangeRate);
 
-  // If lead is not yet captured or user chooses to launch guided wizard
-  if (!effectiveUnlocked) {
-    return (
-      <div className="min-h-screen bg-slate-50 text-slate-900 font-sans pb-16">
+  return (
+    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans flex flex-col lg:flex-row">
+      {/* Main Content Workspace */}
+      <div className="flex-1 min-w-0 flex flex-col pb-24 lg:pb-12">
         <Header
           viewMode={viewMode}
           setViewMode={setViewMode}
@@ -175,162 +255,143 @@ export default function Home() {
           onReset={handleReset}
           projectName={projectState.projectName}
           onChangeProjectName={(projectName) => handleUpdateProjectState({ projectName })}
+          onOpenWizard={effectiveUnlocked ? () => setIsStudioUnlocked(false) : undefined}
           leadProfile={effectiveLead}
+          showStudioTabs={effectiveUnlocked}
         />
 
-        <main className="pt-4">
-          <GuidedScopingWizard
-            initialState={projectState}
-            onComplete={(lead, updatedState) => {
-              setActiveLead(lead);
-              setProjectState(updatedState);
-              setIsStudioUnlocked(true);
-            }}
-            currencySymbol={currency.symbol}
-            exchangeRate={currency.exchangeRate}
-          />
-        </main>
+        {!effectiveUnlocked ? (
+          <main className="pt-4 flex-1">
+            <GuidedScopingWizard
+              key={resetCounter}
+              initialState={projectState}
+              onStateChange={handleUpdateProjectState}
+              onComplete={(lead, updatedState) => {
+                setActiveLead(lead);
+                setProjectState(updatedState);
+                setIsStudioUnlocked(true);
+              }}
+              currencySymbol={currency.symbol}
+              exchangeRate={currency.exchangeRate}
+            />
+          </main>
+        ) : (
+          <main className="max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 flex-1">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={viewMode}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.15 }}
+              >
+                {viewMode === 'parameters' && (
+                  <ProjectCostCalculator
+                    state={projectState}
+                    onChange={handleUpdateProjectState}
+                    currencySymbol={currency.symbol}
+                    exchangeRate={currency.exchangeRate}
+                  />
+                )}
 
-        <AiEstimatorModal
-          isOpen={isAiModalOpen}
-          onClose={() => setIsAiModalOpen(false)}
-          onApplyAiResult={(updated) => handleUpdateProjectState(updated)}
-        />
+                {viewMode === 'team' && (
+                  <TeamCostCalculator
+                    state={projectState}
+                    onChange={handleUpdateProjectState}
+                    currencySymbol={currency.symbol}
+                    exchangeRate={currency.exchangeRate}
+                  />
+                )}
 
-        <PresetSelectorModal
-          isOpen={isPresetModalOpen}
-          onClose={() => setIsPresetModalOpen(false)}
-          onSelectPreset={handleSelectPreset}
-        />
+                {viewMode === 'combined' && (
+                  <CombinedStudio
+                    state={projectState}
+                    estimate={estimate}
+                    onChange={handleUpdateProjectState}
+                    currencySymbol={currency.symbol}
+                    exchangeRate={currency.exchangeRate}
+                    onOpenExportModal={() => setIsExportModalOpen(true)}
+                  />
+                )}
+
+                {viewMode === 'comparison' && (
+                  <ScenarioComparison
+                    currentState={projectState}
+                    onLoadState={setProjectState}
+                    currencySymbol={currency.symbol}
+                    exchangeRate={currency.exchangeRate}
+                  />
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </main>
+        )}
       </div>
-    );
-  }
 
-  return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans pb-28">
-      
-      {/* Header Bar */}
-      <Header
-        viewMode={viewMode}
-        setViewMode={setViewMode}
-        regionId={projectState.regionId}
-        setRegionId={(regionId) => handleUpdateProjectState({ regionId })}
-        currency={currency}
-        setCurrency={setCurrency}
+      {/* Desktop Live Estimate Sidebar (Glassmorphism Overlay) */}
+      <LiveEstimateSidebar
+        state={projectState}
+        estimate={estimate}
+        currencySymbol={currency.symbol}
+        exchangeRate={currency.exchangeRate}
+        isUnlocked={effectiveUnlocked}
         onOpenAiModal={() => setIsAiModalOpen(true)}
-        onOpenPresetModal={() => setIsPresetModalOpen(true)}
         onOpenExportModal={() => setIsExportModalOpen(true)}
-        onReset={handleReset}
-        projectName={projectState.projectName}
-        onChangeProjectName={(projectName) => handleUpdateProjectState({ projectName })}
-        onOpenWizard={() => setIsStudioUnlocked(false)}
-        leadProfile={effectiveLead}
+        onOpenPresetModal={() => setIsPresetModalOpen(true)}
       />
 
-      {/* Main Container */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={viewMode}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.15 }}
-          >
-            {viewMode === 'parameters' && (
-              <ProjectCostCalculator
-                state={projectState}
-                onChange={handleUpdateProjectState}
-                currencySymbol={currency.symbol}
-                exchangeRate={currency.exchangeRate}
-              />
-            )}
-
-            {viewMode === 'team' && (
-              <TeamCostCalculator
-                state={projectState}
-                onChange={handleUpdateProjectState}
-                currencySymbol={currency.symbol}
-                exchangeRate={currency.exchangeRate}
-              />
-            )}
-
-            {viewMode === 'combined' && (
-              <CombinedStudio
-                state={projectState}
-                estimate={estimate}
-                onChange={handleUpdateProjectState}
-                currencySymbol={currency.symbol}
-                exchangeRate={currency.exchangeRate}
-                onOpenExportModal={() => setIsExportModalOpen(true)}
-              />
-            )}
-
-            {viewMode === 'comparison' && (
-              <ScenarioComparison
-                currentState={projectState}
-                onLoadState={setProjectState}
-                currencySymbol={currency.symbol}
-                exchangeRate={currency.exchangeRate}
-              />
-            )}
-          </motion.div>
-        </AnimatePresence>
-      </main>
-
-      {/* Sticky Bottom Real-Time Cost Dock */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-lg py-3.5 px-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-          
-          <div className="flex items-center space-x-4 sm:space-x-8">
+      {/* Mobile Sticky Bottom Estimate Bar */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-800/80 backdrop-blur-md border-t border-slate-700/50 shadow-2xl py-3 px-4">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center space-x-4">
             <div>
-              <span className="text-[11px] uppercase font-semibold text-slate-500 block">Total Est. Cost</span>
-              <span className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                {currency.symbol}{convertedGrandTotal.toLocaleString()}
+              <span className="text-[10px] uppercase font-semibold text-slate-400 block">
+                {effectiveUnlocked ? 'Total Est. Cost' : 'Est. Range'}
+              </span>
+              <span className="text-lg sm:text-xl font-black text-emerald-500 tracking-tight">
+                {effectiveUnlocked
+                  ? `${currency.symbol}${convertedGrandTotal.toLocaleString()}`
+                  : `${currency.symbol}${Math.round(convertedGrandTotal * 0.9).toLocaleString()}–${currency.symbol}${Math.round(convertedGrandTotal * 1.1).toLocaleString()}`}
               </span>
             </div>
 
-            <div className="hidden sm:block border-l border-slate-200 pl-4">
-              <span className="text-[11px] uppercase font-semibold text-slate-500 block">Timeline</span>
-              <span className="text-sm font-bold text-slate-800 flex items-center space-x-1">
-                <Clock className="w-3.5 h-3.5 text-blue-600" />
-                <span>{estimate.estimatedTimelineWeeks} Weeks</span>
+            <div className="hidden sm:block border-l border-slate-700/50 pl-3">
+              <span className="text-[10px] uppercase font-semibold text-slate-400 block">Timeline</span>
+              <span className="text-xs font-bold text-slate-100 flex items-center space-x-1">
+                <Clock className="w-3.5 h-3.5 text-indigo-400" />
+                <span>{estimate.estimatedTimelineWeeks}w ({estimate.totalHours}h)</span>
               </span>
             </div>
 
-            <div className="hidden md:block border-l border-slate-200 pl-4">
-              <span className="text-[11px] uppercase font-semibold text-slate-500 block">Monthly Burn</span>
-              <span className="text-sm font-bold text-emerald-700">
+            <div className="hidden md:block border-l border-slate-700/50 pl-3">
+              <span className="text-[10px] uppercase font-semibold text-slate-400 block">Monthly Burn</span>
+              <span className="text-xs font-bold text-emerald-500">
                 {currency.symbol}{convertedMonthlyBurn.toLocaleString()}/mo
-              </span>
-            </div>
-
-            <div className="hidden lg:block border-l border-slate-200 pl-4">
-              <span className="text-[11px] uppercase font-semibold text-slate-500 block">Dev Effort</span>
-              <span className="text-sm font-semibold text-slate-700">
-                {estimate.totalHours} Hours ({projectState.selectedFeatureIds.length} Modules)
               </span>
             </div>
           </div>
 
           <div className="flex items-center space-x-2">
             <button
+              type="button"
               onClick={() => setIsAiModalOpen(true)}
-              className="inline-flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition"
+              className="inline-flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 bg-slate-800 hover:bg-slate-700 border border-slate-700/50 transition-all duration-200 active:scale-[0.98]"
             >
-              <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+              <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
               <span className="hidden sm:inline">AI Architect</span>
             </button>
 
-            <button
-              onClick={() => setIsExportModalOpen(true)}
-              className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition"
-            >
-              <FileText className="w-3.5 h-3.5" />
-              <span>Export SOW</span>
-            </button>
+            {effectiveUnlocked && (
+              <button
+                type="button"
+                onClick={() => setIsExportModalOpen(true)}
+                className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 shadow-md shadow-indigo-500/20 transition-all duration-200 active:scale-[0.98]"
+              >
+                <FileText className="w-3.5 h-3.5" />
+                <span>Export SOW</span>
+              </button>
+            )}
           </div>
-
         </div>
       </div>
 
@@ -347,17 +408,18 @@ export default function Home() {
         onSelectPreset={handleSelectPreset}
       />
 
-      <ProposalExportModal
-        isOpen={isExportModalOpen}
-        onClose={() => setIsExportModalOpen(false)}
-        state={projectState}
-        estimate={estimate}
-        currencySymbol={currency.symbol}
-        exchangeRate={currency.exchangeRate}
-        onImportState={(newState) => setProjectState(newState)}
-        leadProfile={effectiveLead}
-      />
-
+      {effectiveUnlocked && (
+        <ProposalExportModal
+          isOpen={isExportModalOpen}
+          onClose={() => setIsExportModalOpen(false)}
+          state={projectState}
+          estimate={estimate}
+          currencySymbol={currency.symbol}
+          exchangeRate={currency.exchangeRate}
+          onImportState={(newState) => setProjectState(newState)}
+          leadProfile={effectiveLead}
+        />
+      )}
     </div>
   );
 }
