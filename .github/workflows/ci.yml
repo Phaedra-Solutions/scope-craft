@@ -7,8 +7,8 @@ on:
     branches: [ main ]
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   validate:
@@ -16,8 +16,9 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
-        node-version: [ 20.x, 22.x ]
+        node-version: [ '20.x', '22.x' ]
 
     steps:
       - name: Checkout Source Code
@@ -27,10 +28,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
+
+      - name: Cache npm downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('package.json', 'bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
 
       - name: Install Dependencies
-        run: npm ci || npm install
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install --no-audit --no-fund
+          fi
 
       - name: Validate TypeScript Types
         run: npx tsc --noEmit
@@ -41,4 +54,4 @@ jobs:
       - name: Build Next.js Application
         run: npm run build
         env:
-          NODE_ENV: production
+          NEXT_TELEMETRY_DISABLED: 1

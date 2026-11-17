@@ -151,20 +151,22 @@ export default function Home() {
       title: 'Reset & Start Fresh?',
       text: 'This destructive action will clear all calculations, selections, session data, and local storage so you can calculate from the start.',
       icon: 'warning',
+      iconColor: '#d97706',
       showCancelButton: true,
       confirmButtonText: 'Yes, Reset Everything',
       cancelButtonText: 'Cancel',
       reverseButtons: true,
       focusCancel: true,
-      background: '#ffffff',
-      color: '#082a1c',
-      iconColor: '#d97706',
-      confirmButtonColor: '#dc2626',
-      cancelButtonColor: '#082a1c',
+      buttonsStyling: false,
       customClass: {
-        popup: 'border border-[#DDE3E7] rounded-2xl shadow-2xl',
-        confirmButton: 'rounded-xl font-semibold text-xs px-4 py-2.5',
-        cancelButton: 'rounded-xl font-semibold text-xs px-4 py-2.5'
+        container: 'lb-swal-backdrop',
+        popup: 'lb-swal-popup',
+        icon: '!border-amber-200 !bg-amber-50/80',
+        title: '!font-sans !text-xl !font-bold !text-[#082A1C] lb-heading !pt-1',
+        htmlContainer: '!font-sans !text-xs sm:!text-sm !text-[#64707A] !leading-relaxed',
+        actions: '!w-full !flex !items-center !justify-center !gap-3 !pt-5 !mt-5 !border-t !border-[#DDE3E7]',
+        confirmButton: 'px-5 py-2.5 rounded-xl font-bold text-xs lb-btn-primary shadow-sm active:scale-[0.98] cursor-pointer',
+        cancelButton: 'px-5 py-2.5 rounded-xl font-semibold text-xs text-[#082A1C] bg-[#F4F7F9] hover:bg-[#DDE3E7]/70 border border-[#DDE3E7] transition-all duration-200 active:scale-[0.98] cursor-pointer'
       }
     });
 
@@ -209,9 +211,10 @@ export default function Home() {
       showConfirmButton: false,
       timer: 2200,
       timerProgressBar: true,
-      background: '#082a1c',
-      color: '#ffffff',
-      iconColor: '#cdff8c'
+      iconColor: '#cdff8c',
+      customClass: {
+        popup: 'lb-swal-toast'
+      }
     });
   };
 

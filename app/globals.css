@@ -63,6 +63,41 @@
   }
 }
 
+/* LegacyBridge Option A — SweetAlert2 Modal & Toast Theme */
+.swal2-container.lb-swal-backdrop {
+  background: rgba(8, 42, 28, 0.6) !important;
+  backdrop-filter: blur(4px);
+}
+
+.swal2-popup.lb-swal-popup {
+  font-family: var(--font-sans) !important;
+  background: #ffffff !important;
+  color: #082a1c !important;
+  border: 1px solid #dde3e7 !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 25px 50px -12px rgba(8, 42, 28, 0.25) !important;
+  padding: 1.75rem !important;
+}
+
+.swal2-popup.lb-swal-toast {
+  font-family: var(--font-sans) !important;
+  background: #082a1c !important;
+  color: #ffffff !important;
+  border: 1px solid #1e4f3a !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 20px 25px -5px rgba(8, 42, 28, 0.3) !important;
+}
+
+.swal2-popup.lb-swal-toast .swal2-title {
+  color: #ffffff !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+}
+
+.swal2-popup.lb-swal-toast .swal2-timer-progress-bar {
+  background: #cdff8c !important;
+}
+
 @media print {
   /* Hide main app elements when printing modal */
   header,
