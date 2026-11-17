@@ -125,13 +125,13 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
       {/* 1. Target Platforms & Scope Complexity */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Platforms (Rule 2 Matrix Cards) */}
-        <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700/50 shadow-xl">
+        <div className="bg-white p-6 rounded-2xl border border-[#DDE3E7] shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-bold text-slate-100 text-sm flex items-center space-x-2">
-              <Globe className="w-4 h-4 text-indigo-400" />
+            <h3 className="font-bold text-[#082A1C] text-sm lb-heading flex items-center space-x-2">
+              <Globe className="w-4 h-4 text-[#082A1C]" />
               <span>Target Platforms</span>
             </h3>
-            <span className="text-xs text-slate-400">Multi-platform builds</span>
+            <span className="text-xs text-[#64707A]">Multi-platform builds</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -152,16 +152,20 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
                   onClick={() => togglePlatform(item.id as ProjectPlatform)}
                   className={`p-3.5 rounded-xl text-left transition-all duration-200 active:scale-[0.98] cursor-pointer ${
                     active
-                      ? 'bg-slate-800/80 border-2 border-indigo-500 shadow-md shadow-indigo-500/5'
-                      : 'bg-slate-800/40 border-2 border-slate-800 hover:border-slate-700'
+                      ? 'bg-white border-2 border-[#082A1C] shadow-md shadow-[#082A1C]/5'
+                      : 'bg-[#F4F7F9] border-2 border-[#DDE3E7] hover:border-[#64707A]/60'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1.5">
-                    <IconComp className={`w-4 h-4 ${active ? 'text-indigo-400' : 'text-slate-400'}`} />
-                    {active && <Check className="w-3.5 h-3.5 text-indigo-400" />}
+                    <IconComp className={`w-4 h-4 ${active ? 'text-[#082A1C]' : 'text-[#64707A]'}`} />
+                    {active && (
+                      <span className="w-4 h-4 rounded bg-[#CDFF8C] text-[#082A1C] flex items-center justify-center">
+                        <Check className="w-3 h-3 stroke-[3]" />
+                      </span>
+                    )}
                   </div>
-                  <div className="font-bold text-xs text-slate-100">{item.label}</div>
-                  <div className="text-[11px] text-slate-400">{item.sub}</div>
+                  <div className="font-bold text-xs text-[#082A1C]">{item.label}</div>
+                  <div className="text-[11px] text-[#64707A]">{item.sub}</div>
                 </button>
               );
             })}
@@ -169,13 +173,13 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
         </div>
 
         {/* Complexity Level (Rule 2 Matrix Cards) */}
-        <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700/50 shadow-xl">
+        <div className="bg-white p-6 rounded-2xl border border-[#DDE3E7] shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-bold text-slate-100 text-sm flex items-center space-x-2">
-              <Zap className="w-4 h-4 text-indigo-400" />
+            <h3 className="font-bold text-[#082A1C] text-sm lb-heading flex items-center space-x-2">
+              <Zap className="w-4 h-4 text-[#082A1C]" />
               <span>Project Complexity Tier</span>
             </h3>
-            <span className="text-xs text-slate-400">Architecture scale multiplier</span>
+            <span className="text-xs text-[#64707A]">Architecture scale multiplier</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" role="radiogroup" aria-label="Complexity Level">
@@ -209,17 +213,17 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
                   onClick={() => onChange({ complexity: item.id as ComplexityLevel })}
                   className={`p-3.5 rounded-xl text-left transition-all duration-200 active:scale-[0.98] cursor-pointer ${
                     active
-                      ? 'bg-slate-800/80 border-2 border-indigo-500 shadow-md shadow-indigo-500/5'
-                      : 'bg-slate-800/40 border-2 border-slate-800 hover:border-slate-700'
+                      ? 'bg-white border-2 border-[#082A1C] shadow-md shadow-[#082A1C]/5'
+                      : 'bg-[#F4F7F9] border-2 border-[#DDE3E7] hover:border-[#64707A]/60'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="font-bold text-xs text-slate-100">{item.label}</span>
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-900/80 text-emerald-500 border border-slate-700/50">
+                    <span className="font-bold text-xs text-[#082A1C]">{item.label}</span>
+                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#CDFF8C] text-[#082A1C] tabular-nums">
                       {item.mult}
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-400 leading-tight">{item.desc}</p>
+                  <p className="text-[11px] text-[#64707A] leading-tight">{item.desc}</p>
                 </button>
               );
             })}
@@ -230,9 +234,9 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
       {/* 2. Design & QA Tiers */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Design Polish */}
-        <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700/50 shadow-xl">
-          <h3 className="font-bold text-slate-100 text-sm mb-4 flex items-center space-x-2">
-            <Sparkles className="w-4 h-4 text-indigo-400" />
+        <div className="bg-white p-6 rounded-2xl border border-[#DDE3E7] shadow-sm">
+          <h3 className="font-bold text-[#082A1C] text-sm lb-heading mb-4 flex items-center space-x-2">
+            <Sparkles className="w-4 h-4 text-[#082A1C]" />
             <span>UI/UX Design Polish Tier</span>
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" role="radiogroup" aria-label="UI/UX Design Polish">
@@ -251,15 +255,15 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
                   onClick={() => onChange({ designLevel: tier.id as DesignLevel })}
                   className={`p-3.5 rounded-xl text-left transition-all duration-200 active:scale-[0.98] cursor-pointer ${
                     active
-                      ? 'bg-slate-800/80 border-2 border-indigo-500 shadow-md shadow-indigo-500/5'
-                      : 'bg-slate-800/40 border-2 border-slate-800 hover:border-slate-700'
+                      ? 'bg-white border-2 border-[#082A1C] shadow-md shadow-[#082A1C]/5'
+                      : 'bg-[#F4F7F9] border-2 border-[#DDE3E7] hover:border-[#64707A]/60'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="font-bold text-xs text-slate-100">{tier.title}</span>
-                    <span className="text-[10px] text-emerald-500 font-bold">{tier.overhead}</span>
+                    <span className="font-bold text-xs text-[#082A1C]">{tier.title}</span>
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#CDFF8C] text-[#082A1C] font-bold tabular-nums">{tier.overhead}</span>
                   </div>
-                  <p className="text-[11px] text-slate-400 leading-tight">{tier.desc}</p>
+                  <p className="text-[11px] text-[#64707A] leading-tight">{tier.desc}</p>
                 </button>
               );
             })}
@@ -267,9 +271,9 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
         </div>
 
         {/* QA & Security Level */}
-        <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700/50 shadow-xl">
-          <h3 className="font-bold text-slate-100 text-sm mb-4 flex items-center space-x-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-500" />
+        <div className="bg-white p-6 rounded-2xl border border-[#DDE3E7] shadow-sm">
+          <h3 className="font-bold text-[#082A1C] text-sm lb-heading mb-4 flex items-center space-x-2">
+            <ShieldCheck className="w-4 h-4 text-[#082A1C]" />
             <span>QA & Security Testing Level</span>
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" role="radiogroup" aria-label="QA and Security Level">
@@ -288,15 +292,15 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
                   onClick={() => onChange({ qaLevel: tier.id as QALevel })}
                   className={`p-3.5 rounded-xl text-left transition-all duration-200 active:scale-[0.98] cursor-pointer ${
                     active
-                      ? 'bg-slate-800/80 border-2 border-indigo-500 shadow-md shadow-indigo-500/5'
-                      : 'bg-slate-800/40 border-2 border-slate-800 hover:border-slate-700'
+                      ? 'bg-white border-2 border-[#082A1C] shadow-md shadow-[#082A1C]/5'
+                      : 'bg-[#F4F7F9] border-2 border-[#DDE3E7] hover:border-[#64707A]/60'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="font-bold text-xs text-slate-100">{tier.title}</span>
-                    <span className="text-[10px] text-emerald-500 font-bold">{tier.overhead}</span>
+                    <span className="font-bold text-xs text-[#082A1C]">{tier.title}</span>
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#CDFF8C] text-[#082A1C] font-bold tabular-nums">{tier.overhead}</span>
                   </div>
-                  <p className="text-[11px] text-slate-400 leading-tight">{tier.desc}</p>
+                  <p className="text-[11px] text-[#64707A] leading-tight">{tier.desc}</p>
                 </button>
               );
             })}
@@ -305,39 +309,39 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
       </div>
 
       {/* 3. Feature Selection Catalog */}
-      <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700/50 shadow-xl">
+      <div className="bg-white p-6 rounded-2xl border border-[#DDE3E7] shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
           <div>
-            <h3 className="font-bold text-slate-100 text-base flex items-center space-x-2">
-              <Layers className="w-5 h-5 text-indigo-400" />
+            <h3 className="font-bold text-[#082A1C] text-base lb-heading flex items-center space-x-2">
+              <Layers className="w-5 h-5 text-[#082A1C]" />
               <span>Project Feature Modules</span>
             </h3>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-[#64707A]">
               Select functional components to build your custom software estimate
             </p>
           </div>
 
           <div className="relative w-full sm:w-64">
-            <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+            <Search className="w-4 h-4 text-[#64707A] absolute left-3 top-2.5" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search features..."
-              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-900/70 border border-slate-700/50 rounded-lg text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 transition-all duration-200"
+              className="w-full pl-9 pr-3 py-1.5 text-xs bg-[#F4F7F9] focus:bg-white border border-[#DDE3E7] rounded-lg text-[#082A1C] placeholder:text-[#64707A]/60 focus:outline-none focus:border-[#082A1C] transition-all duration-200"
             />
           </div>
         </div>
 
         {/* Category Filter Tabs (Flat Minimalism) */}
-        <div className="flex items-center space-x-3 overflow-x-auto pb-1 mb-4 border-b border-slate-800 no-scrollbar">
+        <div className="flex items-center space-x-4 overflow-x-auto pb-1 mb-4 border-b border-[#DDE3E7] no-scrollbar">
           <button
             type="button"
             onClick={() => setActiveCategoryFilter('all')}
             className={`pb-2.5 text-xs font-semibold border-b-2 transition-all duration-200 active:scale-[0.98] whitespace-nowrap ${
               activeCategoryFilter === 'all'
-                ? 'border-indigo-500 text-slate-100'
-                : 'border-transparent text-slate-500 hover:text-slate-300'
+                ? 'border-[#082A1C] text-[#082A1C]'
+                : 'border-transparent text-[#64707A] hover:text-[#082A1C]'
             }`}
           >
             All Modules ({FEATURE_CATALOG.length})
@@ -352,8 +356,8 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
                 onClick={() => setActiveCategoryFilter(catKey)}
                 className={`pb-2.5 text-xs font-semibold border-b-2 transition-all duration-200 active:scale-[0.98] whitespace-nowrap ${
                   activeCategoryFilter === catKey
-                    ? 'border-indigo-500 text-slate-100'
-                    : 'border-transparent text-slate-500 hover:text-slate-300'
+                    ? 'border-[#082A1C] text-[#082A1C]'
+                    : 'border-transparent text-[#64707A] hover:text-[#082A1C]'
                 }`}
               >
                 {CATEGORY_LABELS[catKey].label} ({count})
@@ -374,34 +378,34 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
                 onClick={() => toggleFeature(f.id)}
                 className={`p-4 rounded-xl text-left transition-all duration-200 active:scale-[0.98] cursor-pointer flex flex-col justify-between ${
                   selected
-                    ? 'bg-slate-800/80 border-2 border-indigo-500 shadow-md shadow-indigo-500/5'
-                    : 'bg-slate-800/40 border-2 border-slate-800 hover:border-slate-700'
+                    ? 'bg-white border-2 border-[#082A1C] shadow-md shadow-[#082A1C]/5'
+                    : 'bg-[#F4F7F9] border-2 border-[#DDE3E7] hover:border-[#64707A]/60'
                 }`}
               >
                 <div className="w-full">
                   <div className="flex items-start justify-between gap-2 mb-1.5">
-                    <span className="font-bold text-xs text-slate-100 leading-snug">{f.name}</span>
+                    <span className="font-bold text-xs text-[#082A1C] leading-snug">{f.name}</span>
                     <div className="flex items-center space-x-1.5 flex-shrink-0">
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-900/70 text-emerald-500 border border-slate-700/50">
+                      <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#CDFF8C] text-[#082A1C] tabular-nums">
                         {f.baseHours} hrs
                       </span>
                       <div
                         className={`w-4 h-4 rounded flex items-center justify-center border transition-all duration-200 ${
                           selected
-                            ? 'bg-indigo-600 border-indigo-500 text-white'
-                            : 'border-slate-700 bg-slate-900/60'
+                            ? 'bg-[#082A1C] border-[#082A1C] text-[#CDFF8C]'
+                            : 'border-[#DDE3E7] bg-white'
                         }`}
                       >
                         {selected && <Check className="w-3 h-3 stroke-[3]" />}
                       </div>
                     </div>
                   </div>
-                  <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">
+                  <p className="text-[11px] text-[#64707A] line-clamp-2 leading-relaxed">
                     {f.description}
                   </p>
                 </div>
 
-                <div className="w-full mt-2.5 pt-2 border-t border-slate-700/50 flex items-center justify-between text-[10px] text-slate-500">
+                <div className="w-full mt-2.5 pt-2 border-t border-[#DDE3E7] flex items-center justify-between text-[10px] text-[#64707A]">
                   <span className="uppercase tracking-wider font-semibold">
                     {CATEGORY_LABELS[f.category]?.label || f.category}
                   </span>
@@ -416,31 +420,31 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
       {/* 4. Custom Line Items & SaaS Add-ons */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Custom Parameters */}
-        <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700/50 shadow-xl">
-          <h3 className="font-bold text-slate-100 text-sm mb-3 flex items-center space-x-2">
-            <Plus className="w-4 h-4 text-indigo-400" />
+        <div className="bg-white p-6 rounded-2xl border border-[#DDE3E7] shadow-sm">
+          <h3 className="font-bold text-[#082A1C] text-sm lb-heading mb-3 flex items-center space-x-2">
+            <Plus className="w-4 h-4 text-[#082A1C]" />
             <span>Custom Scope Parameters & Add-ons</span>
           </h3>
 
           <div className="space-y-2 mb-4">
             {state.customParams.length === 0 ? (
-              <p className="text-xs text-slate-500 italic">No custom line items added yet.</p>
+              <p className="text-xs text-[#64707A] italic">No custom line items added yet.</p>
             ) : (
               state.customParams.map((p) => (
                 <div
                   key={p.id}
-                  className="flex items-center justify-between p-2.5 rounded-lg bg-slate-900/60 border border-slate-800 text-xs"
+                  className="flex items-center justify-between p-2.5 rounded-lg bg-[#F4F7F9] border border-[#DDE3E7] text-xs"
                 >
                   <div>
-                    <span className="font-semibold text-slate-100">{p.name}</span>
-                    <span className="ml-2 text-[11px] font-semibold text-emerald-500">
+                    <span className="font-semibold text-[#082A1C]">{p.name}</span>
+                    <span className="ml-2 text-[11px] font-mono font-bold text-[#144731] tabular-nums">
                       ({p.type === 'fixed_cost' ? `${currencySymbol}${p.value}` : `${p.value} Custom Hrs`})
                     </span>
                   </div>
                   <button
                     type="button"
                     onClick={() => handleRemoveCustomParam(p.id)}
-                    className="p-1 text-red-400 hover:text-red-300 transition-all duration-200 active:scale-[0.98]"
+                    className="p-1 text-red-600 hover:text-red-500 transition-all duration-200 active:scale-[0.98]"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -449,19 +453,19 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
             )}
           </div>
 
-          <div className="p-3.5 bg-slate-900/60 rounded-xl border border-slate-800 space-y-2.5">
+          <div className="p-3.5 bg-[#F4F7F9] rounded-xl border border-[#DDE3E7] space-y-2.5">
             <input
               type="text"
               value={newParamName}
               onChange={(e) => setNewParamName(e.target.value)}
               placeholder="Custom Line Item (e.g. Third-Party Hardware BLE Audit)"
-              className="w-full px-3 py-2 text-xs bg-slate-800 border border-slate-700/50 rounded-lg focus:outline-none focus:border-indigo-500 text-slate-100 placeholder:text-slate-500 transition-all duration-200"
+              className="w-full px-3 py-2 text-xs bg-white border border-[#DDE3E7] rounded-lg focus:outline-none focus:border-[#082A1C] text-[#082A1C] placeholder:text-[#64707A]/60 transition-all duration-200"
             />
             <div className="flex items-center space-x-2">
               <select
                 value={newParamType}
                 onChange={(e) => setNewParamType(e.target.value as 'fixed_cost' | 'hours')}
-                className="px-2.5 py-2 text-xs bg-slate-800 border border-slate-700/50 rounded-lg text-slate-100 focus:outline-none focus:border-indigo-500"
+                className="px-2.5 py-2 text-xs bg-white border border-[#DDE3E7] rounded-lg text-[#082A1C] focus:outline-none focus:border-[#082A1C]"
               >
                 <option value="fixed_cost">Fixed Cost ({currencySymbol})</option>
                 <option value="hours">Custom Hours (hrs)</option>
@@ -470,12 +474,12 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
                 type="number"
                 value={newParamValue}
                 onChange={(e) => setNewParamValue(Number(e.target.value))}
-                className="w-24 px-2.5 py-2 text-xs bg-slate-800 border border-slate-700/50 rounded-lg focus:outline-none focus:border-indigo-500 text-slate-100"
+                className="w-24 px-2.5 py-2 text-xs bg-white border border-[#DDE3E7] rounded-lg focus:outline-none focus:border-[#082A1C] text-[#082A1C] font-mono tabular-nums"
               />
               <button
                 type="button"
                 onClick={handleAddCustomParam}
-                className="flex-1 py-2 px-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold transition-all duration-200 active:scale-[0.98]"
+                className="flex-1 py-2 px-3 lb-btn-primary rounded-lg text-xs font-semibold active:scale-[0.98]"
               >
                 Add Item
               </button>
@@ -484,9 +488,9 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
         </div>
 
         {/* SaaS & Third-Party Infrastructure Estimates */}
-        <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700/50 shadow-xl">
-          <h3 className="font-bold text-slate-100 text-sm mb-3 flex items-center space-x-2">
-            <Server className="w-4 h-4 text-emerald-500" />
+        <div className="bg-white p-6 rounded-2xl border border-[#DDE3E7] shadow-sm">
+          <h3 className="font-bold text-[#082A1C] text-sm lb-heading mb-3 flex items-center space-x-2">
+            <Server className="w-4 h-4 text-[#082A1C]" />
             <span>Estimated Third-Party SaaS & Infrastructure</span>
           </h3>
 
@@ -502,26 +506,26 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
                   onClick={() => toggleSaaS(saas.id)}
                   className={`w-full p-3 rounded-xl text-xs cursor-pointer transition-all duration-200 active:scale-[0.98] flex items-center justify-between text-left ${
                     active
-                      ? 'bg-slate-800/80 border-2 border-indigo-500 shadow-md shadow-indigo-500/5'
-                      : 'bg-slate-800/40 border-2 border-slate-800 hover:border-slate-700'
+                      ? 'bg-white border-2 border-[#082A1C] shadow-md shadow-[#082A1C]/5'
+                      : 'bg-[#F4F7F9] border-2 border-[#DDE3E7] hover:border-[#64707A]/60'
                   }`}
                 >
                   <div className="flex items-center space-x-2.5">
                     <div
                       className={`w-4 h-4 rounded flex items-center justify-center border ${
                         active
-                          ? 'bg-indigo-600 border-indigo-500 text-white'
-                          : 'border-slate-700 bg-slate-900/60'
+                          ? 'bg-[#082A1C] border-[#082A1C] text-[#CDFF8C]'
+                          : 'border-[#DDE3E7] bg-white'
                       }`}
                     >
                       {active && <Check className="w-3 h-3 stroke-[3]" />}
                     </div>
                     <div>
-                      <div className="font-semibold text-slate-100">{saas.name}</div>
-                      <div className="text-[10px] text-slate-400">{saas.description}</div>
+                      <div className="font-semibold text-[#082A1C]">{saas.name}</div>
+                      <div className="text-[10px] text-[#64707A]">{saas.description}</div>
                     </div>
                   </div>
-                  <span className="font-bold text-emerald-500 flex-shrink-0 pl-2">
+                  <span className="font-mono font-bold text-[#082A1C] flex-shrink-0 pl-2 tabular-nums">
                     ~{currencySymbol}{estCost}/mo
                   </span>
                 </button>
@@ -532,14 +536,14 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
       </div>
 
       {/* 5. Post-Launch SLA Maintenance Period */}
-      <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700/50 shadow-xl">
+      <div className="bg-white p-6 rounded-2xl border border-[#DDE3E7] shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
           <div>
-            <h3 className="font-bold text-slate-100 text-sm flex items-center space-x-2">
-              <ShieldCheck className="w-4 h-4 text-indigo-400" />
+            <h3 className="font-bold text-[#082A1C] text-sm lb-heading flex items-center space-x-2">
+              <ShieldCheck className="w-4 h-4 text-[#082A1C]" />
               <span>Post-Launch Maintenance & Support SLA</span>
             </h3>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-[#64707A]">
               Ongoing bug fixes, security updates, OS compatibility, and server monitoring
             </p>
           </div>
@@ -562,12 +566,12 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
                 onClick={() => onChange({ maintenancePeriod: item.id as MaintenancePeriod })}
                 className={`p-3.5 rounded-xl text-left transition-all duration-200 active:scale-[0.98] cursor-pointer ${
                   active
-                    ? 'bg-slate-800/80 border-2 border-indigo-500 shadow-md shadow-indigo-500/5'
-                    : 'bg-slate-800/40 border-2 border-slate-800 hover:border-slate-700'
+                    ? 'bg-white border-2 border-[#082A1C] shadow-md shadow-[#082A1C]/5'
+                    : 'bg-[#F4F7F9] border-2 border-[#DDE3E7] hover:border-[#64707A]/60'
                 }`}
               >
-                <div className="font-bold text-xs text-slate-100 mb-1">{item.label}</div>
-                <div className="text-[11px] text-slate-400">{item.desc}</div>
+                <div className="font-bold text-xs text-[#082A1C] mb-1">{item.label}</div>
+                <div className="text-[11px] text-[#64707A]">{item.desc}</div>
               </button>
             );
           })}

@@ -43,32 +43,32 @@ export const LiveEstimateSidebar: React.FC<LiveEstimateSidebarProps> = ({
   const region = REGIONS.find((r) => r.id === state.regionId) || REGIONS[0];
 
   return (
-    <aside className="hidden lg:flex lg:flex-col w-80 xl:w-96 flex-shrink-0 sticky top-0 h-screen bg-slate-800/40 backdrop-blur-md border-l border-slate-700/50 shadow-2xl overflow-y-auto no-scrollbar">
+    <aside className="hidden lg:flex lg:flex-col w-80 xl:w-96 flex-shrink-0 sticky top-0 h-screen bg-[#082A1C] text-white border-l border-[#16422F] overflow-y-auto no-scrollbar">
       <div className="p-6 flex flex-col justify-between min-h-full space-y-6">
         <div className="space-y-6">
           {/* Sidebar Header */}
-          <div className="flex items-center justify-between pb-4 border-b border-slate-700/50">
+          <div className="flex items-center justify-between pb-4 border-b border-[#1A4733]">
             <div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-400 block">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-[#CDFF8C] block">
                 Live Telemetry
               </span>
-              <h2 className="text-base font-bold text-slate-100 tracking-tight">
+              <h2 className="text-base font-semibold text-white lb-heading">
                 Real-Time Estimate
               </h2>
             </div>
-            <span className="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700/50 text-xs font-semibold text-slate-300">
+            <span className="px-2.5 py-1 rounded-lg bg-[#0F3827] border border-[#1E4F3A] text-xs font-semibold text-[#CDFF8C] tabular-nums">
               {region.flag} {Math.round(region.rateMultiplier * 100)}%
             </span>
           </div>
 
           {/* Primary Cost Readout */}
-          <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-700/50 space-y-2">
+          <div className="p-5 rounded-2xl bg-[#0F3827] border border-[#1E4F3A] space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-400">
+              <span className="text-xs font-medium text-[#94A3B8]">
                 Total Est. Investment
               </span>
               {!isUnlocked && (
-                <span className="inline-flex items-center space-x-1 text-[10px] font-bold text-indigo-400">
+                <span className="inline-flex items-center space-x-1 text-[10px] font-semibold text-[#CDFF8C]">
                   <Lock className="w-3 h-3" />
                   <span>Step 4 Unlocks SOW</span>
                 </span>
@@ -77,20 +77,20 @@ export const LiveEstimateSidebar: React.FC<LiveEstimateSidebarProps> = ({
 
             {isUnlocked ? (
               <>
-                <div className="text-3xl xl:text-4xl font-black text-emerald-500 tracking-tight">
+                <div className="text-3xl xl:text-4xl font-semibold text-[#CDFF8C] tracking-tight tabular-nums">
                   {currencySymbol}{convertedGrandTotal.toLocaleString()}
                 </div>
-                <div className="text-[11px] text-slate-400">
+                <div className="text-[11px] text-[#94A3B8] tabular-nums">
                   Range: {currencySymbol}{Math.round(convertedGrandTotal * 0.92).toLocaleString()} – {currencySymbol}{Math.round(convertedGrandTotal * 1.12).toLocaleString()}
                 </div>
               </>
             ) : (
               <>
-                <div className="flex items-center space-x-2 text-2xl font-black text-slate-400 tracking-tight select-none">
-                  <Lock className="w-5 h-5 text-indigo-400 flex-shrink-0" />
+                <div className="flex items-center space-x-2 text-2xl font-semibold text-[#94A3B8] tracking-tight select-none tabular-nums">
+                  <Lock className="w-5 h-5 text-[#CDFF8C] flex-shrink-0" />
                   <span>{currencySymbol} ••,•••</span>
                 </div>
-                <div className="text-[11px] text-slate-400">
+                <div className="text-[11px] text-[#94A3B8]">
                   Submit Step 4 lead form to unlock exact cost & SOW
                 </div>
               </>
@@ -99,99 +99,99 @@ export const LiveEstimateSidebar: React.FC<LiveEstimateSidebarProps> = ({
 
           {/* Core Numerical Metrics */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="p-3.5 rounded-xl bg-slate-800/60 border border-slate-700/50">
-              <div className="flex items-center space-x-1.5 text-[11px] font-semibold text-slate-400">
-                <TrendingUp className="w-3.5 h-3.5 text-emerald-500" />
+            <div className="p-3.5 rounded-xl bg-[#0F3827] border border-[#1E4F3A]">
+              <div className="flex items-center space-x-1.5 text-[11px] font-medium text-[#94A3B8]">
+                <TrendingUp className="w-3.5 h-3.5 text-[#CDFF8C]" />
                 <span>Total Effort</span>
               </div>
-              <div className="text-lg font-extrabold text-emerald-500 mt-1">
+              <div className="text-lg font-semibold text-white mt-1 tabular-nums">
                 {estimate.totalHours.toLocaleString()} hrs
               </div>
-              <div className="text-[10px] text-slate-500 mt-0.5">
+              <div className="text-[10px] text-[#94A3B8] mt-0.5 tabular-nums">
                 {state.selectedFeatureIds.length} active modules
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-800/60 border border-slate-700/50">
-              <div className="flex items-center space-x-1.5 text-[11px] font-semibold text-slate-400">
-                <Clock className="w-3.5 h-3.5 text-indigo-400" />
+            <div className="p-3.5 rounded-xl bg-[#0F3827] border border-[#1E4F3A]">
+              <div className="flex items-center space-x-1.5 text-[11px] font-medium text-[#94A3B8]">
+                <Clock className="w-3.5 h-3.5 text-[#CDFF8C]" />
                 <span>Timeline</span>
               </div>
-              <div className="text-lg font-extrabold text-slate-100 mt-1">
+              <div className="text-lg font-semibold text-white mt-1 tabular-nums">
                 {estimate.estimatedTimelineWeeks} Weeks
               </div>
-              <div className="text-[10px] text-slate-500 mt-0.5">
+              <div className="text-[10px] text-[#94A3B8] mt-0.5 tabular-nums">
                 ~{estimate.estimatedTimelineMonths} calendar mos
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-800/60 border border-slate-700/50">
-              <div className="flex items-center space-x-1.5 text-[11px] font-semibold text-slate-400">
-                <Users className="w-3.5 h-3.5 text-indigo-400" />
+            <div className="p-3.5 rounded-xl bg-[#0F3827] border border-[#1E4F3A]">
+              <div className="flex items-center space-x-1.5 text-[11px] font-medium text-[#94A3B8]">
+                <Users className="w-3.5 h-3.5 text-[#CDFF8C]" />
                 <span>Monthly Burn</span>
               </div>
               {isUnlocked ? (
-                <div className="text-base font-extrabold text-emerald-500 mt-1">
+                <div className="text-base font-semibold text-[#CDFF8C] mt-1 tabular-nums">
                   {currencySymbol}{convertedMonthlyBurn.toLocaleString()}
                 </div>
               ) : (
-                <div className="text-base font-extrabold text-slate-400 mt-1 flex items-center space-x-1.5 select-none">
-                  <Lock className="w-3.5 h-3.5 text-indigo-400 flex-shrink-0" />
+                <div className="text-base font-semibold text-[#94A3B8] mt-1 flex items-center space-x-1.5 select-none">
+                  <Lock className="w-3.5 h-3.5 text-[#CDFF8C] flex-shrink-0" />
                   <span>Locked</span>
                 </div>
               )}
-              <div className="text-[10px] text-slate-500 mt-0.5">
+              <div className="text-[10px] text-[#94A3B8] mt-0.5 tabular-nums">
                 {totalHeadcount} squad specialists
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-800/60 border border-slate-700/50">
-              <div className="flex items-center space-x-1.5 text-[11px] font-semibold text-slate-400">
-                <Layers className="w-3.5 h-3.5 text-indigo-400" />
+            <div className="p-3.5 rounded-xl bg-[#0F3827] border border-[#1E4F3A]">
+              <div className="flex items-center space-x-1.5 text-[11px] font-medium text-[#94A3B8]">
+                <Layers className="w-3.5 h-3.5 text-[#CDFF8C]" />
                 <span>Cloud Infra</span>
               </div>
               {isUnlocked ? (
-                <div className="text-base font-extrabold text-emerald-500 mt-1">
+                <div className="text-base font-semibold text-[#CDFF8C] mt-1 tabular-nums">
                   {currencySymbol}{convertedSaasMonthly.toLocaleString()}/mo
                 </div>
               ) : (
-                <div className="text-base font-extrabold text-slate-400 mt-1 flex items-center space-x-1.5 select-none">
-                  <Lock className="w-3.5 h-3.5 text-indigo-400 flex-shrink-0" />
+                <div className="text-base font-semibold text-[#94A3B8] mt-1 flex items-center space-x-1.5 select-none">
+                  <Lock className="w-3.5 h-3.5 text-[#CDFF8C] flex-shrink-0" />
                   <span>Locked</span>
                 </div>
               )}
-              <div className="text-[10px] text-slate-500 mt-0.5">
+              <div className="text-[10px] text-[#94A3B8] mt-0.5 tabular-nums">
                 {state.selectedSaaSAddons.length} SaaS services
               </div>
             </div>
           </div>
 
           {/* Architecture Summary */}
-          <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800 space-y-2.5 text-xs">
-            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+          <div className="p-4 rounded-xl bg-[#062015] border border-[#1A4733] space-y-2.5 text-xs">
+            <div className="text-[11px] font-semibold uppercase tracking-wider text-[#94A3B8]">
               Active Architecture Spec
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Platforms</span>
-              <span className="font-semibold text-slate-100 uppercase">
+              <span className="text-[#94A3B8]">Platforms</span>
+              <span className="font-semibold text-white uppercase">
                 {state.platforms.join(', ') || 'WEB'}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Complexity</span>
-              <span className="font-semibold text-slate-100 capitalize">
+              <span className="text-[#94A3B8]">Complexity</span>
+              <span className="font-semibold text-white capitalize">
                 {state.complexity}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">UI/UX Fidelity</span>
-              <span className="font-semibold text-slate-100 capitalize">
+              <span className="text-[#94A3B8]">UI/UX Fidelity</span>
+              <span className="font-semibold text-white capitalize">
                 {state.designLevel.replace('_', ' ')}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Risk Buffer</span>
-              <span className="font-semibold text-emerald-500">
+              <span className="text-[#94A3B8]">Risk Buffer</span>
+              <span className="font-semibold text-[#CDFF8C] tabular-nums">
                 +{state.contingencyBufferPercent}%
               </span>
             </div>
@@ -199,31 +199,31 @@ export const LiveEstimateSidebar: React.FC<LiveEstimateSidebarProps> = ({
 
           {/* Phase Cost Preview */}
           <div className="space-y-2.5">
-            <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-slate-400">
+            <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-[#94A3B8]">
               <span>Phase Distribution</span>
-              <span className="text-emerald-500">{estimate.totalHours}h</span>
+              <span className="text-[#CDFF8C] tabular-nums">{estimate.totalHours}h</span>
             </div>
             <div className="space-y-2">
               {estimate.phaseBreakdown.map((phase) => (
                 <div key={phase.phase} className="space-y-1">
                   <div className="flex items-center justify-between text-[11px]">
-                    <span className="text-slate-300 truncate pr-2">
+                    <span className="text-white/90 truncate pr-2">
                       {phase.phase.replace(/^\d+\.\s*/, '')}
                     </span>
                     {isUnlocked ? (
-                      <span className="font-bold text-emerald-500 flex-shrink-0">
+                      <span className="font-semibold text-[#CDFF8C] flex-shrink-0 tabular-nums">
                         {currencySymbol}{Math.round(phase.cost * exchangeRate).toLocaleString()}
                       </span>
                     ) : (
-                      <span className="inline-flex items-center space-x-1 font-semibold text-slate-400 flex-shrink-0 select-none">
-                        <Lock className="w-3 h-3 text-indigo-400" />
+                      <span className="inline-flex items-center space-x-1 font-medium text-[#94A3B8] flex-shrink-0 select-none">
+                        <Lock className="w-3 h-3 text-[#CDFF8C]" />
                         <span>Locked</span>
                       </span>
                     )}
                   </div>
-                  <div className="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                  <div className="w-full h-1.5 rounded-full bg-[#133D2B] overflow-hidden">
                     <div
-                      className="h-full rounded-full bg-indigo-500 transition-all duration-300"
+                      className="h-full rounded-full bg-[#CDFF8C] transition-all duration-300"
                       style={{ width: `${phase.percentage}%` }}
                     />
                   </div>
@@ -234,22 +234,22 @@ export const LiveEstimateSidebar: React.FC<LiveEstimateSidebarProps> = ({
         </div>
 
         {/* Sticky Sidebar Actions */}
-        <div className="pt-4 border-t border-slate-700/50 space-y-2.5">
+        <div className="pt-4 border-t border-[#1A4733] space-y-2.5">
           <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
               onClick={onOpenAiModal}
-              className="inline-flex items-center justify-center space-x-1.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-200 bg-slate-800 hover:bg-slate-700 border border-slate-700/50 transition-all duration-200 active:scale-[0.98]"
+              className="inline-flex items-center justify-center space-x-1.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-white bg-[#0F3827] hover:bg-[#194F38] border border-[#1E4F3A] transition-all duration-200 active:scale-[0.98]"
             >
-              <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+              <Sparkles className="w-3.5 h-3.5 text-[#CDFF8C]" />
               <span>AI Scope</span>
             </button>
             <button
               type="button"
               onClick={onOpenPresetModal}
-              className="inline-flex items-center justify-center space-x-1.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-200 bg-slate-800 hover:bg-slate-700 border border-slate-700/50 transition-all duration-200 active:scale-[0.98]"
+              className="inline-flex items-center justify-center space-x-1.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-white bg-[#0F3827] hover:bg-[#194F38] border border-[#1E4F3A] transition-all duration-200 active:scale-[0.98]"
             >
-              <BookmarkPlus className="w-3.5 h-3.5 text-indigo-400" />
+              <BookmarkPlus className="w-3.5 h-3.5 text-[#CDFF8C]" />
               <span>Presets</span>
             </button>
           </div>
@@ -258,14 +258,14 @@ export const LiveEstimateSidebar: React.FC<LiveEstimateSidebarProps> = ({
             <button
               type="button"
               onClick={onOpenExportModal}
-              className="w-full inline-flex items-center justify-center space-x-2 px-4 py-3 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-500/20 transition-all duration-200 active:scale-[0.98]"
+              className="w-full inline-flex items-center justify-center space-x-2 px-4 py-3 rounded-xl text-xs font-bold lb-btn-lime active:scale-[0.98]"
             >
               <FileText className="w-4 h-4" />
               <span>Export Formal SOW</span>
             </button>
           ) : (
-            <div className="flex items-center justify-center space-x-1.5 py-2.5 px-3 rounded-xl bg-slate-800/60 border border-slate-700/50 text-[11px] text-slate-400">
-              <ShieldCheck className="w-3.5 h-3.5 text-indigo-400 flex-shrink-0" />
+            <div className="flex items-center justify-center space-x-1.5 py-2.5 px-3 rounded-xl bg-[#0F3827] border border-[#1E4F3A] text-[11px] text-[#94A3B8]">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#CDFF8C] flex-shrink-0" />
               <span>Complete Wizard to Export SOW</span>
             </div>
           )}

@@ -156,14 +156,14 @@ export default function Home() {
       cancelButtonText: 'Cancel',
       reverseButtons: true,
       focusCancel: true,
-      background: '#1e293b',
-      color: '#f1f5f9',
-      iconColor: '#f59e0b',
+      background: '#ffffff',
+      color: '#082a1c',
+      iconColor: '#d97706',
       confirmButtonColor: '#dc2626',
-      cancelButtonColor: '#334155',
+      cancelButtonColor: '#082a1c',
       customClass: {
-        popup: 'border border-slate-700/50 rounded-2xl shadow-2xl',
-        confirmButton: 'rounded-xl font-bold text-xs px-4 py-2.5',
+        popup: 'border border-[#DDE3E7] rounded-2xl shadow-2xl',
+        confirmButton: 'rounded-xl font-semibold text-xs px-4 py-2.5',
         cancelButton: 'rounded-xl font-semibold text-xs px-4 py-2.5'
       }
     });
@@ -209,9 +209,9 @@ export default function Home() {
       showConfirmButton: false,
       timer: 2200,
       timerProgressBar: true,
-      background: '#1e293b',
-      color: '#f1f5f9',
-      iconColor: '#10b981'
+      background: '#082a1c',
+      color: '#ffffff',
+      iconColor: '#cdff8c'
     });
   };
 
@@ -239,7 +239,7 @@ export default function Home() {
   const convertedMonthlyBurn = Math.round(estimate.teamMonthlyBurnRate * currency.exchangeRate);
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans flex flex-col lg:flex-row">
+    <div className="min-h-screen bg-white text-[#082A1C] font-sans flex flex-col lg:flex-row">
       {/* Main Content Workspace */}
       <div className="flex-1 min-w-0 flex flex-col pb-24 lg:pb-12">
         <Header
@@ -341,43 +341,45 @@ export default function Home() {
       />
 
       {/* Mobile Sticky Bottom Estimate Bar */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-800/80 backdrop-blur-md border-t border-slate-700/50 shadow-2xl py-3 px-4">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#082A1C]/95 backdrop-blur-md border-t border-[#1A4332] shadow-2xl py-3 px-4 text-white">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center space-x-4">
             <div>
-              <span className="text-[10px] uppercase font-semibold text-slate-400 block">
-                {effectiveUnlocked ? 'Total Est. Cost' : 'Est. Range'}
+              <span className="text-[10px] uppercase font-semibold text-[#94A3B8] block">
+                {effectiveUnlocked ? 'Total Est. Cost' : 'Investment'}
               </span>
-              <span className="text-lg sm:text-xl font-black text-emerald-500 tracking-tight">
+              <span className="text-lg sm:text-xl font-bold text-[#CDFF8C] tracking-tight tabular-nums">
                 {effectiveUnlocked
                   ? `${currency.symbol}${convertedGrandTotal.toLocaleString()}`
-                  : `${currency.symbol}${Math.round(convertedGrandTotal * 0.9).toLocaleString()}–${currency.symbol}${Math.round(convertedGrandTotal * 1.1).toLocaleString()}`}
+                  : 'Locked · Step 4'}
               </span>
             </div>
 
-            <div className="hidden sm:block border-l border-slate-700/50 pl-3">
-              <span className="text-[10px] uppercase font-semibold text-slate-400 block">Timeline</span>
-              <span className="text-xs font-bold text-slate-100 flex items-center space-x-1">
-                <Clock className="w-3.5 h-3.5 text-indigo-400" />
+            <div className="hidden sm:block border-l border-[#1A4332] pl-3">
+              <span className="text-[10px] uppercase font-semibold text-[#94A3B8] block">Timeline</span>
+              <span className="text-xs font-semibold text-white flex items-center space-x-1 tabular-nums">
+                <Clock className="w-3.5 h-3.5 text-[#CDFF8C]" />
                 <span>{estimate.estimatedTimelineWeeks}w ({estimate.totalHours}h)</span>
               </span>
             </div>
 
-            <div className="hidden md:block border-l border-slate-700/50 pl-3">
-              <span className="text-[10px] uppercase font-semibold text-slate-400 block">Monthly Burn</span>
-              <span className="text-xs font-bold text-emerald-500">
-                {currency.symbol}{convertedMonthlyBurn.toLocaleString()}/mo
-              </span>
-            </div>
+            {effectiveUnlocked && (
+              <div className="hidden md:block border-l border-[#1A4332] pl-3">
+                <span className="text-[10px] uppercase font-semibold text-[#94A3B8] block">Monthly Burn</span>
+                <span className="text-xs font-semibold text-[#CDFF8C] tabular-nums">
+                  {currency.symbol}{convertedMonthlyBurn.toLocaleString()}/mo
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="flex items-center space-x-2">
             <button
               type="button"
               onClick={() => setIsAiModalOpen(true)}
-              className="inline-flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 bg-slate-800 hover:bg-slate-700 border border-slate-700/50 transition-all duration-200 active:scale-[0.98]"
+              className="inline-flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-white bg-[#113B29] hover:bg-[#194D37] border border-[#245C44] transition-all duration-200 active:scale-[0.98]"
             >
-              <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+              <Sparkles className="w-3.5 h-3.5 text-[#CDFF8C]" />
               <span className="hidden sm:inline">AI Architect</span>
             </button>
 
@@ -385,7 +387,7 @@ export default function Home() {
               <button
                 type="button"
                 onClick={() => setIsExportModalOpen(true)}
-                className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 shadow-md shadow-indigo-500/20 transition-all duration-200 active:scale-[0.98]"
+                className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-bold lb-btn-lime active:scale-[0.98]"
               >
                 <FileText className="w-3.5 h-3.5" />
                 <span>Export SOW</span>

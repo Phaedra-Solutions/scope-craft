@@ -239,23 +239,23 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
   return (
     <div className="max-w-5xl mx-auto py-6 px-4 sm:px-6">
       {/* Top Wizard Banner & Flat Minimalist Multi-Step Navigation */}
-      <div className="bg-slate-800 border border-slate-700/50 rounded-2xl p-6 sm:p-8 shadow-xl mb-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-700/50">
+      <div className="bg-white border border-[#DDE3E7] rounded-2xl p-6 sm:p-8 shadow-sm mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#DDE3E7]">
           <div>
-            <div className="inline-flex items-center space-x-1.5 text-xs font-semibold text-indigo-400 mb-2">
-              <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+            <div className="inline-flex items-center space-x-1.5 text-xs font-bold px-2.5 py-1 rounded-md bg-[#CDFF8C] text-[#082A1C] mb-2.5">
+              <Sparkles className="w-3.5 h-3.5 text-[#082A1C]" />
               <span>ScopeCraft Precision Scoping</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-100 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#082A1C] lb-heading">
               Software Cost & Team Estimator
             </h1>
-            <p className="text-sm text-slate-400 mt-1">
+            <p className="text-sm text-[#64707A] mt-1">
               Configure your architecture, modules, and engineering squad to compute transparent project costs.
             </p>
           </div>
 
           <div className="flex items-center space-x-2 self-start sm:self-auto">
-            <span className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-900/80 text-slate-300 border border-slate-700/50">
+            <span className="text-xs font-mono font-semibold px-3 py-1.5 rounded-lg bg-[#F4F7F9] text-[#082A1C] border border-[#DDE3E7] tabular-nums">
               Step {currentStep} of 4
             </span>
           </div>
@@ -283,23 +283,27 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
                 disabled={item.step > currentStep}
                 className={`text-left pb-3 pt-1 border-b-2 transition-all duration-200 ${
                   isCurrent
-                    ? 'border-indigo-500 text-slate-100'
+                    ? 'border-[#082A1C] text-[#082A1C]'
                     : isPassed
-                    ? 'border-emerald-500 text-emerald-400 hover:text-emerald-300 cursor-pointer active:scale-[0.98]'
-                    : 'border-slate-800 text-slate-500 cursor-not-allowed'
+                    ? 'border-[#144731] text-[#082A1C] hover:text-[#144731] cursor-pointer active:scale-[0.98]'
+                    : 'border-[#DDE3E7] text-[#64707A] cursor-not-allowed opacity-70'
                 }`}
               >
                 <div className="flex items-center justify-between mb-1">
                   <span
                     className={`text-xs font-bold tracking-tight ${
-                      isCurrent ? 'text-slate-100' : isPassed ? 'text-emerald-400' : 'text-slate-500'
+                      isCurrent || isPassed ? 'text-[#082A1C]' : 'text-[#64707A]'
                     }`}
                   >
                     {item.label}
                   </span>
-                  {isPassed && <Check className="w-3.5 h-3.5 text-emerald-500" />}
+                  {isPassed && (
+                    <span className="w-4 h-4 rounded-full bg-[#CDFF8C] text-[#082A1C] flex items-center justify-center">
+                      <Check className="w-2.5 h-2.5 stroke-[3]" />
+                    </span>
+                  )}
                 </div>
-                <p className={`text-[11px] leading-tight ${isCurrent ? 'text-slate-300' : 'text-slate-500'}`}>
+                <p className={`text-[11px] leading-tight ${isCurrent ? 'text-[#082A1C]/80' : 'text-[#64707A]'}`}>
                   {item.desc}
                 </p>
               </button>
@@ -310,13 +314,13 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
 
       {/* STEP 1: Foundations & Platforms */}
       {currentStep === 1 && (
-        <div className="bg-slate-800 border border-slate-700/50 rounded-2xl p-6 sm:p-8 shadow-xl space-y-8">
+        <div className="bg-white border border-[#DDE3E7] rounded-2xl p-6 sm:p-8 shadow-sm space-y-8">
           <div>
-            <h2 className="text-xl font-bold text-slate-100 flex items-center space-x-2">
-              <Layers className="w-5 h-5 text-indigo-400" />
+            <h2 className="text-xl font-bold text-[#082A1C] lb-heading flex items-center space-x-2">
+              <Layers className="w-5 h-5 text-[#082A1C]" />
               <span>Project Foundations & Deployment Platforms</span>
             </h2>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-[#64707A] mt-1">
               Specify your project identification, target platforms, architecture scale, and design fidelity.
             </p>
           </div>
@@ -324,7 +328,7 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
           {/* Project & Client Inputs */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-[#082A1C] mb-1.5">
                 Project Title
               </label>
               <input
@@ -332,11 +336,11 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
                 value={state.projectName}
                 onChange={(e) => updateState({ projectName: e.target.value })}
                 placeholder="e.g. Enterprise SaaS Platform"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-700/50 bg-slate-900/70 text-slate-100 placeholder:text-slate-500 text-sm focus:outline-none focus:border-indigo-500 transition-all duration-200"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#DDE3E7] bg-[#F4F7F9] focus:bg-white text-[#082A1C] placeholder:text-[#64707A]/60 text-sm focus:outline-none focus:border-[#082A1C] transition-all duration-200"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-[#082A1C] mb-1.5">
                 Company / Organization
               </label>
               <input
@@ -344,14 +348,14 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
                 value={state.clientName}
                 onChange={(e) => updateState({ clientName: e.target.value })}
                 placeholder="e.g. Acme Corporation"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-700/50 bg-slate-900/70 text-slate-100 placeholder:text-slate-500 text-sm focus:outline-none focus:border-indigo-500 transition-all duration-200"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#DDE3E7] bg-[#F4F7F9] focus:bg-white text-[#082A1C] placeholder:text-[#64707A]/60 text-sm focus:outline-none focus:border-[#082A1C] transition-all duration-200"
               />
             </div>
           </div>
 
-          {/* Target Platforms Matrix Cards (Rule 2: No raw checkboxes/radios) */}
+          {/* Target Platforms Matrix Cards */}
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-3">
+            <label className="block text-xs font-semibold text-[#082A1C] mb-3">
               Select Target Platforms (Multi-Select)
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -372,31 +376,31 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
                     onClick={() => handleTogglePlatform(p.id)}
                     className={`p-4 rounded-xl text-left flex items-center justify-between gap-3 transition-all duration-200 active:scale-[0.98] cursor-pointer ${
                       active
-                        ? 'bg-slate-800/80 border-2 border-indigo-500 shadow-md shadow-indigo-500/5'
-                        : 'bg-slate-800/40 border-2 border-slate-800 hover:border-slate-700'
+                        ? 'bg-white border-2 border-[#082A1C] shadow-md shadow-[#082A1C]/5'
+                        : 'bg-[#F4F7F9] border-2 border-[#DDE3E7] hover:border-[#64707A]/60'
                     }`}
                   >
                     <div className="flex items-center space-x-3.5">
                       <div
                         className={`p-2.5 rounded-lg border ${
                           active
-                            ? 'bg-indigo-500/15 border-indigo-500/40 text-indigo-400'
-                            : 'bg-slate-900/60 border-slate-700/50 text-slate-400'
+                            ? 'bg-[#082A1C] border-[#082A1C] text-[#CDFF8C]'
+                            : 'bg-white border-[#DDE3E7] text-[#64707A]'
                         }`}
                       >
                         <Icon className="w-5 h-5" />
                       </div>
                       <div>
-                        <div className="font-semibold text-sm text-slate-100">{p.name}</div>
-                        <div className="text-xs text-slate-400 mt-0.5 leading-tight">{p.desc}</div>
+                        <div className="font-semibold text-sm text-[#082A1C]">{p.name}</div>
+                        <div className="text-xs text-[#64707A] mt-0.5 leading-tight">{p.desc}</div>
                       </div>
                     </div>
                     <div
                       className={`w-5 h-5 rounded-md border flex items-center justify-center flex-shrink-0 transition-all duration-200 ${
-                        active ? 'bg-indigo-600 border-indigo-500 text-white' : 'border-slate-700 bg-slate-900/50'
+                        active ? 'bg-[#CDFF8C] border-[#082A1C] text-[#082A1C]' : 'border-[#DDE3E7] bg-white'
                       }`}
                     >
-                      {active && <Check className="w-3.5 h-3.5" />}
+                      {active && <Check className="w-3.5 h-3.5 stroke-[3]" />}
                     </div>
                   </button>
                 );
@@ -404,10 +408,10 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
             </div>
           </div>
 
-          {/* Architecture Complexity Matrix Cards (Rule 2: No raw radio inputs) */}
+          {/* Architecture Complexity Matrix Cards */}
           <div className="space-y-6">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-3">
+              <label className="block text-xs font-semibold text-[#082A1C] mb-3">
                 Architecture Complexity
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" role="radiogroup" aria-label="Architecture Complexity">
@@ -426,23 +430,25 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
                       onClick={() => updateState({ complexity: tier.id })}
                       className={`p-4 rounded-xl text-left transition-all duration-200 active:scale-[0.98] cursor-pointer flex items-start justify-between gap-3 ${
                         active
-                          ? 'bg-slate-800/80 border-2 border-indigo-500 shadow-md shadow-indigo-500/5'
-                          : 'bg-slate-800/40 border-2 border-slate-800 hover:border-slate-700'
+                          ? 'bg-white border-2 border-[#082A1C] shadow-md shadow-[#082A1C]/5'
+                          : 'bg-[#F4F7F9] border-2 border-[#DDE3E7] hover:border-[#64707A]/60'
                       }`}
                     >
                       <div>
                         <div className="flex items-center space-x-2">
-                          <span className="text-sm font-bold text-slate-100">{tier.title}</span>
-                          <span className="text-[11px] font-semibold text-emerald-500">{tier.mult}</span>
+                          <span className="text-sm font-bold text-[#082A1C]">{tier.title}</span>
+                          <span className="text-[11px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#CDFF8C] text-[#082A1C] tabular-nums">
+                            {tier.mult}
+                          </span>
                         </div>
-                        <div className="text-xs text-slate-400 leading-relaxed mt-1">{tier.desc}</div>
+                        <div className="text-xs text-[#64707A] leading-relaxed mt-1">{tier.desc}</div>
                       </div>
                       <div
                         className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                          active ? 'border-indigo-500 bg-indigo-500/20' : 'border-slate-700'
+                          active ? 'border-[#082A1C] bg-[#CDFF8C]' : 'border-[#DDE3E7] bg-white'
                         }`}
                       >
-                        {active && <div className="w-2 h-2 rounded-full bg-indigo-400" />}
+                        {active && <div className="w-2 h-2 rounded-full bg-[#082A1C]" />}
                       </div>
                     </button>
                   );
@@ -450,9 +456,9 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
               </div>
             </div>
 
-            {/* Design & UI/UX Fidelity Matrix Cards (Rule 2: No raw radio inputs) */}
+            {/* Design & UI/UX Fidelity Matrix Cards */}
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-3">
+              <label className="block text-xs font-semibold text-[#082A1C] mb-3">
                 Design & UI/UX Fidelity
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" role="radiogroup" aria-label="Design and UI/UX Fidelity">
@@ -471,23 +477,25 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
                       onClick={() => updateState({ designLevel: tier.id })}
                       className={`p-4 rounded-xl text-left transition-all duration-200 active:scale-[0.98] cursor-pointer flex items-start justify-between gap-3 ${
                         active
-                          ? 'bg-slate-800/80 border-2 border-indigo-500 shadow-md shadow-indigo-500/5'
-                          : 'bg-slate-800/40 border-2 border-slate-800 hover:border-slate-700'
+                          ? 'bg-white border-2 border-[#082A1C] shadow-md shadow-[#082A1C]/5'
+                          : 'bg-[#F4F7F9] border-2 border-[#DDE3E7] hover:border-[#64707A]/60'
                       }`}
                     >
                       <div>
                         <div className="flex items-center space-x-2">
-                          <span className="text-sm font-bold text-slate-100">{tier.title}</span>
-                          <span className="text-[11px] font-semibold text-emerald-500">{tier.mult}</span>
+                          <span className="text-sm font-bold text-[#082A1C]">{tier.title}</span>
+                          <span className="text-[11px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#CDFF8C] text-[#082A1C] tabular-nums">
+                            {tier.mult}
+                          </span>
                         </div>
-                        <div className="text-xs text-slate-400 leading-relaxed mt-1">{tier.desc}</div>
+                        <div className="text-xs text-[#64707A] leading-relaxed mt-1">{tier.desc}</div>
                       </div>
                       <div
                         className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                          active ? 'border-indigo-500 bg-indigo-500/20' : 'border-slate-700'
+                          active ? 'border-[#082A1C] bg-[#CDFF8C]' : 'border-[#DDE3E7] bg-white'
                         }`}
                       >
-                        {active && <div className="w-2 h-2 rounded-full bg-indigo-400" />}
+                        {active && <div className="w-2 h-2 rounded-full bg-[#082A1C]" />}
                       </div>
                     </button>
                   );
@@ -497,11 +505,11 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
           </div>
 
           {/* Step 1 Actions */}
-          <div className="flex justify-end pt-4 border-t border-slate-700/50">
+          <div className="flex justify-end pt-4 border-t border-[#DDE3E7]">
             <button
               type="button"
               onClick={() => setCurrentStep(2)}
-              className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-500 shadow-md shadow-indigo-500/20 transition-all duration-200 active:scale-[0.98]"
+              className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold lb-btn-primary shadow-sm active:scale-[0.98]"
             >
               <span>Continue to Modules (Step 2)</span>
               <ArrowRight className="w-4 h-4" />
@@ -512,24 +520,24 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
 
       {/* STEP 2: Feature Modules Catalog */}
       {currentStep === 2 && (
-        <div className="bg-slate-800 border border-slate-700/50 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
+        <div className="bg-white border border-[#DDE3E7] rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
-              <h2 className="text-xl font-bold text-slate-100 flex items-center space-x-2">
-                <Code2 className="w-5 h-5 text-indigo-400" />
+              <h2 className="text-xl font-bold text-[#082A1C] lb-heading flex items-center space-x-2">
+                <Code2 className="w-5 h-5 text-[#082A1C]" />
                 <span>Select Feature Modules & Add-ons</span>
               </h2>
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-[#64707A] mt-1">
                 Choose the technical features required for your platform.
               </p>
             </div>
-            <div className="px-3 py-1 rounded-lg bg-indigo-500/10 text-indigo-300 font-semibold text-xs border border-indigo-500/30 self-start sm:self-auto">
-              <span className="text-emerald-500 font-bold">{state.selectedFeatureIds.length}</span> Modules Selected
+            <div className="px-3 py-1.5 rounded-lg bg-[#CDFF8C] text-[#082A1C] font-semibold text-xs border border-[#082A1C]/15 self-start sm:self-auto tabular-nums">
+              <span className="font-mono font-bold">{state.selectedFeatureIds.length}</span> Modules Selected
             </div>
           </div>
 
           {/* Category Filter Tabs (Flat Minimalism) */}
-          <div className="flex items-center gap-3 overflow-x-auto pb-1 border-b border-slate-800 no-scrollbar">
+          <div className="flex items-center gap-4 overflow-x-auto pb-1 border-b border-[#DDE3E7] no-scrollbar">
             {categories.map((cat) => (
               <button
                 key={cat.id}
@@ -537,8 +545,8 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
                 onClick={() => setActiveCategory(cat.id)}
                 className={`pb-2.5 text-xs font-semibold whitespace-nowrap border-b-2 transition-all duration-200 active:scale-[0.98] ${
                   activeCategory === cat.id
-                    ? 'border-indigo-500 text-slate-100'
-                    : 'border-transparent text-slate-500 hover:text-slate-300'
+                    ? 'border-[#082A1C] text-[#082A1C]'
+                    : 'border-transparent text-[#64707A] hover:text-[#082A1C]'
                 }`}
               >
                 {cat.name}
@@ -558,29 +566,29 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
                   onClick={() => handleToggleFeature(feat.id)}
                   className={`p-4 rounded-xl text-left flex flex-col justify-between space-y-2.5 transition-all duration-200 active:scale-[0.98] cursor-pointer ${
                     active
-                      ? 'bg-slate-800/80 border-2 border-indigo-500 shadow-md shadow-indigo-500/5'
-                      : 'bg-slate-800/40 border-2 border-slate-800 hover:border-slate-700'
+                      ? 'bg-white border-2 border-[#082A1C] shadow-md shadow-[#082A1C]/5'
+                      : 'bg-[#F4F7F9] border-2 border-[#DDE3E7] hover:border-[#64707A]/60'
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2 w-full">
-                    <span className="font-bold text-xs text-slate-100 leading-snug">
+                    <span className="font-bold text-xs text-[#082A1C] leading-snug">
                       {feat.name}
                     </span>
-                    <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-slate-900/70 text-emerald-500 border border-slate-700/50 whitespace-nowrap">
+                    <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded bg-[#CDFF8C] text-[#082A1C] whitespace-nowrap tabular-nums">
                       +{feat.baseHours} hrs
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-400 leading-relaxed line-clamp-2">
+                  <p className="text-[11px] text-[#64707A] leading-relaxed line-clamp-2">
                     {feat.description}
                   </p>
-                  <div className="flex items-center justify-between w-full pt-2 border-t border-slate-700/50 text-[11px]">
-                    <span className="capitalize text-slate-500">{feat.category.replace('_', ' ')}</span>
+                  <div className="flex items-center justify-between w-full pt-2 border-t border-[#DDE3E7] text-[11px]">
+                    <span className="capitalize text-[#64707A]">{feat.category.replace('_', ' ')}</span>
                     <div
                       className={`w-4 h-4 rounded border flex items-center justify-center transition-all duration-200 ${
-                        active ? 'bg-indigo-600 border-indigo-500 text-white' : 'border-slate-700 bg-slate-900/50'
+                        active ? 'bg-[#082A1C] border-[#082A1C] text-[#CDFF8C]' : 'border-[#DDE3E7] bg-white'
                       }`}
                     >
-                      {active && <Check className="w-3 h-3" />}
+                      {active && <Check className="w-3 h-3 stroke-[3]" />}
                     </div>
                   </div>
                 </button>
@@ -589,8 +597,8 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
           </div>
 
           {/* Cloud & Managed Infrastructure Services */}
-          <div className="pt-4 border-t border-slate-700/50">
-            <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3">
+          <div className="pt-4 border-t border-[#DDE3E7]">
+            <h3 className="text-xs font-bold text-[#082A1C] uppercase tracking-wider mb-3">
               Optional Cloud Services & Infrastructure Subscriptions
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -605,22 +613,22 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
                     onClick={() => handleToggleSaaS(addon.id)}
                     className={`p-3.5 rounded-xl text-left flex items-center justify-between transition-all duration-200 active:scale-[0.98] cursor-pointer ${
                       active
-                        ? 'bg-slate-800/80 border-2 border-indigo-500 shadow-md shadow-indigo-500/5'
-                        : 'bg-slate-800/40 border-2 border-slate-800 hover:border-slate-700'
+                        ? 'bg-white border-2 border-[#082A1C] shadow-md shadow-[#082A1C]/5'
+                        : 'bg-[#F4F7F9] border-2 border-[#DDE3E7] hover:border-[#64707A]/60'
                     }`}
                   >
                     <div>
-                      <div className="text-xs font-bold text-slate-100">{addon.name}</div>
-                      <div className="text-[11px] font-semibold text-emerald-500 mt-0.5">
+                      <div className="text-xs font-bold text-[#082A1C]">{addon.name}</div>
+                      <div className="text-[11px] font-mono font-semibold text-[#144731] mt-0.5 tabular-nums">
                         {currencySymbol}{estMonthly}/mo est.
                       </div>
                     </div>
                     <div
                       className={`w-4 h-4 rounded border flex items-center justify-center ${
-                        active ? 'bg-indigo-600 border-indigo-500 text-white' : 'border-slate-700 bg-slate-900/50'
+                        active ? 'bg-[#082A1C] border-[#082A1C] text-[#CDFF8C]' : 'border-[#DDE3E7] bg-white'
                       }`}
                     >
-                      {active && <Check className="w-3 h-3" />}
+                      {active && <Check className="w-3 h-3 stroke-[3]" />}
                     </div>
                   </button>
                 );
@@ -629,11 +637,11 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
           </div>
 
           {/* Navigation Buttons */}
-          <div className="flex items-center justify-between pt-4 border-t border-slate-700/50">
+          <div className="flex items-center justify-between pt-4 border-t border-[#DDE3E7]">
             <button
               type="button"
               onClick={() => setCurrentStep(1)}
-              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-200 bg-slate-900/60 hover:bg-slate-700 border border-slate-700/50 transition-all duration-200 active:scale-[0.98]"
+              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-[#082A1C] bg-[#F4F7F9] hover:bg-[#DDE3E7]/60 border border-[#DDE3E7] transition-all duration-200 active:scale-[0.98]"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Back to Foundations</span>
@@ -641,7 +649,7 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
             <button
               type="button"
               onClick={() => setCurrentStep(3)}
-              className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-500 shadow-md shadow-indigo-500/20 transition-all duration-200 active:scale-[0.98]"
+              className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold lb-btn-primary shadow-sm active:scale-[0.98]"
             >
               <span>Continue to Team & Rates (Step 3)</span>
               <ArrowRight className="w-4 h-4" />
@@ -652,29 +660,29 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
 
       {/* STEP 3: Squad Composition & Regional Rate Benchmark */}
       {currentStep === 3 && (
-        <div className="bg-slate-800 border border-slate-700/50 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
+        <div className="bg-white border border-[#DDE3E7] rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
           <div>
-            <h2 className="text-xl font-bold text-slate-100 flex items-center space-x-2">
-              <Globe2 className="w-5 h-5 text-indigo-400" />
+            <h2 className="text-xl font-bold text-[#082A1C] lb-heading flex items-center space-x-2">
+              <Globe2 className="w-5 h-5 text-[#082A1C]" />
               <span>Dedicated Engineering Squad & Regional Rate Benchmarks</span>
             </h2>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-[#64707A] mt-1">
               ScopeCraft models senior dedicated technical squads across global rate benchmarks.
             </p>
           </div>
 
           {/* Dedicated Squad Regional Benchmark Matrix */}
-          <div className="p-5 rounded-xl bg-slate-900/50 border border-slate-700/50 space-y-4">
+          <div className="p-5 rounded-xl bg-[#F4F7F9] border border-[#DDE3E7] space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
-                <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider block">
+                <span className="text-xs font-mono font-bold text-[#64707A] uppercase tracking-wider block">
                   Regional Rate Comparison
                 </span>
-                <h3 className="text-base font-bold text-slate-100">
+                <h3 className="text-base font-bold text-[#082A1C] lb-heading">
                   Select Location Rate Benchmark
                 </h3>
               </div>
-              <div className="text-xs font-semibold px-3 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 self-start sm:self-auto">
+              <div className="text-xs font-bold px-3 py-1 rounded-lg bg-[#CDFF8C] text-[#082A1C] border border-[#082A1C]/15 self-start sm:self-auto">
                 Dedicated Offshore Benchmark: ~70% Cost Advantage
               </div>
             </div>
@@ -691,18 +699,18 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
                     onClick={() => updateState({ regionId: r.id })}
                     className={`p-3.5 rounded-xl text-left transition-all duration-200 active:scale-[0.98] cursor-pointer ${
                       isSelected
-                        ? 'bg-slate-800/80 border-2 border-indigo-500 shadow-md shadow-indigo-500/5'
-                        : 'bg-slate-800/40 border-2 border-slate-800 hover:border-slate-700'
+                        ? 'bg-white border-2 border-[#082A1C] shadow-md shadow-[#082A1C]/5'
+                        : 'bg-white/60 border-2 border-[#DDE3E7] hover:border-[#64707A]/60'
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-lg">{r.flag}</span>
-                      <span className="text-xs font-bold text-emerald-500">
+                      <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-[#CDFF8C] text-[#082A1C] tabular-nums">
                         {(r.rateMultiplier * 100).toFixed(0)}% Index
                       </span>
                     </div>
-                    <div className="font-bold text-xs text-slate-100 mt-1.5">{r.name}</div>
-                    <div className="text-[11px] text-slate-400 mt-0.5 line-clamp-1">{r.description}</div>
+                    <div className="font-bold text-xs text-[#082A1C] mt-1.5">{r.name}</div>
+                    <div className="text-[11px] text-[#64707A] mt-0.5 line-clamp-1">{r.description}</div>
                   </button>
                 );
               })}
@@ -712,47 +720,47 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
           {/* Team Squad Headcount Table */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-slate-100 flex items-center space-x-2">
-                <Users className="w-4 h-4 text-indigo-400" />
+              <h3 className="text-sm font-bold text-[#082A1C] flex items-center space-x-2">
+                <Users className="w-4 h-4 text-[#082A1C]" />
                 <span>Recommended Engineering Squad Roles</span>
               </h3>
-              <span className="text-xs font-semibold text-emerald-500">
+              <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-md bg-[#CDFF8C] text-[#082A1C] tabular-nums">
                 Total Team: {state.team.reduce((acc, t) => acc + t.count, 0)} Specialists
               </span>
             </div>
 
-            <div className="border border-slate-700/50 rounded-xl divide-y divide-slate-800 overflow-hidden bg-slate-900/40">
+            <div className="border border-[#DDE3E7] rounded-xl divide-y divide-[#DDE3E7] overflow-hidden bg-[#F4F7F9]">
               {TEAM_ROLES.map((role) => {
                 const teamMember = state.team.find((m) => m.roleId === role.id);
                 const count = teamMember ? teamMember.count : 0;
                 const regionalRate = Math.round(role.defaultHourlyRate * activeRegion.rateMultiplier * exchangeRate);
                 return (
-                  <div key={role.id} className="p-3.5 flex items-center justify-between hover:bg-slate-800/60 transition-all duration-200">
+                  <div key={role.id} className="p-3.5 flex items-center justify-between hover:bg-white transition-all duration-200">
                     <div className="pr-4">
-                      <div className="text-xs font-bold text-slate-100">{role.title}</div>
-                      <div className="text-[11px] text-slate-400">{role.description}</div>
+                      <div className="text-xs font-bold text-[#082A1C]">{role.title}</div>
+                      <div className="text-[11px] text-[#64707A]">{role.description}</div>
                     </div>
                     <div className="flex items-center space-x-3 flex-shrink-0">
-                      <span className="text-xs font-semibold text-emerald-500">
+                      <span className="text-xs font-mono font-bold text-[#082A1C] tabular-nums">
                         {currencySymbol}{regionalRate}/hr
                       </span>
-                      <div className="flex items-center space-x-1.5 bg-slate-800 border border-slate-700/50 rounded-lg p-1">
+                      <div className="flex items-center space-x-1.5 bg-white border border-[#DDE3E7] rounded-lg p-1">
                         <button
                           type="button"
                           onClick={() => handleUpdateRoleCount(role.id, -1)}
                           disabled={count === 0}
-                          className="p-1 rounded text-slate-300 hover:bg-slate-700 disabled:opacity-30 transition-all duration-200 active:scale-[0.98]"
+                          className="p-1 rounded text-[#082A1C] hover:bg-[#F4F7F9] disabled:opacity-30 transition-all duration-200 active:scale-[0.98]"
                           title="Decrease headcount"
                         >
                           <Minus className="w-3.5 h-3.5" />
                         </button>
-                        <span className="w-6 text-center text-xs font-bold text-slate-100">
+                        <span className="w-6 text-center text-xs font-mono font-bold text-[#082A1C] tabular-nums">
                           {count}
                         </span>
                         <button
                           type="button"
                           onClick={() => handleUpdateRoleCount(role.id, 1)}
-                          className="p-1 rounded text-slate-300 hover:bg-slate-700 transition-all duration-200 active:scale-[0.98]"
+                          className="p-1 rounded text-[#082A1C] hover:bg-[#F4F7F9] transition-all duration-200 active:scale-[0.98]"
                           title="Increase headcount"
                         >
                           <Plus className="w-3.5 h-3.5" />
@@ -766,11 +774,11 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
           </div>
 
           {/* Navigation Buttons */}
-          <div className="flex items-center justify-between pt-4 border-t border-slate-700/50">
+          <div className="flex items-center justify-between pt-4 border-t border-[#DDE3E7]">
             <button
               type="button"
               onClick={() => setCurrentStep(2)}
-              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-200 bg-slate-900/60 hover:bg-slate-700 border border-slate-700/50 transition-all duration-200 active:scale-[0.98]"
+              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-[#082A1C] bg-[#F4F7F9] hover:bg-[#DDE3E7]/60 border border-[#DDE3E7] transition-all duration-200 active:scale-[0.98]"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Back to Modules</span>
@@ -778,7 +786,7 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
             <button
               type="button"
               onClick={() => setCurrentStep(4)}
-              className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-500 shadow-md shadow-indigo-500/20 transition-all duration-200 active:scale-[0.98]"
+              className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold lb-btn-primary shadow-sm active:scale-[0.98]"
             >
               <span>Continue to Unlock Estimate (Step 4)</span>
               <ArrowRight className="w-4 h-4" />
@@ -789,28 +797,28 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
 
       {/* STEP 4: Complimentary Lead Form & Calculation Reveal */}
       {currentStep === 4 && (
-        <div className="bg-slate-800 border border-slate-700/50 rounded-2xl p-6 sm:p-10 shadow-xl space-y-8">
+        <div className="bg-white border border-[#DDE3E7] rounded-2xl p-6 sm:p-10 shadow-sm space-y-8">
           {/* Trust Guarantee Card */}
-          <div className="p-6 rounded-xl bg-slate-900/60 border border-slate-700/50 space-y-3">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-lg text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+          <div className="p-6 rounded-xl bg-[#082A1C] text-white space-y-3">
+            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-lg text-xs font-bold text-[#082A1C] bg-[#CDFF8C]">
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#082A1C]" />
               <span>100% Complimentary · Instant Calculation Unlock</span>
             </div>
 
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-100 tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-bold text-white lb-heading">
               Your Customized Project Estimate is Ready
             </h2>
 
-            <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#94A3B8] leading-relaxed">
               Submitting your details unlocks the interactive estimation suite, including full dev hour itemizations, monthly team burn schedules, Gantt phase planning, and PDF statement of work export.
             </p>
 
-            <div className="p-4 rounded-xl bg-slate-800/80 border border-slate-700/50 text-xs text-slate-300 space-y-1">
-              <div className="font-bold text-slate-100 flex items-center space-x-1.5">
-                <ShieldCheck className="w-4 h-4 text-indigo-400" />
+            <div className="p-4 rounded-xl bg-[#0F3827] border border-[#1E4F3A] text-xs text-white/90 space-y-1">
+              <div className="font-bold text-white flex items-center space-x-1.5">
+                <ShieldCheck className="w-4 h-4 text-[#CDFF8C]" />
                 <span>ScopeCraft Consultative Transparency:</span>
               </div>
-              <p className="text-slate-400">
+              <p className="text-[#94A3B8]">
                 We capture your business details to save your scoping records and connect you with our solutions engineering team. If you would like your technical specifications formally vetted by a Principal Solutions Architect with a comprehensive delivery roadmap, that paid advisory service is available—completely optional.
               </p>
             </div>
@@ -821,127 +829,127 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Full Name */}
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1.5">
+                <label className="block text-xs font-bold text-[#082A1C] mb-1.5">
                   Full Name *
                 </label>
                 <div className="relative">
-                  <User className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+                  <User className="w-4 h-4 text-[#64707A] absolute left-3.5 top-3" />
                   <input
                     type="text"
                     required
                     value={leadForm.fullName}
                     onChange={(e) => setLeadForm({ ...leadForm, fullName: e.target.value })}
                     placeholder="e.g. Jordan Lee"
-                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-slate-100 bg-slate-900/70 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 transition-all duration-200 ${
-                      formErrors.fullName ? 'border-red-500' : 'border-slate-700/50'
+                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-[#082A1C] bg-[#F4F7F9] focus:bg-white placeholder:text-[#64707A]/60 focus:outline-none focus:border-[#082A1C] transition-all duration-200 ${
+                      formErrors.fullName ? 'border-red-600' : 'border-[#DDE3E7]'
                     }`}
                   />
                 </div>
-                {formErrors.fullName && <p className="text-[11px] text-red-400 mt-1">{formErrors.fullName}</p>}
+                {formErrors.fullName && <p className="text-[11px] text-red-600 mt-1">{formErrors.fullName}</p>}
               </div>
 
               {/* Work Email */}
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1.5">
+                <label className="block text-xs font-bold text-[#082A1C] mb-1.5">
                   Business Work Email *
                 </label>
                 <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+                  <Mail className="w-4 h-4 text-[#64707A] absolute left-3.5 top-3" />
                   <input
                     type="email"
                     required
                     value={leadForm.email}
                     onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
                     placeholder="e.g. jordan@company.com"
-                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-slate-100 bg-slate-900/70 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 transition-all duration-200 ${
-                      formErrors.email ? 'border-red-500' : 'border-slate-700/50'
+                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-[#082A1C] bg-[#F4F7F9] focus:bg-white placeholder:text-[#64707A]/60 focus:outline-none focus:border-[#082A1C] transition-all duration-200 ${
+                      formErrors.email ? 'border-red-600' : 'border-[#DDE3E7]'
                     }`}
                   />
                 </div>
-                {formErrors.email && <p className="text-[11px] text-red-400 mt-1">{formErrors.email}</p>}
+                {formErrors.email && <p className="text-[11px] text-red-600 mt-1">{formErrors.email}</p>}
               </div>
 
               {/* Phone */}
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1.5">
+                <label className="block text-xs font-bold text-[#082A1C] mb-1.5">
                   Phone Number *
                 </label>
                 <div className="relative">
-                  <Phone className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+                  <Phone className="w-4 h-4 text-[#64707A] absolute left-3.5 top-3" />
                   <input
                     type="tel"
                     required
                     value={leadForm.phone}
                     onChange={(e) => setLeadForm({ ...leadForm, phone: e.target.value })}
                     placeholder="e.g. +1 (555) 019-2834"
-                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-slate-100 bg-slate-900/70 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 transition-all duration-200 ${
-                      formErrors.phone ? 'border-red-500' : 'border-slate-700/50'
+                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-[#082A1C] bg-[#F4F7F9] focus:bg-white placeholder:text-[#64707A]/60 focus:outline-none focus:border-[#082A1C] transition-all duration-200 ${
+                      formErrors.phone ? 'border-red-600' : 'border-[#DDE3E7]'
                     }`}
                   />
                 </div>
-                {formErrors.phone && <p className="text-[11px] text-red-400 mt-1">{formErrors.phone}</p>}
+                {formErrors.phone && <p className="text-[11px] text-red-600 mt-1">{formErrors.phone}</p>}
               </div>
 
               {/* Company Name */}
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1.5">
+                <label className="block text-xs font-bold text-[#082A1C] mb-1.5">
                   Company / Organization *
                 </label>
                 <div className="relative">
-                  <Building2 className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+                  <Building2 className="w-4 h-4 text-[#64707A] absolute left-3.5 top-3" />
                   <input
                     type="text"
                     required
                     value={leadForm.company}
                     onChange={(e) => setLeadForm({ ...leadForm, company: e.target.value })}
                     placeholder="e.g. Acme Innovations Corp"
-                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-slate-100 bg-slate-900/70 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 transition-all duration-200 ${
-                      formErrors.company ? 'border-red-500' : 'border-slate-700/50'
+                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-[#082A1C] bg-[#F4F7F9] focus:bg-white placeholder:text-[#64707A]/60 focus:outline-none focus:border-[#082A1C] transition-all duration-200 ${
+                      formErrors.company ? 'border-red-600' : 'border-[#DDE3E7]'
                     }`}
                   />
                 </div>
-                {formErrors.company && <p className="text-[11px] text-red-400 mt-1">{formErrors.company}</p>}
+                {formErrors.company && <p className="text-[11px] text-red-600 mt-1">{formErrors.company}</p>}
               </div>
 
               {/* Role / Job Title */}
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1.5">
+                <label className="block text-xs font-bold text-[#082A1C] mb-1.5">
                   Your Primary Role
                 </label>
                 <div className="relative">
-                  <Briefcase className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+                  <Briefcase className="w-4 h-4 text-[#64707A] absolute left-3.5 top-3" />
                   <select
                     value={leadForm.role}
                     onChange={(e) => setLeadForm({ ...leadForm, role: e.target.value })}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-700/50 text-sm text-slate-100 bg-slate-900/70 focus:outline-none focus:border-indigo-500 transition-all duration-200"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#DDE3E7] text-sm text-[#082A1C] bg-[#F4F7F9] focus:bg-white focus:outline-none focus:border-[#082A1C] transition-all duration-200"
                   >
-                    <option value="Founder / C-Level Executive" className="bg-slate-900">Founder / C-Level Executive</option>
-                    <option value="VP of Product / Head of Product" className="bg-slate-900">VP of Product / Head of Product</option>
-                    <option value="VP of Engineering / CTO" className="bg-slate-900">VP of Engineering / CTO</option>
-                    <option value="Technical Project Manager" className="bg-slate-900">Technical Project Manager</option>
-                    <option value="Operations / Enterprise Procurement" className="bg-slate-900">Operations / Enterprise Procurement</option>
-                    <option value="Other Stakeholder" className="bg-slate-900">Other Stakeholder</option>
+                    <option value="Founder / C-Level Executive">Founder / C-Level Executive</option>
+                    <option value="VP of Product / Head of Product">VP of Product / Head of Product</option>
+                    <option value="VP of Engineering / CTO">VP of Engineering / CTO</option>
+                    <option value="Technical Project Manager">Technical Project Manager</option>
+                    <option value="Operations / Enterprise Procurement">Operations / Enterprise Procurement</option>
+                    <option value="Other Stakeholder">Other Stakeholder</option>
                   </select>
                 </div>
               </div>
 
               {/* Planned Budget Range */}
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1.5">
+                <label className="block text-xs font-bold text-[#082A1C] mb-1.5">
                   Planned Budget Range
                 </label>
                 <div className="relative">
-                  <DollarSign className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+                  <DollarSign className="w-4 h-4 text-[#64707A] absolute left-3.5 top-3" />
                   <select
                     value={leadForm.budgetRange}
                     onChange={(e) => setLeadForm({ ...leadForm, budgetRange: e.target.value })}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-700/50 text-sm text-slate-100 bg-slate-900/70 focus:outline-none focus:border-indigo-500 transition-all duration-200"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#DDE3E7] text-sm text-[#082A1C] bg-[#F4F7F9] focus:bg-white focus:outline-none focus:border-[#082A1C] transition-all duration-200"
                   >
-                    <option value="Under $25k" className="bg-slate-900">Under $25,000</option>
-                    <option value="$25k - $50k" className="bg-slate-900">$25,000 - $50,000</option>
-                    <option value="$50k - $100k" className="bg-slate-900">$50,000 - $100,000</option>
-                    <option value="$100k - $250k" className="bg-slate-900">$100,000 - $250,000</option>
-                    <option value="$250k+" className="bg-slate-900">$250,000+</option>
+                    <option value="Under $25k">Under $25,000</option>
+                    <option value="$25k - $50k">$25,000 - $50,000</option>
+                    <option value="$50k - $100k">$50,000 - $100,000</option>
+                    <option value="$100k - $250k">$100,000 - $250,000</option>
+                    <option value="$250k+">$250,000+</option>
                   </select>
                 </div>
               </div>
@@ -954,29 +962,29 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
               onClick={() => setLeadForm({ ...leadForm, wantsOptionalPaidReview: !leadForm.wantsOptionalPaidReview })}
               className={`w-full p-4 rounded-xl text-left flex items-start space-x-3 transition-all duration-200 active:scale-[0.98] cursor-pointer ${
                 leadForm.wantsOptionalPaidReview
-                  ? 'bg-slate-800/80 border-2 border-indigo-500 shadow-md shadow-indigo-500/5'
-                  : 'bg-slate-800/40 border-2 border-slate-800 hover:border-slate-700'
+                  ? 'bg-white border-2 border-[#082A1C] shadow-md shadow-[#082A1C]/5'
+                  : 'bg-[#F4F7F9] border-2 border-[#DDE3E7] hover:border-[#64707A]/60'
               }`}
             >
               <div
                 className={`mt-0.5 w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${
-                  leadForm.wantsOptionalPaidReview ? 'bg-indigo-600 border-indigo-500 text-white' : 'border-slate-600 bg-slate-900/60'
+                  leadForm.wantsOptionalPaidReview ? 'bg-[#082A1C] border-[#082A1C] text-[#CDFF8C]' : 'border-[#DDE3E7] bg-white'
                 }`}
               >
-                {leadForm.wantsOptionalPaidReview && <Check className="w-3 h-3" />}
+                {leadForm.wantsOptionalPaidReview && <Check className="w-3 h-3 stroke-[3]" />}
               </div>
               <div>
-                <div className="text-xs font-bold text-slate-100">
+                <div className="text-xs font-bold text-[#082A1C]">
                   Request Senior Solutions Architect Review (Optional)
                 </div>
-                <p className="text-[11px] text-slate-400 leading-normal mt-0.5">
+                <p className="text-[11px] text-[#64707A] leading-normal mt-0.5">
                   Have an experienced Principal Architect independently vet your technical stack, architecture diagrams, and milestones.
                 </p>
               </div>
             </button>
 
             {/* Mandatory Privacy & Contact Consent */}
-            <div className="p-4 rounded-xl border border-slate-700/50 bg-slate-900/50">
+            <div className="p-4 rounded-xl border border-[#DDE3E7] bg-[#F4F7F9]">
               <div className="flex items-start space-x-3">
                 <button
                   type="button"
@@ -985,38 +993,38 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
                   aria-label="Agree to Privacy Policy"
                   onClick={() => setLeadForm({ ...leadForm, consentGiven: !leadForm.consentGiven })}
                   className={`mt-0.5 w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 transition-all duration-200 active:scale-[0.98] cursor-pointer ${
-                    leadForm.consentGiven ? 'bg-indigo-600 border-indigo-500 text-white' : 'border-slate-600 bg-slate-800'
+                    leadForm.consentGiven ? 'bg-[#082A1C] border-[#082A1C] text-[#CDFF8C]' : 'border-[#DDE3E7] bg-white'
                   }`}
                 >
-                  {leadForm.consentGiven && <Check className="w-3 h-3" />}
+                  {leadForm.consentGiven && <Check className="w-3 h-3 stroke-[3]" />}
                 </button>
-                <div className="text-xs text-slate-300 leading-normal">
+                <div className="text-xs text-[#64707A] leading-normal">
                   <span>I agree to the </span>
                   <button
                     type="button"
                     onClick={() => setIsPrivacyModalOpen(true)}
-                    className="text-indigo-400 font-semibold underline hover:text-indigo-300 transition-all duration-200"
+                    className="text-[#082A1C] font-bold underline hover:opacity-75 transition-all duration-200"
                   >
                     Privacy Policy
                   </button>
                   <span> and understand that using this estimation suite is 100% complimentary. I consent to receiving consultative communications regarding this project estimate.</span>
                 </div>
               </div>
-              {formErrors.consent && <p className="text-[11px] text-red-400 mt-1.5 pl-7">{formErrors.consent}</p>}
+              {formErrors.consent && <p className="text-[11px] text-red-600 mt-1.5 pl-7">{formErrors.consent}</p>}
             </div>
 
             {submitError && (
-              <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-xs text-amber-300">
+              <div className="p-3 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-800">
                 {submitError}
               </div>
             )}
 
             {/* Submission Actions */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-slate-700/50">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-[#DDE3E7]">
               <button
                 type="button"
                 onClick={() => setCurrentStep(3)}
-                className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-200 bg-slate-900/60 hover:bg-slate-700 border border-slate-700/50 transition-all duration-200 active:scale-[0.98] order-2 sm:order-1"
+                className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-[#082A1C] bg-[#F4F7F9] hover:bg-[#DDE3E7]/60 border border-[#DDE3E7] transition-all duration-200 active:scale-[0.98] order-2 sm:order-1"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Back to Team & Rates</span>
@@ -1025,11 +1033,11 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-8 py-3.5 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-500/20 transition-all duration-200 active:scale-[0.98] disabled:opacity-60 order-1 sm:order-2"
+                className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-8 py-3.5 rounded-xl text-sm font-bold lb-btn-primary shadow-sm active:scale-[0.98] disabled:opacity-60 order-1 sm:order-2"
               >
                 {isSubmitting ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
                     <span>Processing Calculation...</span>
                   </>
                 ) : (

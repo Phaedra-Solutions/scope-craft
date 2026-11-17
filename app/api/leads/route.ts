@@ -38,6 +38,23 @@ interface LeadPayload {
   };
 }
 
+function getValidWebhookUrl(raw?: string): string | null {
+  if (!raw) return null;
+  const trimmed = raw.trim();
+  if (!trimmed || trimmed.includes('YOUR_GHL_INBOUND_WEBHOOK_URL')) {
+    return null;
+  }
+  try {
+    const parsed = new URL(trimmed);
+    if ((parsed.protocol === 'https:' || parsed.protocol === 'http:') && parsed.hostname) {
+      return parsed.toString();
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as LeadPayload;
@@ -119,19 +136,20 @@ export async function POST(req: NextRequest) {
       note: scopeNote
     };
 
-    const webhookUrl = process.env.GHL_WEBHOOK_URL;
+    const validWebhookUrl = getValidWebhookUrl(process.env.GHL_WEBHOOK_URL);
     let forwardedToGHL = false;
 
-    if (webhookUrl && !webhookUrl.includes('YOUR_GHL_INBOUND_WEBHOOK_URL')) {
+    if (validWebhookUrl) {
       try {
-        const ghlResponse = await fetch(webhookUrl, {
+        const ghlResponse = await fetch(validWebhookUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'User-Agent': 'ScopeCraft-Estimator-Hook/1.0'
           },
-          body: JSON.stringify(ghlPayload)
+          body: JSON.stringify(ghlPayload),
+          signal: AbortSignal.timeout(8000)
         });
 
         if (ghlResponse.ok) {
@@ -141,16 +159,17 @@ export async function POST(req: NextRequest) {
           console.warn('[GHL Sync] Webhook returned non-200 status:', ghlResponse.status);
         }
       } catch (err) {
-        console.error('[GHL Sync] Network error while forwarding to GoHighLevel:', err);
+        const errMessage = err instanceof Error ? err.message : 'Unknown error';
+        console.warn('[GHL Sync] Unable to reach GoHighLevel webhook:', errMessage);
       }
     } else {
-      console.log('[GHL Sync] GHL_WEBHOOK_URL is not configured (Mock Mode).');
+      console.log('[GHL Sync] GHL_WEBHOOK_URL is not configured with a valid HTTP(S) URL (Mock Mode).');
     }
 
     return NextResponse.json({
       success: true,
       forwardedToGHL,
-      mockMode: !webhookUrl || webhookUrl.includes('YOUR_GHL_INBOUND_WEBHOOK_URL'),
+      mockMode: !validWebhookUrl,
       message: 'Lead and project scope captured successfully.'
     });
   } catch (error) {

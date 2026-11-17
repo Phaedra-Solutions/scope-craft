@@ -46,39 +46,39 @@ interface ScheduledModule {
 
 const PHASE_THEMES: Record<number, { bar: string; light: string; text: string; border: string; hover: string }> = {
   1: {
-    bar: 'bg-indigo-600',
-    light: 'bg-indigo-500/10',
-    text: 'text-indigo-400',
-    border: 'border-indigo-500/30',
-    hover: 'hover:bg-indigo-500'
+    bar: 'bg-[#082A1C]',
+    light: 'bg-[#082A1C]/10',
+    text: 'text-[#082A1C]',
+    border: 'border-[#082A1C]/20',
+    hover: 'hover:bg-[#10422D]'
   },
   2: {
-    bar: 'bg-sky-600',
-    light: 'bg-sky-500/10',
-    text: 'text-sky-400',
-    border: 'border-sky-500/30',
-    hover: 'hover:bg-sky-500'
+    bar: 'bg-[#144731]',
+    light: 'bg-[#144731]/10',
+    text: 'text-[#144731]',
+    border: 'border-[#144731]/20',
+    hover: 'hover:bg-[#1B5C40]'
   },
   3: {
-    bar: 'bg-indigo-500',
-    light: 'bg-indigo-500/10',
-    text: 'text-indigo-300',
-    border: 'border-indigo-500/30',
-    hover: 'hover:bg-indigo-400'
+    bar: 'bg-[#245C44]',
+    light: 'bg-[#245C44]/10',
+    text: 'text-[#245C44]',
+    border: 'border-[#245C44]/20',
+    hover: 'hover:bg-[#2E7255]'
   },
   4: {
-    bar: 'bg-violet-600',
-    light: 'bg-violet-500/10',
-    text: 'text-violet-400',
-    border: 'border-violet-500/30',
-    hover: 'hover:bg-violet-500'
+    bar: 'bg-[#466357]',
+    light: 'bg-[#466357]/10',
+    text: 'text-[#466357]',
+    border: 'border-[#466357]/20',
+    hover: 'hover:bg-[#537467]'
   },
   5: {
-    bar: 'bg-emerald-600',
-    light: 'bg-emerald-500/10',
-    text: 'text-emerald-400',
-    border: 'border-emerald-500/30',
-    hover: 'hover:bg-emerald-500'
+    bar: 'bg-[#64707A]',
+    light: 'bg-[#64707A]/10',
+    text: 'text-[#64707A]',
+    border: 'border-[#64707A]/20',
+    hover: 'hover:bg-[#525D66]'
   }
 };
 
@@ -313,33 +313,33 @@ export const GanttTimelineBreakdown: React.FC<GanttTimelineBreakdownProps> = ({
   const weekNumbers = Array.from({ length: totalWeeks }, (_, i) => i + 1);
 
   return (
-    <div className="bg-slate-800 border border-slate-700/50 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
+    <div className="bg-white border border-[#DDE3E7] rounded-2xl p-6 sm:p-8 space-y-6">
       {/* 1. Header & Controls */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-slate-700/50">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-[#DDE3E7]">
         <div>
-          <div className="inline-flex items-center space-x-1.5 text-xs font-semibold text-indigo-400 mb-1.5">
-            <Calendar className="w-3.5 h-3.5 text-indigo-400" />
+          <div className="inline-flex items-center space-x-1.5 text-xs font-semibold text-[#64707A] mb-1.5">
+            <Calendar className="w-3.5 h-3.5 text-[#082A1C]" />
             <span>Interactive Delivery Schedule & Phase GANTT</span>
           </div>
-          <h3 className="text-lg font-bold text-slate-100 tracking-tight">
+          <h3 className="text-lg font-semibold text-[#082A1C] lb-heading">
             Engineering Timeline & Module Phase Breakdown
           </h3>
-          <p className="text-xs text-slate-400 max-w-2xl mt-0.5">
+          <p className="text-xs text-[#64707A] max-w-2xl mt-0.5">
             Dynamic Gantt chart modeling parallel sprint velocities, dependencies, and delivery windows for all{' '}
-            <strong className="text-slate-200 font-semibold">{state.selectedFeatureIds.length} scoped modules</strong> across{' '}
-            <strong className="text-emerald-500 font-semibold">{totalWeeks} weeks</strong>.
+            <strong className="text-[#082A1C] font-semibold">{state.selectedFeatureIds.length} scoped modules</strong> across{' '}
+            <strong className="text-[#082A1C] font-semibold tabular-nums">{totalWeeks} weeks</strong>.
           </p>
         </div>
 
         {/* View Mode Switcher (Flat Minimalism) */}
-        <div className="flex items-center gap-4 border-b border-slate-800">
+        <div className="flex items-center gap-4 border-b border-[#DDE3E7]">
           <button
             type="button"
             onClick={() => setViewMode('phases')}
-            className={`pb-2.5 text-xs font-semibold border-b-2 transition-all duration-200 active:scale-[0.98] ${
+            className={`pb-2.5 text-xs font-semibold border-b-2 transition-all duration-200 active:scale-[0.98] whitespace-nowrap ${
               viewMode === 'phases'
-                ? 'border-indigo-500 text-slate-100'
-                : 'border-slate-800 text-slate-500 hover:text-slate-300'
+                ? 'border-[#082A1C] text-[#082A1C]'
+                : 'border-transparent text-[#64707A] hover:text-[#082A1C]'
             }`}
           >
             Phased Timeline
@@ -347,10 +347,10 @@ export const GanttTimelineBreakdown: React.FC<GanttTimelineBreakdownProps> = ({
           <button
             type="button"
             onClick={() => setViewMode('modules')}
-            className={`pb-2.5 text-xs font-semibold border-b-2 transition-all duration-200 active:scale-[0.98] ${
+            className={`pb-2.5 text-xs font-semibold border-b-2 transition-all duration-200 active:scale-[0.98] whitespace-nowrap ${
               viewMode === 'modules'
-                ? 'border-indigo-500 text-slate-100'
-                : 'border-slate-800 text-slate-500 hover:text-slate-300'
+                ? 'border-[#082A1C] text-[#082A1C]'
+                : 'border-transparent text-[#64707A] hover:text-[#082A1C]'
             }`}
           >
             Module Sprints ({scheduledModules.length})
@@ -358,10 +358,10 @@ export const GanttTimelineBreakdown: React.FC<GanttTimelineBreakdownProps> = ({
           <button
             type="button"
             onClick={() => setViewMode('critical_path')}
-            className={`pb-2.5 text-xs font-semibold border-b-2 transition-all duration-200 active:scale-[0.98] ${
+            className={`pb-2.5 text-xs font-semibold border-b-2 transition-all duration-200 active:scale-[0.98] whitespace-nowrap ${
               viewMode === 'critical_path'
-                ? 'border-indigo-500 text-slate-100'
-                : 'border-slate-800 text-slate-500 hover:text-slate-300'
+                ? 'border-[#082A1C] text-[#082A1C]'
+                : 'border-transparent text-[#64707A] hover:text-[#082A1C]'
             }`}
           >
             Critical Path
@@ -370,47 +370,47 @@ export const GanttTimelineBreakdown: React.FC<GanttTimelineBreakdownProps> = ({
       </div>
 
       {/* 2. Timeline Summary Metrics Bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-[#F4F7F9] p-4 rounded-xl border border-[#DDE3E7]">
         <div>
-          <div className="text-[11px] font-semibold text-slate-400">Total Delivery Span</div>
-          <div className="text-sm font-bold text-slate-100 flex items-center space-x-1.5 mt-0.5">
-            <Clock className="w-4 h-4 text-indigo-400" />
+          <div className="text-[11px] font-medium text-[#64707A]">Total Delivery Span</div>
+          <div className="text-sm font-semibold text-[#082A1C] flex items-center space-x-1.5 mt-0.5 tabular-nums">
+            <Clock className="w-4 h-4 text-[#082A1C]" />
             <span>{totalWeeks} Calendar Weeks</span>
           </div>
-          <div className="text-[10px] text-slate-500 mt-0.5">
+          <div className="text-[10px] text-[#64707A] mt-0.5 tabular-nums">
             ~{estimate.estimatedTimelineMonths} Months ({Math.ceil(totalWeeks / 2)} Sprints)
           </div>
         </div>
 
         <div>
-          <div className="text-[11px] font-semibold text-slate-400">Engineering Capacity</div>
-          <div className="text-sm font-bold text-slate-100 flex items-center space-x-1.5 mt-0.5">
-            <Users className="w-4 h-4 text-indigo-400" />
+          <div className="text-[11px] font-medium text-[#64707A]">Engineering Capacity</div>
+          <div className="text-sm font-semibold text-[#082A1C] flex items-center space-x-1.5 mt-0.5 tabular-nums">
+            <Users className="w-4 h-4 text-[#082A1C]" />
             <span>{state.team.reduce((sum, m) => sum + m.count, 0)} Active Roles</span>
           </div>
-          <div className="text-[10px] text-emerald-500 font-semibold mt-0.5">
+          <div className="text-[10px] text-[#082A1C] font-semibold mt-0.5 tabular-nums">
             {estimate.teamTotalMonthlyCapacityHours} hrs/mo sprint velocity
           </div>
         </div>
 
         <div>
-          <div className="text-[11px] font-semibold text-slate-400">Scheduled Scope</div>
-          <div className="text-sm font-bold text-slate-100 flex items-center space-x-1.5 mt-0.5">
-            <Zap className="w-4 h-4 text-emerald-500" />
+          <div className="text-[11px] font-medium text-[#64707A]">Scheduled Scope</div>
+          <div className="text-sm font-semibold text-[#082A1C] flex items-center space-x-1.5 mt-0.5 tabular-nums">
+            <Zap className="w-4 h-4 text-[#082A1C]" />
             <span>{scheduledModules.length} Technical Modules</span>
           </div>
-          <div className="text-[10px] text-emerald-500 font-semibold mt-0.5">
+          <div className="text-[10px] text-[#082A1C] font-semibold mt-0.5 tabular-nums">
             {estimate.totalHours} total engineering hours
           </div>
         </div>
 
         <div>
-          <div className="text-[11px] font-semibold text-slate-400">Schedule Target Status</div>
-          <div className="text-sm font-bold text-emerald-500 flex items-center space-x-1.5 mt-0.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+          <div className="text-[11px] font-medium text-[#64707A]">Schedule Target Status</div>
+          <div className="text-sm font-semibold text-[#082A1C] flex items-center space-x-1.5 mt-0.5">
+            <CheckCircle2 className="w-4 h-4 text-[#082A1C]" />
             <span className="capitalize">{estimate.velocityStatus}</span>
           </div>
-          <div className="text-[10px] text-slate-500 mt-0.5">
+          <div className="text-[10px] text-[#64707A] mt-0.5 tabular-nums">
             Target: {state.targetTimelineWeeks}w vs Projected: {estimate.estimatedTimelineWeeks}w
           </div>
         </div>
@@ -419,13 +419,13 @@ export const GanttTimelineBreakdown: React.FC<GanttTimelineBreakdownProps> = ({
       {/* 3. Gantt Chart Canvas */}
       <div className="space-y-4">
         {/* Milestone Flags Bar */}
-        <div className="bg-slate-900/50 p-3.5 rounded-xl border border-slate-800">
-          <div className="flex items-center justify-between text-xs font-bold text-slate-200 mb-2.5">
+        <div className="bg-[#F4F7F9] p-3.5 rounded-xl border border-[#DDE3E7]">
+          <div className="flex items-center justify-between text-xs font-semibold text-[#082A1C] mb-2.5">
             <span className="flex items-center space-x-1.5">
-              <Flag className="w-3.5 h-3.5 text-indigo-400" />
+              <Flag className="w-3.5 h-3.5 text-[#082A1C]" />
               <span>Key Delivery Milestones & Quality Gates</span>
             </span>
-            <span className="text-[11px] font-semibold text-slate-400">
+            <span className="text-[11px] font-medium text-[#64707A]">
               5 Primary Releases
             </span>
           </div>
@@ -434,50 +434,50 @@ export const GanttTimelineBreakdown: React.FC<GanttTimelineBreakdownProps> = ({
             {milestones.map((m, idx) => (
               <div
                 key={idx}
-                className="bg-slate-800/70 p-2.5 rounded-lg border border-slate-700/50 text-[11px]"
+                className="bg-white p-2.5 rounded-lg border border-[#DDE3E7] text-[11px]"
               >
-                <div className="flex items-center justify-between text-slate-400 mb-1">
-                  <span className="font-bold text-indigo-400">Week {m.week}</span>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-900/80 text-slate-400 font-medium border border-slate-700/50">
+                <div className="flex items-center justify-between text-[#64707A] mb-1">
+                  <span className="font-semibold text-[#082A1C] tabular-nums">Week {m.week}</span>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#CDFF8C] text-[#082A1C] font-semibold tabular-nums">
                     M{idx + 1}
                   </span>
                 </div>
-                <div className="font-bold text-slate-100 leading-snug line-clamp-1">{m.title}</div>
-                <div className="text-[10px] text-slate-400 line-clamp-1 mt-0.5">{m.description}</div>
+                <div className="font-semibold text-[#082A1C] leading-snug line-clamp-1">{m.title}</div>
+                <div className="text-[10px] text-[#64707A] line-clamp-1 mt-0.5">{m.description}</div>
               </div>
             ))}
           </div>
         </div>
 
         {/* Scrollable Gantt Timeline Table */}
-        <div className="overflow-x-auto border border-slate-700/50 rounded-xl bg-slate-900/60">
+        <div className="overflow-x-auto border border-[#DDE3E7] rounded-xl bg-white">
           <div className="min-w-[760px]">
             {/* Timeline Header Ruler */}
-            <div className="grid grid-cols-12 bg-slate-800/80 border-b border-slate-700/50 text-slate-200 text-xs font-bold divide-x divide-slate-800">
+            <div className="grid grid-cols-12 bg-[#F4F7F9] border-b border-[#DDE3E7] text-[#082A1C] text-xs font-semibold divide-x divide-[#DDE3E7]">
               <div className="col-span-4 p-3 flex items-center justify-between">
                 <span>Phase & Module Specification</span>
-                <span className="text-[11px] font-semibold text-slate-400">Duration</span>
+                <span className="text-[11px] font-medium text-[#64707A]">Duration</span>
               </div>
               <div className="col-span-8 p-3 flex items-center justify-between relative">
-                <span className="text-slate-300 font-semibold text-[11px]">
+                <span className="text-[#082A1C] font-semibold text-[11px]">
                   Sprint Timeline (Weeks 1 to {totalWeeks})
                 </span>
-                <div className="flex items-center space-x-2 text-[10px] text-slate-400 font-medium">
-                  <span className="inline-block w-2 h-2 rounded-full bg-indigo-500"></span>
-                  <span>Active Sprint</span>
+                <div className="flex items-center space-x-2 text-[10px] text-[#64707A] font-medium">
+                  <span className="inline-block w-2.5 h-2.5 rounded-sm bg-[#CDFF8C] border border-[#082A1C]/30"></span>
+                  <span>Milestone / Sprint</span>
                 </div>
               </div>
             </div>
 
             {/* Week Columns Bar Indicator */}
-            <div className="grid grid-cols-12 bg-slate-900/80 border-b border-slate-800 text-[10px] font-semibold text-slate-400 divide-x divide-slate-800">
-              <div className="col-span-4 px-3 py-1.5 flex items-center justify-between text-slate-500">
+            <div className="grid grid-cols-12 bg-[#F4F7F9]/60 border-b border-[#DDE3E7] text-[10px] font-semibold text-[#64707A] divide-x divide-[#DDE3E7]">
+              <div className="col-span-4 px-3 py-1.5 flex items-center justify-between">
                 <span>Workstream Item</span>
                 <span>Effort (Hrs)</span>
               </div>
               <div className="col-span-8 px-2 py-1.5 flex items-center justify-between">
                 {weekNumbers.map((w) => (
-                  <div key={w} className="flex-1 text-center font-mono">
+                  <div key={w} className="flex-1 text-center font-mono tabular-nums">
                     W{w}
                   </div>
                 ))}
@@ -486,7 +486,7 @@ export const GanttTimelineBreakdown: React.FC<GanttTimelineBreakdownProps> = ({
 
             {/* GANTT VIEW 1: PHASE BREAKDOWN WITH NESTED MODULES */}
             {viewMode === 'phases' && (
-              <div className="divide-y divide-slate-800">
+              <div className="divide-y divide-[#DDE3E7]">
                 {highLevelPhases.map((phase) => {
                   const phaseModules = scheduledModules.filter((m) => m.phaseId === phase.id);
                   const isExpanded = expandedPhaseIds.includes(phase.id);
@@ -497,16 +497,16 @@ export const GanttTimelineBreakdown: React.FC<GanttTimelineBreakdownProps> = ({
                   );
 
                   return (
-                    <div key={phase.id} className="hover:bg-slate-800/30 transition-all duration-200">
+                    <div key={phase.id} className="hover:bg-[#F4F7F9]/60 transition-all duration-200">
                       {/* Main Phase Row */}
-                      <div className="grid grid-cols-12 items-center p-3 divide-x divide-slate-800">
+                      <div className="grid grid-cols-12 items-center p-3 divide-x divide-[#DDE3E7]">
                         <div className="col-span-4 pr-3">
                           <button
                             type="button"
                             onClick={() => togglePhaseExpand(phase.id)}
                             className="flex items-center space-x-2 text-left w-full group transition-all duration-200 active:scale-[0.98]"
                           >
-                            <span className="p-0.5 rounded text-slate-400 group-hover:text-slate-100 transition-all duration-200">
+                            <span className="p-0.5 rounded text-[#64707A] group-hover:text-[#082A1C] transition-all duration-200">
                               {isExpanded ? (
                                 <ChevronDown className="w-3.5 h-3.5" />
                               ) : (
@@ -514,10 +514,10 @@ export const GanttTimelineBreakdown: React.FC<GanttTimelineBreakdownProps> = ({
                               )}
                             </span>
                             <div>
-                              <div className="font-bold text-xs text-slate-100 group-hover:text-indigo-400 transition-all duration-200 flex items-center space-x-1.5">
+                              <div className="font-semibold text-xs text-[#082A1C] transition-all duration-200 flex items-center space-x-1.5">
                                 <span>{phase.name}</span>
                               </div>
-                              <div className="text-[10px] text-slate-400 line-clamp-1">
+                              <div className="text-[10px] text-[#64707A] line-clamp-1">
                                 {phase.description}
                               </div>
                             </div>
@@ -526,7 +526,7 @@ export const GanttTimelineBreakdown: React.FC<GanttTimelineBreakdownProps> = ({
 
                         {/* Phase Bar Track */}
                         <div className="col-span-8 pl-3 pr-2 py-1 relative h-9 flex items-center">
-                          <div className="absolute inset-0 flex divide-x divide-slate-800 pointer-events-none">
+                          <div className="absolute inset-0 flex divide-x divide-[#DDE3E7]/70 pointer-events-none">
                             {weekNumbers.map((w) => (
                               <div key={w} className="flex-1 h-full"></div>
                             ))}
@@ -537,17 +537,17 @@ export const GanttTimelineBreakdown: React.FC<GanttTimelineBreakdownProps> = ({
                               left: `${phaseStartPct}%`,
                               width: `${phaseWidthPct}%`
                             }}
-                            className={`relative h-6 rounded-lg ${phase.color.bar} text-white shadow-sm flex items-center justify-between px-2.5 text-[10px] font-bold z-10 transition-all duration-200 hover:brightness-110`}
+                            className={`relative h-6 rounded-lg ${phase.color.bar} text-white shadow-sm flex items-center justify-between px-2.5 text-[10px] font-semibold z-10 transition-all duration-200 hover:brightness-110 tabular-nums`}
                           >
                             <span className="truncate">W{phase.startWeek} – W{phase.endWeek}</span>
-                            <span className="opacity-90">{phase.percentage}%</span>
+                            <span className="text-[#CDFF8C] ml-1">{phase.percentage}%</span>
                           </div>
                         </div>
                       </div>
 
                       {/* Nested Modules */}
                       {isExpanded && phaseModules.length > 0 && (
-                        <div className="bg-slate-900/50 divide-y divide-slate-800/80">
+                        <div className="bg-[#F4F7F9]/50 divide-y divide-[#DDE3E7]/80">
                           {phaseModules.map((item) => {
                             const modStartPct = ((item.startWeek - 1) / totalWeeks) * 100;
                             const modWidthPct = Math.max(5, (item.durationWeeks / totalWeeks) * 100);
@@ -562,30 +562,30 @@ export const GanttTimelineBreakdown: React.FC<GanttTimelineBreakdownProps> = ({
                                 onClick={() =>
                                   setSelectedModuleId(isSelected ? null : item.feature.id)
                                 }
-                                className={`grid grid-cols-12 items-center p-2.5 text-xs transition-all duration-200 active:scale-[0.99] cursor-pointer divide-x divide-slate-800 ${
+                                className={`grid grid-cols-12 items-center p-2.5 text-xs transition-all duration-200 active:scale-[0.99] cursor-pointer divide-x divide-[#DDE3E7] ${
                                   isSelected
-                                    ? 'bg-indigo-500/15'
+                                    ? 'bg-[#CDFF8C]/35'
                                     : isHovered
-                                    ? 'bg-slate-800/60'
-                                    : 'hover:bg-slate-800/40'
+                                    ? 'bg-[#F4F7F9]'
+                                    : 'hover:bg-[#F4F7F9]'
                                 }`}
                               >
                                 <div className="col-span-4 pl-6 pr-3 flex items-center justify-between">
                                   <div className="truncate">
-                                    <div className="font-semibold text-xs text-slate-200 truncate">
+                                    <div className="font-semibold text-xs text-[#082A1C] truncate">
                                       {item.feature.name}
                                     </div>
-                                    <div className="text-[10px] text-slate-500 capitalize">
-                                      {item.feature.category.replace('_', ' ')} • {item.roles[0]}
+                                    <div className="text-[10px] text-[#64707A] capitalize">
+                                      {item.feature.category.replace('_', ' ')} · {item.roles[0]}
                                     </div>
                                   </div>
-                                  <span className="text-[11px] font-bold text-emerald-500 bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700/50 flex-shrink-0 ml-2">
+                                  <span className="text-[11px] font-semibold text-[#082A1C] bg-white px-1.5 py-0.5 rounded border border-[#DDE3E7] flex-shrink-0 ml-2 tabular-nums">
                                     {item.adjustedHours}h
                                   </span>
                                 </div>
 
                                 <div className="col-span-8 pl-3 pr-2 py-0.5 relative h-7 flex items-center">
-                                  <div className="absolute inset-0 flex divide-x divide-slate-800/70 pointer-events-none">
+                                  <div className="absolute inset-0 flex divide-x divide-[#DDE3E7]/60 pointer-events-none">
                                     {weekNumbers.map((w) => (
                                       <div key={w} className="flex-1 h-full"></div>
                                     ))}
@@ -596,14 +596,14 @@ export const GanttTimelineBreakdown: React.FC<GanttTimelineBreakdownProps> = ({
                                       left: `${modStartPct}%`,
                                       width: `${modWidthPct}%`
                                     }}
-                                    className={`relative h-5 rounded-md ${item.phaseColor.bar} text-white shadow-sm flex items-center justify-between px-2 text-[10px] font-bold z-10 transition-all duration-200 ${
-                                      isHovered || isSelected ? 'ring-2 ring-indigo-400 brightness-110' : ''
+                                    className={`relative h-5 rounded-md ${item.phaseColor.bar} text-white shadow-sm flex items-center justify-between px-2 text-[10px] font-semibold z-10 transition-all duration-200 tabular-nums ${
+                                      isHovered || isSelected ? 'ring-2 ring-[#CDFF8C]' : ''
                                     }`}
                                   >
                                     <span className="truncate text-[9px]">
                                       W{item.startWeek}–W{item.endWeek}
                                     </span>
-                                    <span className="text-[9px] opacity-90 hidden sm:inline">
+                                    <span className="text-[9px] text-[#CDFF8C] hidden sm:inline">
                                       {item.durationWeeks}w
                                     </span>
                                   </div>
@@ -621,7 +621,7 @@ export const GanttTimelineBreakdown: React.FC<GanttTimelineBreakdownProps> = ({
 
             {/* GANTT VIEW 2: MODULE SPRINTS LIST */}
             {viewMode === 'modules' && (
-              <div className="divide-y divide-slate-800">
+              <div className="divide-y divide-[#DDE3E7]">
                 {scheduledModules.map((item) => {
                   const modStartPct = ((item.startWeek - 1) / totalWeeks) * 100;
                   const modWidthPct = Math.max(5, (item.durationWeeks / totalWeeks) * 100);
@@ -636,30 +636,30 @@ export const GanttTimelineBreakdown: React.FC<GanttTimelineBreakdownProps> = ({
                       onClick={() =>
                         setSelectedModuleId(isSelected ? null : item.feature.id)
                       }
-                      className={`grid grid-cols-12 items-center p-2.5 text-xs transition-all duration-200 active:scale-[0.99] cursor-pointer divide-x divide-slate-800 ${
+                      className={`grid grid-cols-12 items-center p-2.5 text-xs transition-all duration-200 active:scale-[0.99] cursor-pointer divide-x divide-[#DDE3E7] ${
                         isSelected
-                          ? 'bg-indigo-500/15'
+                          ? 'bg-[#CDFF8C]/35'
                           : isHovered
-                          ? 'bg-slate-800/60'
-                          : 'hover:bg-slate-800/40'
+                          ? 'bg-[#F4F7F9]'
+                          : 'hover:bg-[#F4F7F9]'
                       }`}
                     >
                       <div className="col-span-4 pr-3 flex items-center justify-between">
                         <div className="truncate">
-                          <div className="font-bold text-xs text-slate-100 truncate">
+                          <div className="font-semibold text-xs text-[#082A1C] truncate">
                             {item.feature.name}
                           </div>
-                          <div className="text-[10px] text-slate-400 capitalize">
-                            {item.phaseName} • {item.roles[0]}
+                          <div className="text-[10px] text-[#64707A] capitalize">
+                            {item.phaseName} · {item.roles[0]}
                           </div>
                         </div>
-                        <span className="text-[11px] font-bold text-emerald-500 bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700/50 flex-shrink-0 ml-2">
+                        <span className="text-[11px] font-semibold text-[#082A1C] bg-[#F4F7F9] px-1.5 py-0.5 rounded border border-[#DDE3E7] flex-shrink-0 ml-2 tabular-nums">
                           {item.adjustedHours}h
                         </span>
                       </div>
 
                       <div className="col-span-8 pl-3 pr-2 py-0.5 relative h-8 flex items-center">
-                        <div className="absolute inset-0 flex divide-x divide-slate-800 pointer-events-none">
+                        <div className="absolute inset-0 flex divide-x divide-[#DDE3E7]/60 pointer-events-none">
                           {weekNumbers.map((w) => (
                             <div key={w} className="flex-1 h-full"></div>
                           ))}
@@ -670,12 +670,12 @@ export const GanttTimelineBreakdown: React.FC<GanttTimelineBreakdownProps> = ({
                             left: `${modStartPct}%`,
                             width: `${modWidthPct}%`
                           }}
-                          className={`relative h-6 rounded-md ${item.phaseColor.bar} text-white shadow-sm flex items-center justify-between px-2 text-[10px] font-bold z-10 transition-all duration-200 ${
-                            isHovered || isSelected ? 'ring-2 ring-indigo-400 brightness-110' : ''
+                          className={`relative h-6 rounded-md ${item.phaseColor.bar} text-white shadow-sm flex items-center justify-between px-2 text-[10px] font-semibold z-10 transition-all duration-200 tabular-nums ${
+                            isHovered || isSelected ? 'ring-2 ring-[#CDFF8C]' : ''
                           }`}
                         >
                           <span className="truncate">W{item.startWeek} – W{item.endWeek}</span>
-                          <span className="text-[10px] opacity-90 hidden sm:inline">
+                          <span className="text-[10px] text-[#CDFF8C] hidden sm:inline">
                             {item.durationWeeks} Weeks
                           </span>
                         </div>
@@ -688,9 +688,9 @@ export const GanttTimelineBreakdown: React.FC<GanttTimelineBreakdownProps> = ({
 
             {/* GANTT VIEW 3: CRITICAL PATH VIEW */}
             {viewMode === 'critical_path' && (
-              <div className="divide-y divide-slate-800">
-                <div className="p-3 bg-indigo-500/10 border-b border-indigo-500/20 text-xs text-indigo-200">
-                  <span className="font-bold text-indigo-300">Critical Path Sequence:</span> Showing workstreams with zero slack that dictate the overall {totalWeeks}-week release commitment. Delays in these modules directly shift final deployment.
+              <div className="divide-y divide-[#DDE3E7]">
+                <div className="p-3 bg-[#CDFF8C]/30 border-b border-[#DDE3E7] text-xs text-[#082A1C]">
+                  <span className="font-semibold">Critical Path Sequence:</span> Showing workstreams with zero slack that dictate the overall {totalWeeks}-week release commitment. Delays in these modules directly shift final deployment.
                 </div>
 
                 {scheduledModules
@@ -709,27 +709,26 @@ export const GanttTimelineBreakdown: React.FC<GanttTimelineBreakdownProps> = ({
                         onClick={() =>
                           setSelectedModuleId(isSelected ? null : item.feature.id)
                         }
-                        className={`grid grid-cols-12 items-center p-3 text-xs transition-all duration-200 active:scale-[0.99] cursor-pointer divide-x divide-slate-800 ${
-                          isSelected || isHovered ? 'bg-indigo-500/15' : 'hover:bg-slate-800/40'
+                        className={`grid grid-cols-12 items-center p-3 text-xs transition-all duration-200 active:scale-[0.99] cursor-pointer divide-x divide-[#DDE3E7] ${
+                          isSelected || isHovered ? 'bg-[#CDFF8C]/30' : 'hover:bg-[#F4F7F9]'
                         }`}
                       >
                         <div className="col-span-4 pr-3 flex items-center justify-between">
                           <div className="truncate">
-                            <div className="font-bold text-xs text-slate-100 truncate flex items-center space-x-1.5">
-                              <span className="w-2 h-2 rounded-full bg-indigo-500"></span>
-                              <span>{item.feature.name}</span>
+                            <div className="font-semibold text-xs text-[#082A1C] truncate">
+                              {item.feature.name}
                             </div>
-                            <div className="text-[10px] text-slate-400">
+                            <div className="text-[10px] text-[#64707A]">
                               {item.phaseName}
                             </div>
                           </div>
-                          <span className="text-[10px] font-bold text-indigo-300 bg-indigo-500/15 border border-indigo-500/30 px-1.5 py-0.5 rounded">
+                          <span className="text-[10px] font-semibold text-[#082A1C] bg-[#CDFF8C] px-2 py-0.5 rounded">
                             Critical
                           </span>
                         </div>
 
                         <div className="col-span-8 pl-3 pr-2 py-0.5 relative h-8 flex items-center">
-                          <div className="absolute inset-0 flex divide-x divide-slate-800 pointer-events-none">
+                          <div className="absolute inset-0 flex divide-x divide-[#DDE3E7]/60 pointer-events-none">
                             {weekNumbers.map((w) => (
                               <div key={w} className="flex-1 h-full"></div>
                             ))}
@@ -740,10 +739,10 @@ export const GanttTimelineBreakdown: React.FC<GanttTimelineBreakdownProps> = ({
                               left: `${modStartPct}%`,
                               width: `${modWidthPct}%`
                             }}
-                            className="relative h-6 rounded-md bg-indigo-600 text-white shadow-sm flex items-center justify-between px-2 text-[10px] font-bold z-10"
+                            className="relative h-6 rounded-md bg-[#082A1C] text-white shadow-sm flex items-center justify-between px-2 text-[10px] font-semibold z-10 tabular-nums"
                           >
                             <span className="truncate">W{item.startWeek} – W{item.endWeek}</span>
-                            <span>{item.durationWeeks}w</span>
+                            <span className="text-[#CDFF8C]">{item.durationWeeks}w</span>
                           </div>
                         </div>
                       </div>
@@ -757,79 +756,79 @@ export const GanttTimelineBreakdown: React.FC<GanttTimelineBreakdownProps> = ({
 
       {/* 4. Interactive Selected Module Detail Panel */}
       {selectedModule && (
-        <div className="p-4 bg-slate-900/80 border border-indigo-500/40 rounded-xl space-y-3 transition-all duration-200">
+        <div className="p-5 bg-[#082A1C] text-white border border-[#1A4733] rounded-xl space-y-3 transition-all duration-200">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <div className="text-xs font-bold text-slate-100 flex items-center flex-wrap gap-2">
+              <div className="text-xs font-semibold text-white flex items-center flex-wrap gap-2">
                 <span>{selectedModule.feature.name}</span>
-                <span className="text-[10px] px-2 py-0.5 rounded-md bg-indigo-500/15 text-indigo-300 font-semibold border border-indigo-500/30">
+                <span className="text-[10px] px-2 py-0.5 rounded-md bg-[#CDFF8C] text-[#082A1C] font-semibold">
                   {selectedModule.phaseName}
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 mt-1 max-w-2xl leading-relaxed">
+              <p className="text-[11px] text-[#94A3B8] mt-1 max-w-2xl leading-relaxed">
                 {selectedModule.feature.description}
               </p>
             </div>
             <button
               type="button"
               onClick={() => setSelectedModuleId(null)}
-              className="text-xs text-slate-400 hover:text-slate-100 font-bold px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700/50 transition-all duration-200 active:scale-[0.98]"
+              className="text-xs text-[#94A3B8] hover:text-white font-semibold px-2.5 py-1 rounded-lg bg-[#0F3827] border border-[#1E4F3A] transition-all duration-200 active:scale-[0.98]"
             >
               Close
             </button>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs pt-2 border-t border-slate-800">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs pt-2 border-t border-[#1A4733]">
             <div>
-              <span className="text-slate-400 text-[10px] uppercase font-semibold">Active Window</span>
-              <div className="font-bold text-slate-100">
+              <span className="text-[#94A3B8] text-[10px] uppercase font-semibold">Active Window</span>
+              <div className="font-semibold text-white tabular-nums">
                 Week {selectedModule.startWeek} → Week {selectedModule.endWeek}
               </div>
             </div>
             <div>
-              <span className="text-slate-400 text-[10px] uppercase font-semibold">Effort & Duration</span>
-              <div className="font-bold text-emerald-500">
+              <span className="text-[#94A3B8] text-[10px] uppercase font-semibold">Effort & Duration</span>
+              <div className="font-semibold text-[#CDFF8C] tabular-nums">
                 {selectedModule.adjustedHours} hrs (~{selectedModule.durationWeeks} weeks)
               </div>
             </div>
             <div>
-              <span className="text-slate-400 text-[10px] uppercase font-semibold">Assigned Roles</span>
-              <div className="font-bold text-slate-100 truncate">
+              <span className="text-[#94A3B8] text-[10px] uppercase font-semibold">Assigned Roles</span>
+              <div className="font-semibold text-white truncate">
                 {selectedModule.roles.join(', ')}
               </div>
             </div>
             <div>
-              <span className="text-slate-400 text-[10px] uppercase font-semibold">Estimated Allocation</span>
-              <div className="font-bold text-emerald-500">
+              <span className="text-[#94A3B8] text-[10px] uppercase font-semibold">Estimated Allocation</span>
+              <div className="font-semibold text-[#CDFF8C] tabular-nums">
                 {currencySymbol}{selectedModule.estimatedCost.toLocaleString()}
               </div>
             </div>
           </div>
 
-          <div className="text-[11px] text-slate-300 bg-slate-800/80 p-2.5 rounded-lg border border-slate-700/50 flex items-center space-x-2">
-            <CheckCircle2 className="w-4 h-4 text-indigo-400 flex-shrink-0" />
+          <div className="text-[11px] text-white/90 bg-[#0F3827] p-2.5 rounded-lg border border-[#1E4F3A] flex items-center space-x-2">
+            <CheckCircle2 className="w-4 h-4 text-[#CDFF8C] flex-shrink-0" />
             <span>
-              <strong className="text-slate-100">Milestone Deliverable:</strong> {selectedModule.deliverable}
+              <strong className="text-white">Milestone Deliverable:</strong> {selectedModule.deliverable}
             </span>
           </div>
         </div>
       )}
 
       {/* 5. Phase Legend Strip */}
-      <div className="flex items-center justify-between text-xs text-slate-400 pt-3 border-t border-slate-700/50 flex-wrap gap-3">
+      <div className="flex items-center justify-between text-xs text-[#64707A] pt-3 border-t border-[#DDE3E7] flex-wrap gap-3">
         <div className="flex items-center space-x-4 flex-wrap gap-y-2">
-          <span className="text-slate-200 font-bold text-[11px]">Phase Streams:</span>
+          <span className="text-[#082A1C] font-semibold text-[11px]">Phase Streams:</span>
           {highLevelPhases.map((p) => (
             <div key={p.id} className="flex items-center space-x-1.5 text-[11px]">
               <span className={`w-3 h-3 rounded-sm ${p.color.bar}`}></span>
-              <span className="font-medium text-slate-300">
+              <span className="font-medium text-[#082A1C]">
                 P{p.id}: {p.name.split(':')[1]?.trim() || p.name}
               </span>
             </div>
           ))}
         </div>
 
-        <div className="text-[11px] text-slate-500 italic">
+        <div className="text-[11px] text-[#64707A] italic">
           * Timeline dynamically recalibrates when squad headcount or modules change.
         </div>
       </div>

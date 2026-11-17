@@ -187,19 +187,19 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
   const jsonContent = JSON.stringify({ version: '1.0', exportedAt: new Date().toISOString(), projectState: state }, null, 2);
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-slate-800 border border-slate-700/50 rounded-2xl max-w-4xl w-full max-h-[92vh] overflow-y-auto shadow-2xl my-8 flex flex-col print-container-root">
+    <div className="fixed inset-0 z-50 bg-[#082A1C]/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+      <div className="bg-white border border-[#DDE3E7] rounded-2xl max-w-4xl w-full max-h-[92vh] overflow-y-auto shadow-2xl my-8 flex flex-col print-container-root">
         {/* Action Header Bar (Hidden in Print) */}
-        <div className="p-4 sm:p-5 border-b border-slate-700/50 flex flex-col sm:flex-row sm:items-center justify-between bg-slate-900/60 gap-3 print:hidden">
+        <div className="p-4 sm:p-5 border-b border-[#DDE3E7] flex flex-col sm:flex-row sm:items-center justify-between bg-[#F4F7F9] gap-3 print:hidden">
           <div className="flex items-center space-x-3">
-            <div className="p-2 rounded-xl bg-indigo-500/15 text-indigo-400 border border-indigo-500/30">
+            <div className="p-2 rounded-xl bg-[#082A1C] text-[#CDFF8C]">
               <FileDown className="w-5 h-5" />
             </div>
             <div>
-              <span className="font-bold text-sm text-slate-100 block">
+              <span className="font-bold text-sm text-[#082A1C] block lb-heading">
                 Export & Share Cost Proposal
               </span>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-[#64707A]">
                 Generate formal Statement of Work (SOW), CSV spreadsheets, or Markdown docs
               </p>
             </div>
@@ -209,7 +209,7 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="p-1.5 text-slate-400 hover:text-slate-100 transition-all duration-200 active:scale-[0.98] rounded-lg hover:bg-slate-700"
+              className="p-1.5 text-[#64707A] hover:text-[#082A1C] transition-all duration-200 active:scale-[0.98] rounded-lg hover:bg-[#DDE3E7]/60"
             >
               <X className="w-5 h-5" />
             </button>
@@ -217,14 +217,14 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
         </div>
 
         {/* Tab Navigation (Rule 1 Flat Minimalism, Hidden in Print) */}
-        <div className="px-6 pt-2 bg-slate-900/40 border-b border-slate-800 flex items-center space-x-4 overflow-x-auto print:hidden no-scrollbar">
+        <div className="px-6 pt-2 bg-[#F4F7F9] border-b border-[#DDE3E7] flex items-center space-x-4 overflow-x-auto print:hidden no-scrollbar">
           <button
             type="button"
             onClick={() => setActiveTab('sow')}
             className={`flex items-center space-x-2 px-2 py-2.5 text-xs font-semibold border-b-2 transition-all duration-200 active:scale-[0.98] whitespace-nowrap ${
               activeTab === 'sow'
-                ? 'border-indigo-500 text-slate-100'
-                : 'border-slate-800 text-slate-500 hover:text-slate-300'
+                ? 'border-[#082A1C] text-[#082A1C]'
+                : 'border-transparent text-[#64707A] hover:text-[#082A1C]'
             }`}
           >
             <FileText className="w-4 h-4" />
@@ -236,8 +236,8 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
             onClick={() => setActiveTab('csv')}
             className={`flex items-center space-x-2 px-2 py-2.5 text-xs font-semibold border-b-2 transition-all duration-200 active:scale-[0.98] whitespace-nowrap ${
               activeTab === 'csv'
-                ? 'border-indigo-500 text-slate-100'
-                : 'border-slate-800 text-slate-500 hover:text-slate-300'
+                ? 'border-[#082A1C] text-[#082A1C]'
+                : 'border-transparent text-[#64707A] hover:text-[#082A1C]'
             }`}
           >
             <Table className="w-4 h-4" />
@@ -249,8 +249,8 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
             onClick={() => setActiveTab('markdown')}
             className={`flex items-center space-x-2 px-2 py-2.5 text-xs font-semibold border-b-2 transition-all duration-200 active:scale-[0.98] whitespace-nowrap ${
               activeTab === 'markdown'
-                ? 'border-indigo-500 text-slate-100'
-                : 'border-slate-800 text-slate-500 hover:text-slate-300'
+                ? 'border-[#082A1C] text-[#082A1C]'
+                : 'border-transparent text-[#64707A] hover:text-[#082A1C]'
             }`}
           >
             <FileCode className="w-4 h-4" />
@@ -262,8 +262,8 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
             onClick={() => setActiveTab('json')}
             className={`flex items-center space-x-2 px-2 py-2.5 text-xs font-semibold border-b-2 transition-all duration-200 active:scale-[0.98] whitespace-nowrap ${
               activeTab === 'json'
-                ? 'border-indigo-500 text-slate-100'
-                : 'border-slate-800 text-slate-500 hover:text-slate-300'
+                ? 'border-[#082A1C] text-[#082A1C]'
+                : 'border-transparent text-[#64707A] hover:text-[#082A1C]'
             }`}
           >
             <FileJson className="w-4 h-4" />
@@ -275,8 +275,8 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
         {activeTab === 'sow' && (
           <div className="flex-1 overflow-y-auto">
             {/* Action Bar */}
-            <div className="p-4 bg-slate-800/80 border-b border-slate-700/50 flex flex-wrap items-center justify-between gap-2 print:hidden">
-              <span className="text-xs text-slate-400 font-medium">
+            <div className="p-4 bg-white border-b border-[#DDE3E7] flex flex-wrap items-center justify-between gap-2 print:hidden">
+              <span className="text-xs text-[#64707A] font-medium">
                 Ready for client signoff & PDF presentation
               </span>
 
@@ -284,12 +284,12 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
                 <button
                   type="button"
                   onClick={() => handleCopy(generateMarkdownContent(state, estimate, currencySymbol, exchangeRate), 'sow')}
-                  className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-200 bg-slate-900/70 border border-slate-700/50 hover:bg-slate-700 transition-all duration-200 active:scale-[0.98]"
+                  className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-[#082A1C] bg-[#F4F7F9] border border-[#DDE3E7] hover:border-[#082A1C]/40 transition-all duration-200 active:scale-[0.98]"
                 >
                   {copiedFormat === 'sow' ? (
                     <>
-                      <Check className="w-3.5 h-3.5 text-emerald-500" />
-                      <span className="text-emerald-400">Copied!</span>
+                      <Check className="w-3.5 h-3.5 text-[#144731]" />
+                      <span className="text-[#144731]">Copied!</span>
                     </>
                   ) : (
                     <>
@@ -302,7 +302,7 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
                 <button
                   type="button"
                   onClick={handleDownloadHtml}
-                  className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-indigo-300 bg-indigo-500/15 border border-indigo-500/30 hover:bg-indigo-500/25 transition-all duration-200 active:scale-[0.98]"
+                  className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-[#082A1C] bg-[#F4F7F9] border border-[#DDE3E7] hover:border-[#082A1C]/40 transition-all duration-200 active:scale-[0.98]"
                 >
                   <Download className="w-3.5 h-3.5" />
                   <span>Download HTML</span>
@@ -312,11 +312,11 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
                   type="button"
                   onClick={handleExportPdf}
                   disabled={isGeneratingPdf}
-                  className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 shadow-md shadow-indigo-500/20 transition-all duration-200 active:scale-[0.98]"
+                  className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold lb-btn-primary disabled:opacity-50 shadow-sm active:scale-[0.98]"
                 >
                   {isGeneratingPdf ? (
                     <>
-                      <Sparkles className="w-3.5 h-3.5 animate-spin text-amber-300" />
+                      <Sparkles className="w-3.5 h-3.5 animate-spin text-[#CDFF8C]" />
                       <span>Generating PDF...</span>
                     </>
                   ) : (
@@ -330,7 +330,7 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
                 <button
                   type="button"
                   onClick={handlePrint}
-                  className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-200 bg-slate-700 hover:bg-slate-600 transition-all duration-200 active:scale-[0.98]"
+                  className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-[#082A1C] bg-[#F4F7F9] border border-[#DDE3E7] hover:bg-[#DDE3E7]/50 transition-all duration-200 active:scale-[0.98]"
                 >
                   <Printer className="w-3.5 h-3.5" />
                   <span>Print Dialog</span>
@@ -341,29 +341,29 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
                     type="button"
                     onClick={handleRequestArchitectReview}
                     disabled={vettingRequested}
-                    className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-200 bg-slate-900/70 border border-slate-700/50 hover:bg-slate-700 transition-all duration-200 active:scale-[0.98]"
+                    className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-[#082A1C] bg-[#CDFF8C] hover:bg-[#b8ef73] border border-[#082A1C]/20 transition-all duration-200 active:scale-[0.98]"
                     title="Request an experienced Solutions Architect to formally review your scope"
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                    <Sparkles className="w-3.5 h-3.5 text-[#082A1C]" />
                     <span>{vettingRequested ? 'Review Requested!' : 'Request Architect Vetting'}</span>
                   </button>
                 )}
               </div>
             </div>
 
-            {/* Printable Proposal Paper Sheet (Kept Crisp White for Client-Ready PDF Export) */}
-            <div className="bg-slate-900/70 p-4 sm:p-6 print:p-0 print:bg-white">
-              <div id="printable-proposal" className="printable-document-container p-8 sm:p-12 space-y-8 bg-white text-slate-900 rounded-xl shadow-lg print:shadow-none print:rounded-none print:text-black print:p-0">
+            {/* Printable Proposal Paper Sheet (Crisp White for Client-Ready PDF Export) */}
+            <div className="bg-[#F4F7F9] p-4 sm:p-6 print:p-0 print:bg-white">
+              <div id="printable-proposal" className="printable-document-container p-8 sm:p-12 space-y-8 bg-white text-[#082A1C] rounded-xl border border-[#DDE3E7] shadow-sm print:shadow-none print:border-none print:rounded-none print:text-black print:p-0">
                 {/* Document Letterhead */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-6 border-slate-200 gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-6 border-[#DDE3E7] gap-4">
                   <div>
-                    <div className="text-xs font-bold text-indigo-600 uppercase tracking-widest mb-1">
+                    <div className="text-xs font-mono font-bold text-[#144731] uppercase tracking-widest mb-1">
                       Formal Statement of Work (SOW)
                     </div>
-                    <h1 className="text-2xl sm:text-3xl font-black text-slate-900">
+                    <h1 className="text-2xl sm:text-3xl font-black text-[#082A1C] lb-heading">
                       {state.projectName || 'Software Development Project'}
                     </h1>
-                    <div className="text-xs text-slate-500 mt-1 flex flex-wrap items-center gap-2">
+                    <div className="text-xs text-[#64707A] mt-1 flex flex-wrap items-center gap-2">
                       <span>Date: {currentDate}</span>
                       <span>•</span>
                       <span>Client: {state.clientName || 'N/A'}</span>
@@ -373,39 +373,39 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
                   </div>
 
                   <div className="text-left sm:text-right">
-                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Total Investment Quote</span>
-                    <span className="text-3xl font-black text-slate-900">
+                    <span className="text-[10px] uppercase font-bold text-[#64707A] block">Total Investment Quote</span>
+                    <span className="text-3xl font-black text-[#082A1C] tabular-nums">
                       {currencySymbol}{convertedGrandTotal.toLocaleString()}
                     </span>
-                    <span className="text-[11px] text-slate-500 block">
+                    <span className="text-[11px] font-mono text-[#64707A] block tabular-nums">
                       {estimate.estimatedTimelineWeeks} Weeks (~{estimate.totalHours} hrs)
                     </span>
                   </div>
                 </div>
 
                 {/* Executive Summary Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded-2xl bg-[#F4F7F9] border border-[#DDE3E7] text-xs">
                   <div>
-                    <span className="text-slate-500 block text-[10px] uppercase font-semibold">Development Labor</span>
-                    <span className="font-bold text-sm text-slate-900">
+                    <span className="text-[#64707A] block text-[10px] uppercase font-semibold">Development Labor</span>
+                    <span className="font-mono font-bold text-sm text-[#082A1C] tabular-nums">
                       {currencySymbol}{convertedBaseLabor.toLocaleString()}
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-500 block text-[10px] uppercase font-semibold">Contingency Buffer ({state.contingencyBufferPercent}%)</span>
-                    <span className="font-bold text-sm text-amber-600">
+                    <span className="text-[#64707A] block text-[10px] uppercase font-semibold">Contingency Buffer ({state.contingencyBufferPercent}%)</span>
+                    <span className="font-mono font-bold text-sm text-amber-700 tabular-nums">
                       {currencySymbol}{convertedContingency.toLocaleString()}
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-500 block text-[10px] uppercase font-semibold">Maintenance Retainer</span>
-                    <span className="font-bold text-sm text-indigo-600">
+                    <span className="text-[#64707A] block text-[10px] uppercase font-semibold">Maintenance Retainer</span>
+                    <span className="font-mono font-bold text-sm text-[#082A1C] tabular-nums">
                       {currencySymbol}{convertedMaintenance.toLocaleString()}
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-500 block text-[10px] uppercase font-semibold">Monthly SaaS Infra</span>
-                    <span className="font-bold text-sm text-emerald-600">
+                    <span className="text-[#64707A] block text-[10px] uppercase font-semibold">Monthly SaaS Infra</span>
+                    <span className="font-mono font-bold text-sm text-[#144731] tabular-nums">
                       {currencySymbol}{convertedSaaSMonthly.toLocaleString()}/mo
                     </span>
                   </div>
@@ -413,31 +413,31 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
 
                 {/* Itemized Scope Modules Table */}
                 <div>
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 mb-3 flex items-center space-x-2">
-                    <Layers className="w-4 h-4 text-indigo-600" />
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-[#64707A] mb-3 flex items-center space-x-2">
+                    <Layers className="w-4 h-4 text-[#082A1C]" />
                     <span>Itemized Technical Scope Modules ({state.selectedFeatureIds.length})</span>
                   </h3>
 
-                  <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
+                  <div className="border border-[#DDE3E7] rounded-xl overflow-hidden text-xs">
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="bg-slate-100 text-slate-600 border-b border-slate-200">
+                        <tr className="bg-[#F4F7F9] text-[#082A1C] border-b border-[#DDE3E7]">
                           <th className="p-3 font-semibold">Feature Module</th>
                           <th className="p-3 font-semibold">Category</th>
                           <th className="p-3 font-semibold text-right">Est. Effort</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-200">
+                      <tbody className="divide-y divide-[#DDE3E7]">
                         {state.selectedFeatureIds.map((id) => {
                           const f = FEATURE_CATALOG.find((item) => item.id === id);
                           return (
                             <tr key={id}>
-                              <td className="p-3 font-semibold text-slate-800">
+                              <td className="p-3 font-semibold text-[#082A1C]">
                                 {f?.name || id}
-                                <p className="text-[10px] text-slate-500 font-normal">{f?.description}</p>
+                                <p className="text-[10px] text-[#64707A] font-normal">{f?.description}</p>
                               </td>
-                              <td className="p-3 text-slate-600 capitalize">{f?.category.replace('_', ' ')}</td>
-                              <td className="p-3 text-right font-bold text-indigo-600">
+                              <td className="p-3 text-[#64707A] capitalize">{f?.category.replace('_', ' ')}</td>
+                              <td className="p-3 text-right font-mono font-bold text-[#082A1C] tabular-nums">
                                 {f?.baseHours || 0} hrs
                               </td>
                             </tr>
@@ -450,8 +450,8 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
 
                 {/* Assigned Team Squad */}
                 <div>
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 mb-3 flex items-center space-x-2">
-                    <Users className="w-4 h-4 text-indigo-600" />
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-[#64707A] mb-3 flex items-center space-x-2">
+                    <Users className="w-4 h-4 text-[#082A1C]" />
                     <span>Dedicated Engineering Squad</span>
                   </h3>
 
@@ -461,17 +461,17 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
                       return (
                         <div
                           key={m.id}
-                          className="p-3 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between"
+                          className="p-3 rounded-xl border border-[#DDE3E7] bg-[#F4F7F9] flex items-center justify-between"
                         >
                           <div>
-                            <div className="font-bold text-slate-800">
+                            <div className="font-bold text-[#082A1C]">
                               {m.count}x {r?.title || m.roleId}
                             </div>
-                            <div className="text-[10px] text-slate-500">
+                            <div className="text-[10px] text-[#64707A]">
                               {m.experienceLevel.toUpperCase()} • {m.engagement.replace('_', ' ')}
                             </div>
                           </div>
-                          <span className="text-[10px] font-semibold px-2 py-1 rounded bg-slate-200 text-slate-700">
+                          <span className="text-[10px] font-semibold px-2 py-1 rounded bg-white border border-[#DDE3E7] text-[#082A1C]">
                             {region.flag} {region.name}
                           </span>
                         </div>
@@ -482,7 +482,7 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
 
                 {/* Milestone Payment Roadmap */}
                 <div>
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 mb-3">
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-[#64707A] mb-3">
                     Milestone Payment Schedule
                   </h3>
 
@@ -490,17 +490,17 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
                     {estimate.phaseBreakdown.map((phase, idx) => (
                       <div
                         key={idx}
-                        className="p-3 rounded-xl border border-slate-200 flex items-center justify-between"
+                        className="p-3 rounded-xl border border-[#DDE3E7] flex items-center justify-between"
                       >
                         <div>
-                          <div className="font-bold text-slate-800">{phase.phase}</div>
-                          <div className="text-[10px] text-slate-500">{phase.description}</div>
+                          <div className="font-bold text-[#082A1C]">{phase.phase}</div>
+                          <div className="text-[10px] text-[#64707A]">{phase.description}</div>
                         </div>
                         <div className="text-right">
-                          <div className="font-bold text-indigo-600">
+                          <div className="font-mono font-bold text-[#082A1C] tabular-nums">
                             {currencySymbol}{Math.round(phase.cost * exchangeRate).toLocaleString()}
                           </div>
-                          <div className="text-[10px] text-slate-500">{phase.percentage}% of Base Labor</div>
+                          <div className="text-[10px] text-[#64707A] tabular-nums">{phase.percentage}% of Base Labor</div>
                         </div>
                       </div>
                     ))}
@@ -508,14 +508,14 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
                 </div>
 
                 {/* Terms & Signoff Footer */}
-                <div className="pt-6 border-t border-slate-200 text-[11px] text-slate-500 space-y-2">
-                  <p className="font-semibold text-slate-700">
+                <div className="pt-6 border-t border-[#DDE3E7] text-[11px] text-[#64707A] space-y-2">
+                  <p className="font-semibold text-[#082A1C]">
                     Terms & Acceptance Conditions:
                   </p>
                   <p>
                     This estimate is valid for 30 days. Final contract statement of work will include detailed sprint deliverables, code repository transfer rights, and SLA bug-fix commitments.
                   </p>
-                  <p className="text-[10px] text-slate-400 pt-1 text-center">
+                  <p className="text-[10px] text-[#64707A] pt-1 text-center">
                     &copy; {new Date().getFullYear()} Phaedra Solutions. All rights reserved. Generated with ScopeCraft.
                   </p>
                 </div>
@@ -527,13 +527,13 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
         {/* Tab 2: CSV Spreadsheet Export */}
         {activeTab === 'csv' && (
           <div className="p-6 space-y-4 flex-1 overflow-y-auto">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900/60 p-4 rounded-2xl border border-slate-700/50">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#F4F7F9] p-4 rounded-2xl border border-[#DDE3E7]">
               <div>
-                <h4 className="font-bold text-sm text-slate-100 flex items-center space-x-2">
-                  <Table className="w-4 h-4 text-emerald-500" />
+                <h4 className="font-bold text-sm text-[#082A1C] flex items-center space-x-2">
+                  <Table className="w-4 h-4 text-[#082A1C]" />
                   <span>CSV Spreadsheet Export</span>
                 </h4>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs text-[#64707A] mt-0.5">
                   Compatible with Microsoft Excel, Google Sheets, and CRM tools.
                 </p>
               </div>
@@ -542,12 +542,12 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
                 <button
                   type="button"
                   onClick={() => handleCopy(csvContent, 'csv')}
-                  className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-200 bg-slate-800 border border-slate-700/50 hover:bg-slate-700 transition-all duration-200 active:scale-[0.98]"
+                  className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-[#082A1C] bg-white border border-[#DDE3E7] hover:border-[#082A1C]/40 transition-all duration-200 active:scale-[0.98]"
                 >
                   {copiedFormat === 'csv' ? (
                     <>
-                      <Check className="w-3.5 h-3.5 text-emerald-500" />
-                      <span className="text-emerald-400">Copied!</span>
+                      <Check className="w-3.5 h-3.5 text-[#144731]" />
+                      <span className="text-[#144731]">Copied!</span>
                     </>
                   ) : (
                     <>
@@ -560,7 +560,7 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
                 <button
                   type="button"
                   onClick={handleDownloadCsv}
-                  className="inline-flex items-center space-x-1.5 px-4 py-1.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 shadow-md transition-all duration-200 active:scale-[0.98]"
+                  className="inline-flex items-center space-x-1.5 px-4 py-1.5 rounded-xl text-xs font-bold lb-btn-primary shadow-sm active:scale-[0.98]"
                 >
                   <Download className="w-3.5 h-3.5" />
                   <span>Download .CSV File</span>
@@ -569,7 +569,7 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
             </div>
 
             <div className="relative">
-              <pre className="p-4 rounded-2xl bg-slate-900 text-slate-200 font-mono text-xs overflow-x-auto max-h-[50vh] leading-relaxed border border-slate-800">
+              <pre className="p-4 rounded-2xl bg-[#082A1C] text-white/95 font-mono text-xs overflow-x-auto max-h-[50vh] leading-relaxed border border-[#1E4F3A]">
                 {csvContent}
               </pre>
             </div>
@@ -579,13 +579,13 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
         {/* Tab 3: Markdown Document Export */}
         {activeTab === 'markdown' && (
           <div className="p-6 space-y-4 flex-1 overflow-y-auto">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900/60 p-4 rounded-2xl border border-slate-700/50">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#F4F7F9] p-4 rounded-2xl border border-[#DDE3E7]">
               <div>
-                <h4 className="font-bold text-sm text-slate-100 flex items-center space-x-2">
-                  <FileCode className="w-4 h-4 text-indigo-400" />
+                <h4 className="font-bold text-sm text-[#082A1C] flex items-center space-x-2">
+                  <FileCode className="w-4 h-4 text-[#082A1C]" />
                   <span>Markdown Proposal Document</span>
                 </h4>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs text-[#64707A] mt-0.5">
                   Formatted for Notion, GitHub, Slack, and developer documentation.
                 </p>
               </div>
@@ -594,12 +594,12 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
                 <button
                   type="button"
                   onClick={() => handleCopy(markdownContent, 'markdown')}
-                  className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-200 bg-slate-800 border border-slate-700/50 hover:bg-slate-700 transition-all duration-200 active:scale-[0.98]"
+                  className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-[#082A1C] bg-white border border-[#DDE3E7] hover:border-[#082A1C]/40 transition-all duration-200 active:scale-[0.98]"
                 >
                   {copiedFormat === 'markdown' ? (
                     <>
-                      <Check className="w-3.5 h-3.5 text-emerald-500" />
-                      <span className="text-emerald-400">Copied!</span>
+                      <Check className="w-3.5 h-3.5 text-[#144731]" />
+                      <span className="text-[#144731]">Copied!</span>
                     </>
                   ) : (
                     <>
@@ -612,7 +612,7 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
                 <button
                   type="button"
                   onClick={handleDownloadMarkdown}
-                  className="inline-flex items-center space-x-1.5 px-4 py-1.5 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 shadow-md shadow-indigo-500/20 transition-all duration-200 active:scale-[0.98]"
+                  className="inline-flex items-center space-x-1.5 px-4 py-1.5 rounded-xl text-xs font-bold lb-btn-primary shadow-sm active:scale-[0.98]"
                 >
                   <Download className="w-3.5 h-3.5" />
                   <span>Download .MD File</span>
@@ -621,7 +621,7 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
             </div>
 
             <div className="relative">
-              <pre className="p-4 rounded-2xl bg-slate-900 text-slate-200 font-mono text-xs overflow-x-auto max-h-[50vh] leading-relaxed border border-slate-800 whitespace-pre-wrap">
+              <pre className="p-4 rounded-2xl bg-[#082A1C] text-white/95 font-mono text-xs overflow-x-auto max-h-[50vh] leading-relaxed border border-[#1E4F3A] whitespace-pre-wrap">
                 {markdownContent}
               </pre>
             </div>
@@ -632,23 +632,23 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
         {activeTab === 'json' && (
           <div className="p-6 space-y-6 flex-1 overflow-y-auto">
             {importStatusMessage && (
-              <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold flex items-center space-x-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+              <div className="p-3.5 rounded-xl bg-[#CDFF8C] border border-[#082A1C]/20 text-[#082A1C] text-xs font-semibold flex items-center space-x-2">
+                <CheckCircle2 className="w-4 h-4 text-[#082A1C] flex-shrink-0" />
                 <span>{importStatusMessage}</span>
               </div>
             )}
 
             {importErrorMessage && (
-              <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-semibold flex items-center space-x-2">
-                <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0" />
+              <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold flex items-center space-x-2">
+                <AlertTriangle className="w-4 h-4 text-red-600 flex-shrink-0" />
                 <span>{importErrorMessage}</span>
               </div>
             )}
 
-            <div className="p-5 rounded-2xl border-2 border-dashed border-indigo-500/40 bg-indigo-500/10 flex flex-col items-center justify-center text-center space-y-2">
-              <Upload className="w-8 h-8 text-indigo-400" />
-              <h4 className="font-bold text-sm text-slate-100">Restore or Import Saved Estimate JSON</h4>
-              <p className="text-xs text-slate-400 max-w-md">
+            <div className="p-5 rounded-2xl border-2 border-dashed border-[#082A1C]/40 bg-[#F4F7F9] flex flex-col items-center justify-center text-center space-y-2">
+              <Upload className="w-8 h-8 text-[#082A1C]" />
+              <h4 className="font-bold text-sm text-[#082A1C]">Restore or Import Saved Estimate JSON</h4>
+              <p className="text-xs text-[#64707A] max-w-md">
                 Upload a previously exported `.json` file to instantly restore feature choices, team headcount, and pricing calculations.
               </p>
 
@@ -663,7 +663,7 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="mt-2 inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md shadow-indigo-500/20 transition-all duration-200 active:scale-[0.98] cursor-pointer"
+                className="mt-2 inline-flex items-center space-x-2 px-4 py-2 rounded-xl lb-btn-primary font-bold text-xs shadow-sm active:scale-[0.98] cursor-pointer"
               >
                 <Upload className="w-3.5 h-3.5" />
                 <span>Upload JSON File</span>
@@ -671,13 +671,13 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
             </div>
 
             <div className="space-y-3">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900/60 p-4 rounded-2xl border border-slate-700/50">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#F4F7F9] p-4 rounded-2xl border border-[#DDE3E7]">
                 <div>
-                  <h4 className="font-bold text-sm text-slate-100 flex items-center space-x-2">
-                    <FileJson className="w-4 h-4 text-indigo-400" />
+                  <h4 className="font-bold text-sm text-[#082A1C] flex items-center space-x-2">
+                    <FileJson className="w-4 h-4 text-[#082A1C]" />
                     <span>Raw JSON State Backup</span>
                   </h4>
-                  <p className="text-xs text-slate-400 mt-0.5">
+                  <p className="text-xs text-[#64707A] mt-0.5">
                     Backup full project state parameters for future reload or developer API usage.
                   </p>
                 </div>
@@ -686,12 +686,12 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
                   <button
                     type="button"
                     onClick={() => handleCopy(jsonContent, 'json')}
-                    className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-200 bg-slate-800 border border-slate-700/50 hover:bg-slate-700 transition-all duration-200 active:scale-[0.98]"
+                    className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-[#082A1C] bg-white border border-[#DDE3E7] hover:border-[#082A1C]/40 transition-all duration-200 active:scale-[0.98]"
                   >
                     {copiedFormat === 'json' ? (
                       <>
-                        <Check className="w-3.5 h-3.5 text-emerald-500" />
-                        <span className="text-emerald-400">Copied!</span>
+                        <Check className="w-3.5 h-3.5 text-[#144731]" />
+                        <span className="text-[#144731]">Copied!</span>
                       </>
                     ) : (
                       <>
@@ -704,7 +704,7 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
                   <button
                     type="button"
                     onClick={handleDownloadJson}
-                    className="inline-flex items-center space-x-1.5 px-4 py-1.5 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 shadow-md shadow-indigo-500/20 transition-all duration-200 active:scale-[0.98]"
+                    className="inline-flex items-center space-x-1.5 px-4 py-1.5 rounded-xl text-xs font-bold lb-btn-primary shadow-sm active:scale-[0.98]"
                   >
                     <Download className="w-3.5 h-3.5" />
                     <span>Download .JSON State</span>
@@ -712,7 +712,7 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
                 </div>
               </div>
 
-              <pre className="p-4 rounded-2xl bg-slate-900 text-emerald-400/90 font-mono text-xs overflow-x-auto max-h-[35vh] leading-relaxed border border-slate-800">
+              <pre className="p-4 rounded-2xl bg-[#082A1C] text-[#CDFF8C] font-mono text-xs overflow-x-auto max-h-[35vh] leading-relaxed border border-[#1E4F3A]">
                 {jsonContent}
               </pre>
             </div>
