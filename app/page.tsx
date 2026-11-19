@@ -95,26 +95,21 @@ function useStoredLeadProfile(): LeadProfile | null {
 }
 
 const INITIAL_PROJECT_STATE: ProjectState = {
-  projectName: 'SaaS Platform MVP',
-  clientName: 'Acme Corp',
+  projectName: '',
+  clientName: '',
   targetTimelineWeeks: 12,
-  platforms: ['web'],
+  platforms: [],
   complexity: 'standard',
   designLevel: 'standard_ui',
   qaLevel: 'standard',
   maintenancePeriod: '3_months',
-  selectedFeatureIds: ['auth_basic', 'auth_sso', 'pay_stripe', 'cms_admin', 'analytics_charts'],
+  selectedFeatureIds: [],
   regionId: 'phaedra',
-  team: generateRecommendedTeam(
-    ['auth_basic', 'auth_sso', 'pay_stripe', 'cms_admin', 'analytics_charts'],
-    ['web'],
-    'standard',
-    'standard_ui'
-  ),
+  team: [],
   contingencyBufferPercent: 15,
   profitMarginPercent: 10,
   customParams: [],
-  selectedSaaSAddons: ['aws_gcp', 'database_managed', 'ai_api_budget', 'vercel_cdn'],
+  selectedSaaSAddons: [],
   engagementModel: 'dedicated_team'
 };
 
@@ -134,6 +129,8 @@ export default function Home() {
   const [viewMode, setViewMode] = useState<ViewMode>('combined');
   const [currency, setCurrency] = useState<CurrencyConfig>(CURRENCIES[0]);
   const [resetCounter, setResetCounter] = useState(0);
+  const [activePresetTitle, setActivePresetTitle] = useState<string | null>(null);
+  const [wizardStep, setWizardStep] = useState<1 | 2 | 3 | 4 | 5>(1);
 
   // Modals
   const [isPresetModalOpen, setIsPresetModalOpen] = useState(false);
@@ -185,14 +182,14 @@ export default function Home() {
     notifyStorageListeners();
     setIsStudioUnlocked(false);
     setActiveLead(null);
+    setActivePresetTitle(null);
+    setWizardStep(1);
     setProjectState({
       ...INITIAL_PROJECT_STATE,
-      team: generateRecommendedTeam(
-        INITIAL_PROJECT_STATE.selectedFeatureIds,
-        INITIAL_PROJECT_STATE.platforms,
-        INITIAL_PROJECT_STATE.complexity,
-        INITIAL_PROJECT_STATE.designLevel
-      ),
+      platforms: [],
+      selectedFeatureIds: [],
+      team: [],
+      selectedSaaSAddons: [],
       customParams: []
     });
     setViewMode('combined');
@@ -216,8 +213,21 @@ export default function Home() {
     });
   };
 
+  // Clear Preset Back to Zero Custom State
+  const handleClearPreset = () => {
+    setActivePresetTitle(null);
+    setProjectState({
+      ...INITIAL_PROJECT_STATE,
+      platforms: [],
+      selectedFeatureIds: [],
+      team: [],
+      selectedSaaSAddons: [],
+      customParams: []
+    });
+  };
+
   // Load Preset
-  const handleSelectPreset = (presetState: Partial<ProjectState>) => {
+  const handleSelectPreset = (presetState: Partial<ProjectState>, presetTitle?: string) => {
     const fullState: ProjectState = {
       ...INITIAL_PROJECT_STATE,
       ...presetState,
@@ -229,6 +239,10 @@ export default function Home() {
       )
     };
     setProjectState(fullState);
+    setActivePresetTitle(presetTitle || presetState.projectName || 'Industry Preset');
+    if (!effectiveUnlocked && wizardStep === 1) {
+      setWizardStep(2);
+    }
   };
 
   // Calculate Estimate
@@ -266,6 +280,10 @@ export default function Home() {
               initialState={projectState}
               onStateChange={handleUpdateProjectState}
               onOpenPresetModal={() => setIsPresetModalOpen(true)}
+              activePresetTitle={activePresetTitle}
+              onClearPreset={handleClearPreset}
+              currentStep={wizardStep}
+              onStepChange={setWizardStep}
               onComplete={(lead, updatedState) => {
                 setActiveLead(lead);
                 setProjectState(updatedState);
@@ -404,7 +422,6 @@ export default function Home() {
           estimate={estimate}
           currencySymbol={currency.symbol}
           exchangeRate={currency.exchangeRate}
-          onImportState={(newState) => setProjectState(newState)}
           leadProfile={effectiveLead}
         />
       )}

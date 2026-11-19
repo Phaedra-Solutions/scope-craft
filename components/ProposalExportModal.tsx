@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { ProjectState, EstimateResult, LeadProfile } from '@/types/estimator';
 import { FEATURE_CATALOG, TEAM_ROLES, REGIONS } from '@/lib/estimator-data';
 import { sendLeadToGHL } from '@/lib/ghl-sync';
@@ -22,12 +22,9 @@ import {
   Table,
   FileCode,
   FileJson,
-  Upload,
   Sparkles,
   Layers,
   Users,
-  CheckCircle2,
-  AlertTriangle,
   FileDown
 } from 'lucide-react';
 
@@ -40,7 +37,6 @@ interface ProposalExportModalProps {
   estimate: EstimateResult;
   currencySymbol: string;
   exchangeRate: number;
-  onImportState?: (state: ProjectState) => void;
   leadProfile?: LeadProfile | null;
 }
 
@@ -51,16 +47,12 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
   estimate,
   currencySymbol,
   exchangeRate,
-  onImportState,
   leadProfile
 }) => {
   const [activeTab, setActiveTab] = useState<ExportTab>('sow');
   const [copiedFormat, setCopiedFormat] = useState<string | null>(null);
-  const [importStatusMessage, setImportStatusMessage] = useState<string | null>(null);
-  const [importErrorMessage, setImportErrorMessage] = useState<string | null>(null);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [vettingRequested, setVettingRequested] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!isOpen) return null;
 
@@ -154,34 +146,6 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
     downloadFile(`${sanitizeFilename(state.projectName)}_State.json`, jsonStr, 'application/json');
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setImportErrorMessage(null);
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const parsed = JSON.parse(event.target?.result as string);
-        const importedState: ProjectState = parsed.projectState || parsed;
-
-        if (!importedState.projectName || !Array.isArray(importedState.selectedFeatureIds)) {
-          throw new Error('Invalid project state format');
-        }
-
-        if (onImportState) {
-          onImportState(importedState);
-          setImportStatusMessage(`Successfully restored estimate for "${importedState.projectName}"!`);
-          setTimeout(() => setImportStatusMessage(null), 4000);
-        }
-      } catch {
-        setImportErrorMessage('Failed to parse JSON file. Please ensure it is a valid project estimate export.');
-      }
-    };
-    reader.readAsText(file);
-    if (e.target) e.target.value = '';
-  };
-
   const csvContent = generateCsvContent(state, estimate, currencySymbol, exchangeRate);
   const markdownContent = generateMarkdownContent(state, estimate, currencySymbol, exchangeRate);
   const jsonContent = JSON.stringify({ version: '1.0', exportedAt: new Date().toISOString(), projectState: state }, null, 2);
@@ -267,7 +231,7 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
             }`}
           >
             <FileJson className="w-4 h-4" />
-            <span>JSON State & Restore</span>
+            <span>JSON Export</span>
           </button>
         </div>
 
@@ -628,48 +592,9 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
           </div>
         )}
 
-        {/* Tab 4: JSON State & Backup Import */}
+        {/* Tab 4: JSON State Backup */}
         {activeTab === 'json' && (
           <div className="p-6 space-y-6 flex-1 overflow-y-auto">
-            {importStatusMessage && (
-              <div className="p-3.5 rounded-xl bg-[#CDFF8C] border border-[#082A1C]/20 text-[#082A1C] text-xs font-semibold flex items-center space-x-2">
-                <CheckCircle2 className="w-4 h-4 text-[#082A1C] flex-shrink-0" />
-                <span>{importStatusMessage}</span>
-              </div>
-            )}
-
-            {importErrorMessage && (
-              <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold flex items-center space-x-2">
-                <AlertTriangle className="w-4 h-4 text-red-600 flex-shrink-0" />
-                <span>{importErrorMessage}</span>
-              </div>
-            )}
-
-            <div className="p-5 rounded-2xl border-2 border-dashed border-[#082A1C]/40 bg-[#F4F7F9] flex flex-col items-center justify-center text-center space-y-2">
-              <Upload className="w-8 h-8 text-[#082A1C]" />
-              <h4 className="font-bold text-sm text-[#082A1C]">Restore or Import Saved Estimate JSON</h4>
-              <p className="text-xs text-[#64707A] max-w-md">
-                Upload a previously exported `.json` file to instantly restore feature choices, team headcount, and pricing calculations.
-              </p>
-
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".json"
-                onChange={handleFileUpload}
-                className="hidden"
-              />
-
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="mt-2 inline-flex items-center space-x-2 px-4 py-2 rounded-xl lb-btn-primary font-bold text-xs shadow-sm active:scale-[0.98] cursor-pointer"
-              >
-                <Upload className="w-3.5 h-3.5" />
-                <span>Upload JSON File</span>
-              </button>
-            </div>
-
             <div className="space-y-3">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#F4F7F9] p-4 rounded-2xl border border-[#DDE3E7]">
                 <div>

@@ -41,7 +41,11 @@ import {
   Compass,
   FileText,
   Rocket,
-  ExternalLink
+  ExternalLink,
+  Sliders,
+  RotateCcw,
+  Zap,
+  TrendingDown
 } from 'lucide-react';
 
 interface GuidedScopingWizardProps {
@@ -49,6 +53,10 @@ interface GuidedScopingWizardProps {
   onComplete: (lead: LeadProfile, updatedState: ProjectState) => void;
   onStateChange?: (updated: Partial<ProjectState>) => void;
   onOpenPresetModal?: () => void;
+  activePresetTitle?: string | null;
+  onClearPreset?: () => void;
+  currentStep?: 1 | 2 | 3 | 4 | 5;
+  onStepChange?: (step: 1 | 2 | 3 | 4 | 5) => void;
   currencySymbol: string;
   exchangeRate: number;
 }
@@ -58,10 +66,17 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
   onComplete,
   onStateChange,
   onOpenPresetModal,
+  activePresetTitle = null,
+  onClearPreset,
+  currentStep: controlledStep,
+  onStepChange,
   currencySymbol,
   exchangeRate
 }) => {
-  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5>(1);
+  const [internalStep, setInternalStep] = useState<1 | 2 | 3 | 4 | 5>(1);
+  const currentStep = controlledStep ?? internalStep;
+  const setCurrentStep = onStepChange ?? setInternalStep;
+
   const [internalState, setInternalState] = useState<ProjectState>(initialState);
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
@@ -108,14 +123,13 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
   const handleTogglePlatform = (platform: ProjectPlatform) => {
     const current = [...state.platforms];
     const exists = current.includes(platform);
-    let updated: ProjectPlatform[];
-    if (exists) {
-      if (current.length === 1) return;
-      updated = current.filter((p) => p !== platform);
-    } else {
-      updated = [...current, platform];
-    }
-    const recTeam = generateRecommendedTeam(state.selectedFeatureIds, updated, state.complexity, state.designLevel);
+    const updated = exists
+      ? current.filter((p) => p !== platform)
+      : [...current, platform];
+    const shouldGenerateTeam = state.selectedFeatureIds.length > 0 || state.team.length > 0;
+    const recTeam = shouldGenerateTeam
+      ? generateRecommendedTeam(state.selectedFeatureIds, updated, state.complexity, state.designLevel)
+      : [];
     updateState({ platforms: updated, team: recTeam });
   };
 
@@ -124,7 +138,10 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
     const current = [...state.selectedFeatureIds];
     const exists = current.includes(featureId);
     const updated = exists ? current.filter((id) => id !== featureId) : [...current, featureId];
-    const recTeam = generateRecommendedTeam(updated, state.platforms, state.complexity, state.designLevel);
+    const recTeam =
+      updated.length > 0
+        ? generateRecommendedTeam(updated, state.platforms, state.complexity, state.designLevel)
+        : [];
     updateState({ selectedFeatureIds: updated, team: recTeam });
   };
 
@@ -450,29 +467,139 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
             </div>
           </div>
 
-          {/* Step 1 Actions */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-[#DDE3E7]">
-            {onOpenPresetModal ? (
-              <button
-                type="button"
-                onClick={onOpenPresetModal}
-                className="inline-flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-[#082A1C] bg-[#F4F7F9] hover:bg-[#DDE3E7]/60 border border-[#DDE3E7] transition-all duration-200 active:scale-[0.98]"
-              >
-                <BookmarkPlus className="w-4 h-4 text-[#082A1C]" />
-                <span>Browse Industry Presets</span>
-              </button>
-            ) : (
-              <div />
-            )}
+          {/* Step 1: Choose Scoping Path (Industry Preset vs Custom from Zero) */}
+          <div className="pt-5 border-t border-[#DDE3E7] space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h3 className="text-base font-bold text-[#082A1C] lb-heading">
+                  Choose How You Would Like to Begin
+                </h3>
+                <p className="text-xs text-[#64707A] mt-0.5">
+                  No preset is selected by default—all counters start at zero. Load an industry preset if you like, or move forward with a custom configuration.
+                </p>
+              </div>
+              <span className="text-[11px] font-mono font-semibold px-2.5 py-1 rounded-md bg-[#F4F7F9] text-[#082A1C] border border-[#DDE3E7] self-start sm:self-auto">
+                {activePresetTitle ? `Preset: ${activePresetTitle}` : 'No Preset Selected (0)'}
+              </span>
+            </div>
 
-            <button
-              type="button"
-              onClick={() => setCurrentStep(2)}
-              className="inline-flex items-center justify-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold lb-btn-primary shadow-sm active:scale-[0.98]"
-            >
-              <span>Start Scoping Foundations (Step 2)</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Option A: Select an Industry Preset */}
+              <div
+                className={`p-5 rounded-xl border-2 flex flex-col justify-between space-y-4 transition-all duration-200 ${
+                  activePresetTitle
+                    ? 'bg-white border-[#082A1C] shadow-md shadow-[#082A1C]/5'
+                    : 'bg-[#F4F7F9] border-[#DDE3E7]'
+                }`}
+              >
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="inline-flex items-center space-x-2">
+                      <div className="p-2 rounded-lg bg-white border border-[#DDE3E7] text-[#082A1C]">
+                        <BookmarkPlus className="w-4 h-4" />
+                      </div>
+                      <h4 className="text-sm font-bold text-[#082A1C]">
+                        Option 1: Select an Industry Preset
+                      </h4>
+                    </div>
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-white border border-[#DDE3E7] text-[#64707A]">
+                      Optional
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#64707A] leading-relaxed">
+                    {activePresetTitle
+                      ? `Currently loaded with "${activePresetTitle}". You can continue with these pre-configured selections or switch templates anytime.`
+                      : 'Want a quick head start? Pick a benchmark template (SaaS, Mobile, AI, FinTech, or E-Commerce) to pre-populate platforms, modules, and roles.'}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  {onOpenPresetModal && (
+                    <button
+                      type="button"
+                      onClick={onOpenPresetModal}
+                      className="inline-flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl text-xs font-bold text-[#082A1C] bg-white hover:bg-[#CDFF8C]/40 border border-[#082A1C]/25 transition-all duration-200 active:scale-[0.98] cursor-pointer"
+                    >
+                      <BookmarkPlus className="w-4 h-4 text-[#082A1C]" />
+                      <span>{activePresetTitle ? 'Change Industry Preset' : 'Select Industry Preset'}</span>
+                    </button>
+                  )}
+                  {activePresetTitle && onClearPreset && (
+                    <button
+                      type="button"
+                      onClick={onClearPreset}
+                      className="inline-flex items-center space-x-1.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-[#64707A] hover:text-[#082A1C] bg-white border border-[#DDE3E7] transition-all duration-200 active:scale-[0.98] cursor-pointer"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      <span>Clear Preset</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Option B: Move Forward with Custom Options */}
+              <div
+                className={`p-5 rounded-xl border-2 flex flex-col justify-between space-y-4 transition-all duration-200 ${
+                  !activePresetTitle
+                    ? 'bg-white border-[#082A1C] shadow-md shadow-[#082A1C]/5'
+                    : 'bg-[#F4F7F9] border-[#DDE3E7]'
+                }`}
+              >
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="inline-flex items-center space-x-2">
+                      <div className="p-2 rounded-lg bg-[#082A1C] text-[#CDFF8C]">
+                        <Sliders className="w-4 h-4" />
+                      </div>
+                      <h4 className="text-sm font-bold text-[#082A1C]">
+                        Option 2: Custom Configuration
+                      </h4>
+                    </div>
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#CDFF8C] text-[#082A1C]">
+                      Starts at 0
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#64707A] leading-relaxed">
+                    Move forward from a blank slate and tailor every platform, feature module, cloud add-on, and engineering role to your exact product roadmap.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  {activePresetTitle ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setCurrentStep(2)}
+                        className="inline-flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-bold lb-btn-primary shadow-sm active:scale-[0.98]"
+                      >
+                        <span>Continue with Preset (Step 2)</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (onClearPreset) onClearPreset();
+                          setCurrentStep(2);
+                        }}
+                        className="inline-flex items-center justify-center space-x-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold text-[#082A1C] bg-white border border-[#DDE3E7] hover:border-[#082A1C] transition-all duration-200 active:scale-[0.98] cursor-pointer"
+                      >
+                        <span>Start Custom Instead</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setCurrentStep(2)}
+                      className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3 rounded-xl text-xs sm:text-sm font-bold lb-btn-primary shadow-sm active:scale-[0.98]"
+                    >
+                      <span>Move Forward with Custom Option (Step 2)</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -505,9 +632,20 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#082A1C] mb-1.5">
-                Industry Scope Presets
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-semibold text-[#082A1C]">
+                  Industry Scope Presets (Optional)
+                </label>
+                {activePresetTitle && onClearPreset && (
+                  <button
+                    type="button"
+                    onClick={onClearPreset}
+                    className="text-[11px] font-semibold text-[#64707A] hover:text-[#082A1C] underline underline-offset-2 cursor-pointer"
+                  >
+                    Clear to Custom (0)
+                  </button>
+                )}
+              </div>
               <button
                 type="button"
                 onClick={onOpenPresetModal}
@@ -516,10 +654,12 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
               >
                 <span className="flex items-center space-x-2 truncate">
                   <BookmarkPlus className="w-4 h-4 text-[#082A1C] flex-shrink-0" />
-                  <span className="truncate">Load Industry Preset</span>
+                  <span className="truncate">
+                    {activePresetTitle ? activePresetTitle : 'No Preset (Custom Scope)'}
+                  </span>
                 </span>
                 <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-[#CDFF8C] text-[#082A1C] flex-shrink-0">
-                  Presets
+                  {activePresetTitle ? 'Switch' : 'Presets'}
                 </span>
               </button>
             </div>
@@ -867,9 +1007,87 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-1">
               {REGIONS.map((r) => {
                 const isSelected = state.regionId === r.id;
+                const isScopeCraft = r.id === 'phaedra';
+                const convertedSeniorRate = Math.round(r.avgSeniorRate * exchangeRate);
+                const usBaselineRate = Math.round(110 * exchangeRate);
+                const savingsPercent = Math.round((1 - r.rateMultiplier) * 100);
+
+                if (isScopeCraft) {
+                  return (
+                    <button
+                      key={r.id}
+                      type="button"
+                      role="radio"
+                      aria-checked={isSelected}
+                      onClick={() => updateState({ regionId: r.id })}
+                      className={`sm:col-span-2 lg:col-span-4 p-4 sm:p-5 rounded-xl text-left transition-all duration-200 active:scale-[0.99] cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
+                        isSelected
+                          ? 'bg-[#082A1C] text-white border-2 border-[#082A1C] ring-2 ring-[#CDFF8C] shadow-lg shadow-[#082A1C]/15'
+                          : 'bg-[#ECF5EF] text-[#082A1C] border-2 border-[#082A1C]/45 hover:border-[#082A1C] hover:bg-white shadow-sm'
+                      }`}
+                    >
+                      <div className="flex items-start space-x-3.5 min-w-0">
+                        <div
+                          className={`p-2.5 rounded-xl flex-shrink-0 border ${
+                            isSelected
+                              ? 'bg-[#0F3827] border-[#1E4F3A] text-[#CDFF8C]'
+                              : 'bg-[#082A1C] border-[#082A1C] text-[#CDFF8C]'
+                          }`}
+                        >
+                          <Zap className="w-5 h-5" />
+                        </div>
+                        <div className="min-w-0 space-y-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className={`font-bold text-sm sm:text-base lb-heading ${isSelected ? 'text-white' : 'text-[#082A1C]'}`}>
+                              {r.name}
+                            </span>
+                            <span className="inline-flex items-center space-x-1 text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#CDFF8C] text-[#082A1C]">
+                              <TrendingDown className="w-3 h-3" />
+                              <span>Save {savingsPercent}% vs US/Canada</span>
+                            </span>
+                          </div>
+                          <p className={`text-xs leading-relaxed ${isSelected ? 'text-[#94A3B8]' : 'text-[#4B5862]'}`}>
+                            Senior dedicated agile engineering squads delivering Tier-1 velocity at just{' '}
+                            <strong className={isSelected ? 'text-white' : 'text-[#082A1C]'}>
+                              30% of onshore agency rates
+                            </strong>
+                            .
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className={`flex items-center justify-between sm:justify-end gap-4 pt-3 sm:pt-0 border-t sm:border-t-0 flex-shrink-0 ${isSelected ? 'border-[#1E4F3A]' : 'border-[#DDE3E7]'}`}>
+                        <div className="text-left sm:text-right">
+                          <div className={`text-xs font-mono font-bold tabular-nums ${isSelected ? 'text-[#CDFF8C]' : 'text-[#082A1C]'}`}>
+                            ~{currencySymbol}{convertedSeniorRate.toLocaleString()}/hr avg
+                          </div>
+                          <div className={`text-[11px] font-mono line-through tabular-nums ${isSelected ? 'text-[#94A3B8]' : 'text-[#64707A]'}`}>
+                            {currencySymbol}{usBaselineRate.toLocaleString()}/hr US/CA
+                          </div>
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                          <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-md bg-[#CDFF8C] text-[#082A1C] tabular-nums">
+                            {(r.rateMultiplier * 100).toFixed(0)}% Index
+                          </span>
+                          <div
+                            className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                              isSelected
+                                ? 'border-[#CDFF8C] bg-[#CDFF8C] text-[#082A1C]'
+                                : 'border-[#082A1C]/40 bg-white'
+                            }`}
+                          >
+                            {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                          </div>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                }
+
                 return (
                   <button
                     key={r.id}
@@ -899,14 +1117,34 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
 
           {/* Team Squad Headcount Table */}
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <h3 className="text-sm font-bold text-[#082A1C] flex items-center space-x-2">
                 <Users className="w-4 h-4 text-[#082A1C]" />
-                <span>Recommended Engineering Squad Roles</span>
+                <span>Engineering Squad Roles</span>
               </h3>
-              <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-md bg-[#CDFF8C] text-[#082A1C] tabular-nums">
-                Total Team: {state.team.reduce((acc, t) => acc + t.count, 0)} Specialists
-              </span>
+              <div className="flex items-center space-x-2">
+                {state.team.length === 0 && state.selectedFeatureIds.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      updateState({
+                        team: generateRecommendedTeam(
+                          state.selectedFeatureIds,
+                          state.platforms,
+                          state.complexity,
+                          state.designLevel
+                        )
+                      })
+                    }
+                    className="text-xs font-semibold px-2.5 py-1 rounded-md bg-[#F4F7F9] hover:bg-[#DDE3E7]/60 text-[#082A1C] border border-[#DDE3E7] transition-all duration-200 active:scale-[0.98] cursor-pointer"
+                  >
+                    Auto-Fill Recommended Squad
+                  </button>
+                )}
+                <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-md bg-[#CDFF8C] text-[#082A1C] tabular-nums">
+                  Total Team: {state.team.reduce((acc, t) => acc + t.count, 0)} Specialists
+                </span>
+              </div>
             </div>
 
             <div className="border border-[#DDE3E7] rounded-xl divide-y divide-[#DDE3E7] overflow-hidden bg-[#F4F7F9]">

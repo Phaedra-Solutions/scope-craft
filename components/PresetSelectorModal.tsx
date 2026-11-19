@@ -16,7 +16,7 @@ import {
 interface PresetSelectorModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectPreset: (presetState: Partial<ProjectState>) => void;
+  onSelectPreset: (presetState: Partial<ProjectState>, presetTitle?: string) => void;
 }
 
 const PRESET_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -66,7 +66,7 @@ export const PresetSelectorModal: React.FC<PresetSelectorModalProps> = ({
                 key={tmpl.id}
                 type="button"
                 onClick={() => {
-                  onSelectPreset(tmpl.state);
+                  onSelectPreset(tmpl.state, tmpl.title);
                   onClose();
                 }}
                 className="w-full p-4 rounded-xl bg-[#F4F7F9] border-2 border-[#DDE3E7] hover:border-[#082A1C] hover:bg-white transition-all duration-200 active:scale-[0.98] cursor-pointer flex items-center justify-between group text-left"

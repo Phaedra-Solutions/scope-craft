@@ -153,10 +153,7 @@ export function generateRecommendedTeam(
 export function calculateEstimate(state: ProjectState): EstimateResult {
   // 1. Calculate Base Feature Hours
   const selectedFeatures = FEATURE_CATALOG.filter((f) => state.selectedFeatureIds.includes(f.id));
-  let baseFeatureHours = selectedFeatures.reduce((sum, f) => sum + f.baseHours, 0);
-  if (baseFeatureHours === 0) {
-    baseFeatureHours = 120; // Default minimum baseline MVP frame
-  }
+  const baseFeatureHours = selectedFeatures.reduce((sum, f) => sum + f.baseHours, 0);
 
   // 2. Platform Multipliers
   let platformMult = 1.0;
@@ -199,12 +196,7 @@ export function calculateEstimate(state: ProjectState): EstimateResult {
   let totalWeightedRateSum = 0;
   let totalActiveHeadcount = 0;
 
-  const activeTeam = state.team.length > 0 ? state.team : generateRecommendedTeam(
-    state.selectedFeatureIds,
-    state.platforms,
-    state.complexity,
-    state.designLevel
-  );
+  const activeTeam = state.team;
 
   const costByRoleCategory: Record<RoleCategory, number> = {
     engineering: 0,
@@ -250,16 +242,18 @@ export function calculateEstimate(state: ProjectState): EstimateResult {
     totalActiveHeadcount += member.count;
   });
 
-  const effectiveHourlyRate = totalActiveHeadcount > 0 ? Math.round(totalWeightedRateSum / totalActiveHeadcount) : 75;
+  const effectiveHourlyRate = totalActiveHeadcount > 0 ? Math.round(totalWeightedRateSum / totalActiveHeadcount) : 0;
 
   // 7. Timeline Calculations
-  const calculatedTimelineMonths = teamTotalMonthlyCapacityHours > 0
-    ? Math.max(0.75, Math.round((totalHours / teamTotalMonthlyCapacityHours) * 10) / 10)
-    : 3;
-  const estimatedTimelineWeeks = Math.round(calculatedTimelineMonths * 4.33);
+  const calculatedTimelineMonths =
+    totalHours > 0 && teamTotalMonthlyCapacityHours > 0
+      ? Math.max(0.75, Math.round((totalHours / teamTotalMonthlyCapacityHours) * 10) / 10)
+      : 0;
+  const estimatedTimelineWeeks =
+    calculatedTimelineMonths > 0 ? Math.round(calculatedTimelineMonths * 4.33) : 0;
 
   let velocityStatus: EstimateResult['velocityStatus'] = 'balanced';
-  if (state.targetTimelineWeeks) {
+  if (totalHours > 0 && estimatedTimelineWeeks > 0 && state.targetTimelineWeeks) {
     if (estimatedTimelineWeeks > state.targetTimelineWeeks * 1.3) {
       velocityStatus = 'understaffed';
     } else if (estimatedTimelineWeeks < state.targetTimelineWeeks * 0.7) {
@@ -301,38 +295,39 @@ export function calculateEstimate(state: ProjectState): EstimateResult {
   const grandTotalCost = baseLaborCost + contingencyAmount + profitMarginAmount + customParamsCost + maintenanceCost + Math.round(monthlySaaSCost * calculatedTimelineMonths);
 
   // 10. Phase Milestone Breakdown
+  const hasScopeHours = totalHours > 0;
   const phaseBreakdown = [
     {
       phase: '1. Discovery & Architecture',
-      percentage: 12,
+      percentage: hasScopeHours ? 12 : 0,
       hours: Math.round(totalHours * 0.12),
       cost: Math.round(baseLaborCost * 0.12),
       description: 'Requirements, system architecture, database design & UX wireframes.'
     },
     {
       phase: '2. UI/UX High-Fidelity Design',
-      percentage: 16,
+      percentage: hasScopeHours ? 16 : 0,
       hours: Math.round(totalHours * 0.16),
       cost: Math.round(baseLaborCost * 0.16),
       description: 'Design system, screen prototypes & responsive design specifications.'
     },
     {
       phase: '3. Core Sprint Development',
-      percentage: 48,
+      percentage: hasScopeHours ? 48 : 0,
       hours: Math.round(totalHours * 0.48),
       cost: Math.round(baseLaborCost * 0.48),
       description: 'Frontend UI, Backend APIs, Database, Integrations & Mobile builds.'
     },
     {
       phase: '4. QA Testing & Security Audit',
-      percentage: 14,
+      percentage: hasScopeHours ? 14 : 0,
       hours: Math.round(totalHours * 0.14),
       cost: Math.round(baseLaborCost * 0.14),
       description: 'Automated test suite, performance tuning, penetration testing & bug fixes.'
     },
     {
       phase: '5. DevOps, Cloud Launch & Handoff',
-      percentage: 10,
+      percentage: hasScopeHours ? 10 : 0,
       hours: Math.round(totalHours * 0.10),
       cost: Math.round(baseLaborCost * 0.10),
       description: 'Production deployment, CI/CD pipeline, monitoring, documentation & training.'

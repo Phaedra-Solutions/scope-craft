@@ -170,8 +170,8 @@ export const LiveEstimateSidebar: React.FC<LiveEstimateSidebarProps> = ({
             </div>
             <div className="flex items-center justify-between">
               <span className="text-[#94A3B8]">Platforms</span>
-              <span className="font-semibold text-white uppercase">
-                {state.platforms.join(', ') || 'WEB'}
+              <span className="font-semibold text-white">
+                {state.platforms.length > 0 ? state.platforms.join(', ').toUpperCase() : 'None selected'}
               </span>
             </div>
             <div className="flex items-center justify-between">

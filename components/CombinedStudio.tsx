@@ -72,7 +72,7 @@ export const CombinedStudio: React.FC<CombinedStudioProps> = ({
 
             <p className="text-xs text-[#94A3B8] mt-2.5 max-w-xl leading-relaxed">
               Calculated for <strong className="text-white">{state.selectedFeatureIds.length} technical modules</strong> on{' '}
-              <strong className="text-white">{state.platforms.join(', ').toUpperCase()}</strong> with a{' '}
+              <strong className="text-white">{state.platforms.length > 0 ? state.platforms.join(', ').toUpperCase() : 'CUSTOM ARCHITECTURE'}</strong> with a{' '}
               <strong className="text-white">{state.contingencyBufferPercent}% risk buffer</strong>,{' '}
               <strong className="text-white">{state.profitMarginPercent}% agency margin</strong>, and{' '}
               <strong className="text-white">{state.maintenancePeriod.replace('_', ' ')}</strong> post-launch SLA.
@@ -232,7 +232,7 @@ export const CombinedStudio: React.FC<CombinedStudioProps> = ({
             <div className="flex items-center justify-between text-xs">
               <span className="text-[#64707A]">Platforms:</span>
               <span className="font-semibold text-[#082A1C]">
-                {state.platforms.join(', ').toUpperCase() || 'Web'}
+                {state.platforms.length > 0 ? state.platforms.join(', ').toUpperCase() : 'None selected'}
               </span>
             </div>
             <div className="flex items-center justify-between text-xs">
