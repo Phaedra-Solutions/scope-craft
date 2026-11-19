@@ -6,7 +6,6 @@ import { ProjectCostCalculator } from '@/components/ProjectCostCalculator';
 import { TeamCostCalculator } from '@/components/TeamCostCalculator';
 import { CombinedStudio } from '@/components/CombinedStudio';
 import { ScenarioComparison } from '@/components/ScenarioComparison';
-import { AiEstimatorModal } from '@/components/AiEstimatorModal';
 import { PresetSelectorModal } from '@/components/PresetSelectorModal';
 import { ProposalExportModal } from '@/components/ProposalExportModal';
 import { GuidedScopingWizard } from '@/components/GuidedScopingWizard';
@@ -16,7 +15,7 @@ import { ProjectState, CurrencyConfig, LeadProfile } from '@/types/estimator';
 import { CURRENCIES } from '@/lib/estimator-data';
 import { calculateEstimate, generateRecommendedTeam } from '@/lib/estimator-engine';
 import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles, Clock, FileText } from 'lucide-react';
+import { Clock, FileText } from 'lucide-react';
 import Swal from 'sweetalert2';
 
 const storageListeners = new Set<() => void>();
@@ -136,7 +135,6 @@ export default function Home() {
   const [resetCounter, setResetCounter] = useState(0);
 
   // Modals
-  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const [isPresetModalOpen, setIsPresetModalOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
@@ -198,7 +196,6 @@ export default function Home() {
     });
     setViewMode('combined');
     setCurrency(CURRENCIES[0]);
-    setIsAiModalOpen(false);
     setIsPresetModalOpen(false);
     setIsExportModalOpen(false);
     setResetCounter((prev) => prev + 1);
@@ -252,8 +249,6 @@ export default function Home() {
           setRegionId={(regionId) => handleUpdateProjectState({ regionId })}
           currency={currency}
           setCurrency={setCurrency}
-          onOpenAiModal={() => setIsAiModalOpen(true)}
-          onOpenPresetModal={() => setIsPresetModalOpen(true)}
           onOpenExportModal={() => setIsExportModalOpen(true)}
           onReset={handleReset}
           projectName={projectState.projectName}
@@ -269,6 +264,7 @@ export default function Home() {
               key={resetCounter}
               initialState={projectState}
               onStateChange={handleUpdateProjectState}
+              onOpenPresetModal={() => setIsPresetModalOpen(true)}
               onComplete={(lead, updatedState) => {
                 setActiveLead(lead);
                 setProjectState(updatedState);
@@ -338,7 +334,6 @@ export default function Home() {
         currencySymbol={currency.symbol}
         exchangeRate={currency.exchangeRate}
         isUnlocked={effectiveUnlocked}
-        onOpenAiModal={() => setIsAiModalOpen(true)}
         onOpenExportModal={() => setIsExportModalOpen(true)}
         onOpenPresetModal={() => setIsPresetModalOpen(true)}
       />
@@ -376,17 +371,8 @@ export default function Home() {
             )}
           </div>
 
-          <div className="flex items-center space-x-2">
-            <button
-              type="button"
-              onClick={() => setIsAiModalOpen(true)}
-              className="inline-flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-white bg-[#113B29] hover:bg-[#194D37] border border-[#245C44] transition-all duration-200 active:scale-[0.98]"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-[#CDFF8C]" />
-              <span className="hidden sm:inline">AI Architect</span>
-            </button>
-
-            {effectiveUnlocked && (
+          {effectiveUnlocked && (
+            <div className="flex items-center space-x-2">
               <button
                 type="button"
                 onClick={() => setIsExportModalOpen(true)}
@@ -395,18 +381,12 @@ export default function Home() {
                 <FileText className="w-3.5 h-3.5" />
                 <span>Export SOW</span>
               </button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Modals */}
-      <AiEstimatorModal
-        isOpen={isAiModalOpen}
-        onClose={() => setIsAiModalOpen(false)}
-        onApplyAiResult={(updated) => handleUpdateProjectState(updated)}
-      />
-
       <PresetSelectorModal
         isOpen={isPresetModalOpen}
         onClose={() => setIsPresetModalOpen(false)}

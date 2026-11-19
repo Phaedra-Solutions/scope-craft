@@ -89,7 +89,7 @@ export interface SaaSAddon {
 }
 
 export interface CurrencyConfig {
-  code: 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD' | 'INR';
+  code: 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD' | 'AED' | 'SAR';
   symbol: string;
   exchangeRate: number; // relative to USD
 }

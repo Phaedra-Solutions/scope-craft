@@ -2,7 +2,6 @@
 
 import React from 'react';
 import {
-  Sparkles,
   Sliders,
   Users,
   Layers,
@@ -10,7 +9,6 @@ import {
   FileText,
   Globe2,
   Coins,
-  BookmarkPlus,
   RotateCcw,
   Compass,
   CheckCircle2
@@ -27,8 +25,6 @@ interface HeaderProps {
   setRegionId: (id: string) => void;
   currency: CurrencyConfig;
   setCurrency: (currency: CurrencyConfig) => void;
-  onOpenAiModal: () => void;
-  onOpenPresetModal: () => void;
   onOpenExportModal: () => void;
   onReset: () => void;
   projectName: string;
@@ -45,8 +41,6 @@ export const Header: React.FC<HeaderProps> = ({
   setRegionId,
   currency,
   setCurrency,
-  onOpenAiModal,
-  onOpenPresetModal,
   onOpenExportModal,
   onReset,
   projectName,
@@ -85,13 +79,13 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Action Tools & Dropdowns */}
-          <div className="flex items-center flex-wrap gap-2">
+          <div className="flex items-center flex-wrap gap-2.5 sm:gap-3 lg:justify-end">
             {/* Guided Wizard Launcher */}
             {onOpenWizard && (
               <button
                 type="button"
                 onClick={onOpenWizard}
-                className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-[#082A1C] bg-[#CDFF8C] hover:bg-[#bfff6e] border border-[#082A1C]/15 transition-all duration-200 active:scale-[0.98] whitespace-nowrap shrink-0"
+                className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-[#082A1C] bg-[#CDFF8C] hover:bg-[#bfff6e] border border-[#082A1C]/15 transition-all duration-200 active:scale-[0.98] whitespace-nowrap shrink-0"
                 title="Relaunch 4-Step Guided Wizard"
               >
                 <Compass className="w-3.5 h-3.5 text-[#082A1C]" />
@@ -99,39 +93,17 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             )}
 
-            {/* AI Scope Architect */}
-            <button
-              type="button"
-              onClick={onOpenAiModal}
-              className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-[#082A1C] bg-[#F4F7F9] hover:bg-[#DDE3E7]/60 border border-[#DDE3E7] transition-all duration-200 active:scale-[0.98] whitespace-nowrap shrink-0"
-              title="Generate customized architectural recommendations"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-[#082A1C]" />
-              <span>AI Scope</span>
-            </button>
-
-            {/* Templates Preset */}
-            <button
-              type="button"
-              onClick={onOpenPresetModal}
-              className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-[#082A1C] bg-[#F4F7F9] hover:bg-[#DDE3E7]/60 border border-[#DDE3E7] transition-all duration-200 active:scale-[0.98] whitespace-nowrap shrink-0"
-              title="Load industry presets"
-            >
-              <BookmarkPlus className="w-3.5 h-3.5 text-[#64707A]" />
-              <span className="hidden sm:inline">Presets</span>
-            </button>
-
             {/* Verified Prospect Badge */}
             {leadProfile && (
-              <div className="hidden xl:flex items-center space-x-1.5 text-xs text-[#082A1C] bg-[#CDFF8C]/50 border border-[#082A1C]/15 rounded-xl px-2.5 py-1">
+              <div className="hidden xl:flex items-center space-x-1.5 text-xs text-[#082A1C] bg-[#CDFF8C]/50 border border-[#082A1C]/15 rounded-xl px-3 py-2">
                 <CheckCircle2 className="w-3.5 h-3.5 text-[#082A1C]" />
                 <span className="font-semibold truncate max-w-[130px]">{leadProfile.company || leadProfile.fullName}</span>
               </div>
             )}
 
             {/* Location Benchmark Dropdown */}
-            <div className="flex items-center space-x-1.5 bg-[#F4F7F9] border border-[#DDE3E7] rounded-xl px-2.5 py-1.5">
-              <Globe2 className="w-3.5 h-3.5 text-[#64707A]" />
+            <div className="flex items-center space-x-2 bg-[#F4F7F9] border border-[#DDE3E7] hover:border-[#082A1C]/40 rounded-xl px-3 py-2 transition-colors">
+              <Globe2 className="w-3.5 h-3.5 text-[#64707A] flex-shrink-0" />
               <select
                 value={regionId}
                 onChange={(e) => setRegionId(e.target.value)}
@@ -147,8 +119,8 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
 
             {/* Currency Selector */}
-            <div className="flex items-center space-x-1.5 bg-[#F4F7F9] border border-[#DDE3E7] rounded-xl px-2.5 py-1.5">
-              <Coins className="w-3.5 h-3.5 text-[#64707A]" />
+            <div className="flex items-center space-x-2 bg-[#F4F7F9] border border-[#DDE3E7] hover:border-[#082A1C]/40 rounded-xl px-3 py-2 transition-colors">
+              <Coins className="w-3.5 h-3.5 text-[#64707A] flex-shrink-0" />
               <select
                 value={currency.code}
                 onChange={(e) => {
@@ -160,7 +132,7 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 {CURRENCIES.map((c) => (
                   <option key={c.code} value={c.code} className="bg-white text-[#082A1C]">
-                    {c.symbol} {c.code}
+                    {c.symbol.trim() === c.code ? c.code : `${c.symbol} ${c.code}`}
                   </option>
                 ))}
               </select>
@@ -172,7 +144,7 @@ export const Header: React.FC<HeaderProps> = ({
               onClick={onReset}
               title="Reset & Start Fresh (Clear all saved data)"
               aria-label="Reset & Start Fresh"
-              className="p-2 text-[#64707A] hover:text-[#082A1C] hover:bg-[#F4F7F9] border border-transparent hover:border-[#DDE3E7] rounded-xl transition-all duration-200 active:scale-[0.98]"
+              className="p-2 text-[#64707A] hover:text-[#082A1C] bg-[#F4F7F9] hover:bg-[#DDE3E7]/50 border border-[#DDE3E7] hover:border-[#082A1C]/40 rounded-xl transition-all duration-200 active:scale-[0.98]"
             >
               <RotateCcw className="w-4 h-4" />
             </button>
@@ -182,7 +154,7 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 type="button"
                 onClick={onOpenExportModal}
-                className="inline-flex items-center space-x-1.5 px-4 py-1.5 rounded-xl text-xs font-semibold lb-btn-primary active:scale-[0.98] whitespace-nowrap shrink-0"
+                className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-semibold lb-btn-primary active:scale-[0.98] whitespace-nowrap shrink-0"
               >
                 <FileText className="w-3.5 h-3.5" />
                 <span>Export SOW</span>

@@ -34,13 +34,15 @@ import {
   DollarSign,
   Plus,
   Minus,
-  Check
+  Check,
+  BookmarkPlus
 } from 'lucide-react';
 
 interface GuidedScopingWizardProps {
   initialState: ProjectState;
   onComplete: (lead: LeadProfile, updatedState: ProjectState) => void;
   onStateChange?: (updated: Partial<ProjectState>) => void;
+  onOpenPresetModal?: () => void;
   currencySymbol: string;
   exchangeRate: number;
 }
@@ -49,6 +51,7 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
   initialState,
   onComplete,
   onStateChange,
+  onOpenPresetModal,
   currencySymbol,
   exchangeRate
 }) => {
@@ -325,7 +328,7 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
             </p>
           </div>
 
-          {/* Project & Client Inputs */}
+          {/* Project Title & Quick Presets */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-[#082A1C] mb-1.5">
@@ -341,15 +344,22 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
             </div>
             <div>
               <label className="block text-xs font-semibold text-[#082A1C] mb-1.5">
-                Company / Organization
+                Industry Scope Presets
               </label>
-              <input
-                type="text"
-                value={state.clientName}
-                onChange={(e) => updateState({ clientName: e.target.value })}
-                placeholder="e.g. Acme Corporation"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#DDE3E7] bg-[#F4F7F9] focus:bg-white text-[#082A1C] placeholder:text-[#64707A]/60 text-sm focus:outline-none focus:border-[#082A1C] transition-all duration-200"
-              />
+              <button
+                type="button"
+                onClick={onOpenPresetModal}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#DDE3E7] bg-[#F4F7F9] hover:bg-white hover:border-[#082A1C] text-[#082A1C] text-sm font-medium flex items-center justify-between gap-2 transition-all duration-200 active:scale-[0.98] cursor-pointer text-left"
+                title="Load industry presets"
+              >
+                <span className="flex items-center space-x-2 truncate">
+                  <BookmarkPlus className="w-4 h-4 text-[#082A1C] flex-shrink-0" />
+                  <span className="truncate">Load Industry Preset</span>
+                </span>
+                <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-[#CDFF8C] text-[#082A1C] flex-shrink-0">
+                  Presets
+                </span>
+              </button>
             </div>
           </div>
 
@@ -945,11 +955,21 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
                     onChange={(e) => setLeadForm({ ...leadForm, budgetRange: e.target.value })}
                     className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#DDE3E7] text-sm text-[#082A1C] bg-[#F4F7F9] focus:bg-white focus:outline-none focus:border-[#082A1C] transition-all duration-200"
                   >
-                    <option value="Under $25k">Under $25,000</option>
-                    <option value="$25k - $50k">$25,000 - $50,000</option>
-                    <option value="$50k - $100k">$50,000 - $100,000</option>
-                    <option value="$100k - $250k">$100,000 - $250,000</option>
-                    <option value="$250k+">$250,000+</option>
+                    <option value="Under $25k">
+                      Under {currencySymbol}{Math.round(25000 * exchangeRate).toLocaleString()}
+                    </option>
+                    <option value="$25k - $50k">
+                      {currencySymbol}{Math.round(25000 * exchangeRate).toLocaleString()} - {currencySymbol}{Math.round(50000 * exchangeRate).toLocaleString()}
+                    </option>
+                    <option value="$50k - $100k">
+                      {currencySymbol}{Math.round(50000 * exchangeRate).toLocaleString()} - {currencySymbol}{Math.round(100000 * exchangeRate).toLocaleString()}
+                    </option>
+                    <option value="$100k - $250k">
+                      {currencySymbol}{Math.round(100000 * exchangeRate).toLocaleString()} - {currencySymbol}{Math.round(250000 * exchangeRate).toLocaleString()}
+                    </option>
+                    <option value="$250k+">
+                      {currencySymbol}{Math.round(250000 * exchangeRate).toLocaleString()}+
+                    </option>
                   </select>
                 </div>
               </div>

@@ -4,7 +4,6 @@ import React from 'react';
 import { ProjectState, EstimateResult } from '@/types/estimator';
 import { REGIONS } from '@/lib/estimator-data';
 import {
-  Sparkles,
   FileText,
   Clock,
   Users,
@@ -21,7 +20,6 @@ interface LiveEstimateSidebarProps {
   currencySymbol: string;
   exchangeRate: number;
   isUnlocked: boolean;
-  onOpenAiModal: () => void;
   onOpenExportModal: () => void;
   onOpenPresetModal: () => void;
 }
@@ -32,7 +30,6 @@ export const LiveEstimateSidebar: React.FC<LiveEstimateSidebarProps> = ({
   currencySymbol,
   exchangeRate,
   isUnlocked,
-  onOpenAiModal,
   onOpenExportModal,
   onOpenPresetModal
 }) => {
@@ -235,34 +232,25 @@ export const LiveEstimateSidebar: React.FC<LiveEstimateSidebarProps> = ({
 
         {/* Sticky Sidebar Actions */}
         <div className="pt-4 border-t border-[#1A4733] space-y-2.5">
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={onOpenAiModal}
-              className="inline-flex items-center justify-center space-x-1.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-white bg-[#0F3827] hover:bg-[#194F38] border border-[#1E4F3A] transition-all duration-200 active:scale-[0.98]"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-[#CDFF8C]" />
-              <span>AI Scope</span>
-            </button>
-            <button
-              type="button"
-              onClick={onOpenPresetModal}
-              className="inline-flex items-center justify-center space-x-1.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-white bg-[#0F3827] hover:bg-[#194F38] border border-[#1E4F3A] transition-all duration-200 active:scale-[0.98]"
-            >
-              <BookmarkPlus className="w-3.5 h-3.5 text-[#CDFF8C]" />
-              <span>Presets</span>
-            </button>
-          </div>
-
           {isUnlocked ? (
-            <button
-              type="button"
-              onClick={onOpenExportModal}
-              className="w-full inline-flex items-center justify-center space-x-2 px-4 py-3 rounded-xl text-xs font-bold lb-btn-lime active:scale-[0.98]"
-            >
-              <FileText className="w-4 h-4" />
-              <span>Export Formal SOW</span>
-            </button>
+            <>
+              <button
+                type="button"
+                onClick={onOpenPresetModal}
+                className="w-full inline-flex items-center justify-center space-x-1.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-white bg-[#0F3827] hover:bg-[#194F38] border border-[#1E4F3A] transition-all duration-200 active:scale-[0.98]"
+              >
+                <BookmarkPlus className="w-3.5 h-3.5 text-[#CDFF8C]" />
+                <span>Load Industry Presets</span>
+              </button>
+              <button
+                type="button"
+                onClick={onOpenExportModal}
+                className="w-full inline-flex items-center justify-center space-x-2 px-4 py-3 rounded-xl text-xs font-bold lb-btn-lime active:scale-[0.98]"
+              >
+                <FileText className="w-4 h-4" />
+                <span>Export Formal SOW</span>
+              </button>
+            </>
           ) : (
             <div className="flex items-center justify-center space-x-1.5 py-2.5 px-3 rounded-xl bg-[#0F3827] border border-[#1E4F3A] text-[11px] text-[#94A3B8]">
               <ShieldCheck className="w-3.5 h-3.5 text-[#CDFF8C] flex-shrink-0" />

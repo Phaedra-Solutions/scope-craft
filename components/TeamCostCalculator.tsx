@@ -103,7 +103,9 @@ export const TeamCostCalculator: React.FC<TeamCostCalculatorProps> = ({
             </h3>
             <p className="text-xs text-[#64707A] mt-1">
               {currentRegion.description}. Average Senior Engineer rate:{' '}
-              <span className="text-[#082A1C] font-mono font-bold tabular-nums">${currentRegion.avgSeniorRate}/hr</span>.
+              <span className="text-[#082A1C] font-mono font-bold tabular-nums">
+                {currencySymbol}{Math.round(currentRegion.avgSeniorRate * exchangeRate).toLocaleString()}/hr
+              </span>.
             </p>
           </div>
         </div>
@@ -166,7 +168,7 @@ export const TeamCostCalculator: React.FC<TeamCostCalculatorProps> = ({
               </option>
               {TEAM_ROLES.map((r) => (
                 <option key={r.id} value={r.id} className="bg-white text-[#082A1C]">
-                  {r.title} (${r.defaultHourlyRate}/hr baseline)
+                  {r.title} ({currencySymbol}{Math.round(r.defaultHourlyRate * exchangeRate).toLocaleString()}/hr baseline)
                 </option>
               ))}
             </select>

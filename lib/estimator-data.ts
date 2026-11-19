@@ -15,7 +15,8 @@ export const CURRENCIES: CurrencyConfig[] = [
   { code: 'GBP', symbol: '£', exchangeRate: 0.79 },
   { code: 'CAD', symbol: 'CA$', exchangeRate: 1.36 },
   { code: 'AUD', symbol: 'A$', exchangeRate: 1.52 },
-  { code: 'INR', symbol: '₹', exchangeRate: 83.5 },
+  { code: 'AED', symbol: 'AED ', exchangeRate: 3.67 },
+  { code: 'SAR', symbol: 'SAR ', exchangeRate: 3.75 },
 ];
 
 export const REGIONS: RegionConfig[] = [

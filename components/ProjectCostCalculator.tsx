@@ -88,12 +88,15 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
 
   const handleAddCustomParam = () => {
     if (!newParamName.trim()) return;
+    const rawVal = Number(newParamValue) || 0;
+    const normalizedVal =
+      newParamType === 'fixed_cost' && exchangeRate > 0 ? Math.round(rawVal / exchangeRate) : rawVal;
     const newParam: CustomParam = {
       id: `custom_${Date.now()}`,
       name: newParamName.trim(),
       category: 'Custom Line Item',
       type: newParamType,
-      value: Number(newParamValue) || 0
+      value: normalizedVal
     };
     onChange({ customParams: [...state.customParams, newParam] });
     setNewParamName('');
@@ -438,7 +441,7 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({
                   <div>
                     <span className="font-semibold text-[#082A1C]">{p.name}</span>
                     <span className="ml-2 text-[11px] font-mono font-bold text-[#144731] tabular-nums">
-                      ({p.type === 'fixed_cost' ? `${currencySymbol}${p.value}` : `${p.value} Custom Hrs`})
+                      ({p.type === 'fixed_cost' ? `${currencySymbol}${Math.round(p.value * exchangeRate).toLocaleString()}` : `${p.value} Custom Hrs`})
                     </span>
                   </div>
                   <button
