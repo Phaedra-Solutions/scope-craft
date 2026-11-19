@@ -12,7 +12,10 @@ import {
 import { FEATURE_CATALOG, SAAS_ADDONS, REGIONS, TEAM_ROLES } from '@/lib/estimator-data';
 import { calculateEstimate, generateRecommendedTeam } from '@/lib/estimator-engine';
 import { sendLeadToGHL } from '@/lib/ghl-sync';
+import { CountryCode } from 'libphonenumber-js/max';
 import { PrivacyPolicyModal } from '@/components/PrivacyPolicyModal';
+import { PhoneInputField } from '@/components/PhoneInputField';
+import { validateAndFormatE164 } from '@/lib/phone-utils';
 import {
   Sparkles,
   ArrowRight,
@@ -29,13 +32,16 @@ import {
   Building2,
   Mail,
   User,
-  Phone,
   Briefcase,
   DollarSign,
   Plus,
   Minus,
   Check,
-  BookmarkPlus
+  BookmarkPlus,
+  Compass,
+  FileText,
+  Rocket,
+  ExternalLink
 } from 'lucide-react';
 
 interface GuidedScopingWizardProps {
@@ -55,7 +61,7 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
   currencySymbol,
   exchangeRate
 }) => {
-  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5>(1);
   const [internalState, setInternalState] = useState<ProjectState>(initialState);
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
@@ -68,6 +74,7 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
   const [leadForm, setLeadForm] = useState<{
     fullName: string;
     email: string;
+    phoneCountry: CountryCode;
     phone: string;
     company: string;
     role: string;
@@ -77,8 +84,9 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
   }>({
     fullName: '',
     email: '',
+    phoneCountry: 'US',
     phone: '',
-    company: state.clientName || '',
+    company: '',
     role: 'Founder / C-Level Executive',
     budgetRange: '$50k - $100k',
     wantsOptionalPaidReview: false,
@@ -160,11 +168,12 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(leadForm.email.trim())) {
       errors.email = 'Please enter a valid business email address';
     }
-    if (!leadForm.phone.trim()) {
-      errors.phone = 'Phone number is required';
-    } else if (leadForm.phone.trim().length < 7) {
-      errors.phone = 'Please enter a valid phone number';
+
+    const phoneValidation = validateAndFormatE164(leadForm.phone, leadForm.phoneCountry);
+    if (!phoneValidation.isValid) {
+      errors.phone = phoneValidation.errorMessage || 'Please enter a valid international E.164 phone number';
     }
+
     if (!leadForm.company.trim()) errors.company = 'Company name is required';
     if (!leadForm.consentGiven) {
       errors.consent = 'Please confirm consent to proceed with your estimate';
@@ -179,13 +188,16 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
     e.preventDefault();
     if (!validateForm()) return;
 
+    const phoneValidation = validateAndFormatE164(leadForm.phone, leadForm.phoneCountry);
+    if (!phoneValidation.isValid || !phoneValidation.e164) return;
+
     setIsSubmitting(true);
     setSubmitError(null);
 
     const leadProfile: LeadProfile = {
       fullName: leadForm.fullName.trim(),
       email: leadForm.email.trim().toLowerCase(),
-      phone: leadForm.phone.trim(),
+      phone: phoneValidation.e164,
       company: leadForm.company.trim(),
       role: leadForm.role,
       budgetRange: leadForm.budgetRange,
@@ -259,18 +271,19 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
 
           <div className="flex items-center space-x-2 self-start sm:self-auto">
             <span className="text-xs font-mono font-semibold px-3 py-1.5 rounded-lg bg-[#F4F7F9] text-[#082A1C] border border-[#DDE3E7] tabular-nums">
-              Step {currentStep} of 4
+              Step {currentStep} of 5
             </span>
           </div>
         </div>
 
         {/* Rule 1: Multi-Step Navigation (Flat Minimalism) */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 pt-6">
           {[
-            { step: 1, label: '01. Foundations', desc: 'Platforms & Scale' },
-            { step: 2, label: '02. Modules', desc: 'Core Functionality' },
-            { step: 3, label: '03. Team & Rates', desc: 'Squad & Benchmarks' },
-            { step: 4, label: '04. Unlock SOW', desc: 'Full Calculation' }
+            { step: 1, label: '01. Overview', desc: 'How ScopeCraft Helps' },
+            { step: 2, label: '02. Foundations', desc: 'Platforms & Scale' },
+            { step: 3, label: '03. Modules', desc: 'Core Functionality' },
+            { step: 4, label: '04. Team & Rates', desc: 'Squad & Benchmarks' },
+            { step: 5, label: '05. Unlock SOW', desc: 'Full Calculation' }
           ].map((item) => {
             const isPassed = currentStep > item.step;
             const isCurrent = currentStep === item.step;
@@ -280,7 +293,7 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
                 type="button"
                 onClick={() => {
                   if (item.step < currentStep || isPassed) {
-                    setCurrentStep(item.step as 1 | 2 | 3 | 4);
+                    setCurrentStep(item.step as 1 | 2 | 3 | 4 | 5);
                   }
                 }}
                 disabled={item.step > currentStep}
@@ -315,8 +328,157 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
         </div>
       </div>
 
-      {/* STEP 1: Foundations & Platforms */}
+      {/* STEP 1: Overview & Value Proposition */}
       {currentStep === 1 && (
+        <div className="bg-white border border-[#DDE3E7] rounded-2xl p-6 sm:p-8 shadow-sm space-y-8">
+          {/* Encouraging Hero Card */}
+          <div className="p-6 sm:p-7 rounded-xl bg-[#082A1C] text-white space-y-3">
+            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-lg text-xs font-bold text-[#082A1C] bg-[#CDFF8C]">
+              <Compass className="w-3.5 h-3.5 text-[#082A1C]" />
+              <span>Welcome to ScopeCraft · 3-Minute Interactive Scoping</span>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-bold text-white lb-heading">
+              Scope Smarter, Budget with Confidence, and Launch Faster
+            </h2>
+            <p className="text-xs sm:text-sm text-[#94A3B8] leading-relaxed max-w-3xl">
+              Turn your software idea into an actionable engineering blueprint before writing a single line of code.
+              Walk through four quick configuration steps to benchmark effort hours, align your ideal team structure,
+              compare global rate options, and unlock a complete Statement of Work (SOW)—100% complimentary.
+            </p>
+          </div>
+
+          {/* Customer Pain Points Resolved */}
+          <div>
+            <div className="mb-4">
+              <h3 className="text-base font-bold text-[#082A1C] lb-heading">
+                Key Challenges ScopeCraft Solves for Your Team
+              </h3>
+              <p className="text-xs text-[#64707A] mt-0.5">
+                Built for founders, product leaders, and procurement teams tired of guesswork and opaque estimates.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {[
+                {
+                  icon: DollarSign,
+                  title: 'Eliminate Unpredictable Vendor Quotes',
+                  desc: 'Stop navigating vague agency proposals. Benchmark transparent dev hours, contingency buffers, and regional pricing before signing contracts.'
+                },
+                {
+                  icon: Users,
+                  title: 'Right-Size Squads & Launch Timelines',
+                  desc: 'Prevent understaffing bottlenecks or inflated retainers by aligning specialist headcount and sprint velocity with your target delivery window.'
+                },
+                {
+                  icon: Layers,
+                  title: 'Surface Hidden Technical & Cloud Scope',
+                  desc: 'Account upfront for auth, billing, AI workflows, QA rigor, maintenance retainers, and recurring cloud SaaS infrastructure.'
+                },
+                {
+                  icon: FileText,
+                  title: 'Accelerate Executive & Stakeholder Sign-Off',
+                  desc: 'Skip weeks of manual spreadsheets. Unlock monthly burn schedules, Gantt phase breakdowns, and boardroom-ready PDF/HTML SOW exports.'
+                }
+              ].map((item) => {
+                const Icon = item.icon;
+                return (
+                  <div
+                    key={item.title}
+                    className="p-4 rounded-xl bg-[#F4F7F9] border border-[#DDE3E7] flex items-start space-x-3.5"
+                  >
+                    <div className="p-2.5 rounded-lg bg-white border border-[#DDE3E7] text-[#082A1C] flex-shrink-0">
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs sm:text-sm font-bold text-[#082A1C]">{item.title}</h4>
+                      <p className="text-xs text-[#64707A] leading-relaxed mt-1">{item.desc}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Optional Architect Upgrade + Phaedra Solutions Build Support */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="p-5 rounded-xl bg-[#F4F7F9] border border-[#DDE3E7] space-y-2.5">
+              <div className="flex items-center space-x-2">
+                <div className="p-2 rounded-lg bg-[#CDFF8C] text-[#082A1C]">
+                  <ShieldCheck className="w-4 h-4" />
+                </div>
+                <h3 className="text-sm font-bold text-[#082A1C]">
+                  Optional Upgrade: Vetted Solutions Architect Plan
+                </h3>
+              </div>
+              <p className="text-xs text-[#64707A] leading-relaxed">
+                Calculating and exporting your scope is completely free. Need formal technical due diligence for
+                investors or enterprise stakeholders? You can optionally request a paid review from a{' '}
+                <strong className="text-[#082A1C]">Principal Solutions Architect</strong> to audit your technical
+                stack, refine risk buffers, and deliver a comprehensive milestone-by-milestone project plan.
+              </p>
+            </div>
+
+            <div className="p-5 rounded-xl bg-[#F4F7F9] border border-[#DDE3E7] space-y-2.5 flex flex-col justify-between">
+              <div className="space-y-2.5">
+                <div className="flex items-center space-x-2">
+                  <div className="p-2 rounded-lg bg-[#082A1C] text-[#CDFF8C]">
+                    <Rocket className="w-4 h-4" />
+                  </div>
+                  <h3 className="text-sm font-bold text-[#082A1C]">
+                    Ready to Build? ScopeCraft by Phaedra Solutions Can Help
+                  </h3>
+                </div>
+                <p className="text-xs text-[#64707A] leading-relaxed">
+                  Once your roadmap is locked,{' '}
+                  <strong className="text-[#082A1C]">ScopeCraft by Phaedra Solutions</strong> can assemble a dedicated
+                  senior engineering squad matched to your exact estimate—taking your product seamlessly from technical
+                  scoping to full-scale development and launch.
+                </p>
+              </div>
+              <div className="pt-1">
+                <a
+                  href="https://www.phaedrasolutions.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center space-x-1.5 text-xs font-bold text-[#082A1C] hover:underline underline-offset-4"
+                >
+                  <span>Explore delivery services at Phaedra Solutions</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Step 1 Actions */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-[#DDE3E7]">
+            {onOpenPresetModal ? (
+              <button
+                type="button"
+                onClick={onOpenPresetModal}
+                className="inline-flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-[#082A1C] bg-[#F4F7F9] hover:bg-[#DDE3E7]/60 border border-[#DDE3E7] transition-all duration-200 active:scale-[0.98]"
+              >
+                <BookmarkPlus className="w-4 h-4 text-[#082A1C]" />
+                <span>Browse Industry Presets</span>
+              </button>
+            ) : (
+              <div />
+            )}
+
+            <button
+              type="button"
+              onClick={() => setCurrentStep(2)}
+              className="inline-flex items-center justify-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold lb-btn-primary shadow-sm active:scale-[0.98]"
+            >
+              <span>Start Scoping Foundations (Step 2)</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* STEP 2: Foundations & Platforms */}
+      {currentStep === 2 && (
         <div className="bg-white border border-[#DDE3E7] rounded-2xl p-6 sm:p-8 shadow-sm space-y-8">
           <div>
             <h2 className="text-xl font-bold text-[#082A1C] lb-heading flex items-center space-x-2">
@@ -514,22 +676,30 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
             </div>
           </div>
 
-          {/* Step 1 Actions */}
-          <div className="flex justify-end pt-4 border-t border-[#DDE3E7]">
+          {/* Step 2 Actions */}
+          <div className="flex items-center justify-between pt-4 border-t border-[#DDE3E7]">
             <button
               type="button"
-              onClick={() => setCurrentStep(2)}
+              onClick={() => setCurrentStep(1)}
+              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-[#082A1C] bg-[#F4F7F9] hover:bg-[#DDE3E7]/60 border border-[#DDE3E7] transition-all duration-200 active:scale-[0.98]"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back to Overview</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setCurrentStep(3)}
               className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold lb-btn-primary shadow-sm active:scale-[0.98]"
             >
-              <span>Continue to Modules (Step 2)</span>
+              <span>Continue to Modules (Step 3)</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </div>
       )}
 
-      {/* STEP 2: Feature Modules Catalog */}
-      {currentStep === 2 && (
+      {/* STEP 3: Feature Modules Catalog */}
+      {currentStep === 3 && (
         <div className="bg-white border border-[#DDE3E7] rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
@@ -650,7 +820,7 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
           <div className="flex items-center justify-between pt-4 border-t border-[#DDE3E7]">
             <button
               type="button"
-              onClick={() => setCurrentStep(1)}
+              onClick={() => setCurrentStep(2)}
               className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-[#082A1C] bg-[#F4F7F9] hover:bg-[#DDE3E7]/60 border border-[#DDE3E7] transition-all duration-200 active:scale-[0.98]"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -658,18 +828,18 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
             </button>
             <button
               type="button"
-              onClick={() => setCurrentStep(3)}
+              onClick={() => setCurrentStep(4)}
               className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold lb-btn-primary shadow-sm active:scale-[0.98]"
             >
-              <span>Continue to Team & Rates (Step 3)</span>
+              <span>Continue to Team & Rates (Step 4)</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </div>
       )}
 
-      {/* STEP 3: Squad Composition & Regional Rate Benchmark */}
-      {currentStep === 3 && (
+      {/* STEP 4: Squad Composition & Regional Rate Benchmark */}
+      {currentStep === 4 && (
         <div className="bg-white border border-[#DDE3E7] rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
           <div>
             <h2 className="text-xl font-bold text-[#082A1C] lb-heading flex items-center space-x-2">
@@ -787,7 +957,7 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
           <div className="flex items-center justify-between pt-4 border-t border-[#DDE3E7]">
             <button
               type="button"
-              onClick={() => setCurrentStep(2)}
+              onClick={() => setCurrentStep(3)}
               className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-[#082A1C] bg-[#F4F7F9] hover:bg-[#DDE3E7]/60 border border-[#DDE3E7] transition-all duration-200 active:scale-[0.98]"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -795,18 +965,18 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
             </button>
             <button
               type="button"
-              onClick={() => setCurrentStep(4)}
+              onClick={() => setCurrentStep(5)}
               className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold lb-btn-primary shadow-sm active:scale-[0.98]"
             >
-              <span>Continue to Unlock Estimate (Step 4)</span>
+              <span>Continue to Unlock Estimate (Step 5)</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </div>
       )}
 
-      {/* STEP 4: Complimentary Lead Form & Calculation Reveal */}
-      {currentStep === 4 && (
+      {/* STEP 5: Complimentary Lead Form & Calculation Reveal */}
+      {currentStep === 5 && (
         <div className="bg-white border border-[#DDE3E7] rounded-2xl p-6 sm:p-10 shadow-sm space-y-8">
           {/* Trust Guarantee Card */}
           <div className="p-6 rounded-xl bg-[#082A1C] text-white space-y-3">
@@ -881,22 +1051,48 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
 
               {/* Phone */}
               <div>
-                <label className="block text-xs font-bold text-[#082A1C] mb-1.5">
-                  Phone Number *
+                <label htmlFor="wizard-lead-phone" className="block text-xs font-bold text-[#082A1C] mb-1.5">
+                  Phone Number (International E.164) *
                 </label>
-                <div className="relative">
-                  <Phone className="w-4 h-4 text-[#64707A] absolute left-3.5 top-3" />
-                  <input
-                    type="tel"
-                    required
-                    value={leadForm.phone}
-                    onChange={(e) => setLeadForm({ ...leadForm, phone: e.target.value })}
-                    placeholder="e.g. +1 (555) 019-2834"
-                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-[#082A1C] bg-[#F4F7F9] focus:bg-white placeholder:text-[#64707A]/60 focus:outline-none focus:border-[#082A1C] transition-all duration-200 ${
-                      formErrors.phone ? 'border-red-600' : 'border-[#DDE3E7]'
-                    }`}
-                  />
-                </div>
+                <PhoneInputField
+                  id="wizard-lead-phone"
+                  required
+                  country={leadForm.phoneCountry}
+                  onCountryChange={(nextCountry) => {
+                    setLeadForm((prev) => {
+                      const updated = { ...prev, phoneCountry: nextCountry };
+                      if (formErrors.phone && prev.phone.trim()) {
+                        const check = validateAndFormatE164(prev.phone, nextCountry);
+                        setFormErrors((errs) => ({
+                          ...errs,
+                          phone: check.isValid ? '' : (check.errorMessage || '')
+                        }));
+                      }
+                      return updated;
+                    });
+                  }}
+                  value={leadForm.phone}
+                  onChange={(nextPhone) => {
+                    setLeadForm((prev) => ({ ...prev, phone: nextPhone }));
+                    if (formErrors.phone) {
+                      const check = validateAndFormatE164(nextPhone, leadForm.phoneCountry);
+                      setFormErrors((errs) => ({
+                        ...errs,
+                        phone: check.isValid ? '' : (check.errorMessage || '')
+                      }));
+                    }
+                  }}
+                  onBlur={() => {
+                    if (leadForm.phone.trim()) {
+                      const check = validateAndFormatE164(leadForm.phone, leadForm.phoneCountry);
+                      setFormErrors((errs) => ({
+                        ...errs,
+                        phone: check.isValid ? '' : (check.errorMessage || '')
+                      }));
+                    }
+                  }}
+                  error={formErrors.phone}
+                />
                 {formErrors.phone && <p className="text-[11px] text-red-600 mt-1">{formErrors.phone}</p>}
               </div>
 
@@ -1043,7 +1239,7 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-[#DDE3E7]">
               <button
                 type="button"
-                onClick={() => setCurrentStep(3)}
+                onClick={() => setCurrentStep(4)}
                 className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-[#082A1C] bg-[#F4F7F9] hover:bg-[#DDE3E7]/60 border border-[#DDE3E7] transition-all duration-200 active:scale-[0.98] order-2 sm:order-1"
               >
                 <ArrowLeft className="w-4 h-4" />

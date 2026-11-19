@@ -10,6 +10,7 @@ import { PresetSelectorModal } from '@/components/PresetSelectorModal';
 import { ProposalExportModal } from '@/components/ProposalExportModal';
 import { GuidedScopingWizard } from '@/components/GuidedScopingWizard';
 import { LiveEstimateSidebar } from '@/components/LiveEstimateSidebar';
+import { Footer } from '@/components/Footer';
 
 import { ProjectState, CurrencyConfig, LeadProfile } from '@/types/estimator';
 import { CURRENCIES } from '@/lib/estimator-data';
@@ -241,7 +242,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white text-[#082A1C] font-sans flex flex-col lg:flex-row">
       {/* Main Content Workspace */}
-      <div className="flex-1 min-w-0 flex flex-col pb-24 lg:pb-12">
+      <div className="flex-1 min-w-0 flex flex-col pb-24 lg:pb-0">
         <Header
           viewMode={viewMode}
           setViewMode={setViewMode}
@@ -325,6 +326,8 @@ export default function Home() {
             </AnimatePresence>
           </main>
         )}
+
+        <Footer />
       </div>
 
       {/* Desktop Live Estimate Sidebar (Glassmorphism Overlay) */}
@@ -349,7 +352,7 @@ export default function Home() {
               <span className="text-lg sm:text-xl font-bold text-[#CDFF8C] tracking-tight tabular-nums">
                 {effectiveUnlocked
                   ? `${currency.symbol}${convertedGrandTotal.toLocaleString()}`
-                  : 'Locked · Step 4'}
+                  : 'Locked · Step 5'}
               </span>
             </div>
 

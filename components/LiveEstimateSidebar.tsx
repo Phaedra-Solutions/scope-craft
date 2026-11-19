@@ -67,7 +67,7 @@ export const LiveEstimateSidebar: React.FC<LiveEstimateSidebarProps> = ({
               {!isUnlocked && (
                 <span className="inline-flex items-center space-x-1 text-[10px] font-semibold text-[#CDFF8C]">
                   <Lock className="w-3 h-3" />
-                  <span>Step 4 Unlocks SOW</span>
+                  <span>Step 5 Unlocks SOW</span>
                 </span>
               )}
             </div>
@@ -88,7 +88,7 @@ export const LiveEstimateSidebar: React.FC<LiveEstimateSidebarProps> = ({
                   <span>{currencySymbol} ••,•••</span>
                 </div>
                 <div className="text-[11px] text-[#94A3B8]">
-                  Submit Step 4 lead form to unlock exact cost & SOW
+                  Submit Step 5 lead form to unlock exact cost & SOW
                 </div>
               </>
             )}
