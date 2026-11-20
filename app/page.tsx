@@ -15,6 +15,7 @@ import { Footer } from '@/components/Footer';
 import { ProjectState, CurrencyConfig, LeadProfile } from '@/types/estimator';
 import { CURRENCIES } from '@/lib/estimator-data';
 import { calculateEstimate, generateRecommendedTeam } from '@/lib/estimator-engine';
+import { smoothScrollToTop } from '@/lib/scroll-utils';
 import { motion, AnimatePresence } from 'motion/react';
 import { Clock, FileText } from 'lucide-react';
 import Swal from 'sweetalert2';
@@ -242,6 +243,7 @@ export default function Home() {
     setActivePresetTitle(presetTitle || presetState.projectName || 'Industry Preset');
     if (!effectiveUnlocked && wizardStep === 1) {
       setWizardStep(2);
+      smoothScrollToTop();
     }
   };
 
@@ -268,7 +270,10 @@ export default function Home() {
           onReset={handleReset}
           projectName={projectState.projectName}
           onChangeProjectName={(projectName) => handleUpdateProjectState({ projectName })}
-          onOpenWizard={effectiveUnlocked ? () => setIsStudioUnlocked(false) : undefined}
+          onOpenWizard={effectiveUnlocked ? () => {
+            setIsStudioUnlocked(false);
+            smoothScrollToTop();
+          } : undefined}
           leadProfile={effectiveLead}
           showStudioTabs={effectiveUnlocked}
         />
@@ -288,6 +293,7 @@ export default function Home() {
                 setActiveLead(lead);
                 setProjectState(updatedState);
                 setIsStudioUnlocked(true);
+                smoothScrollToTop();
               }}
               currencySymbol={currency.symbol}
               exchangeRate={currency.exchangeRate}

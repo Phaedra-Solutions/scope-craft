@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { motion } from 'motion/react';
 import {
   ProjectState,
   ProjectPlatform,
@@ -16,6 +17,7 @@ import { CountryCode } from 'libphonenumber-js/max';
 import { PrivacyPolicyModal } from '@/components/PrivacyPolicyModal';
 import { PhoneInputField } from '@/components/PhoneInputField';
 import { validateAndFormatE164 } from '@/lib/phone-utils';
+import { smoothScrollToTop } from '@/lib/scroll-utils';
 import {
   Sparkles,
   ArrowRight,
@@ -75,7 +77,12 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
 }) => {
   const [internalStep, setInternalStep] = useState<1 | 2 | 3 | 4 | 5>(1);
   const currentStep = controlledStep ?? internalStep;
-  const setCurrentStep = onStepChange ?? setInternalStep;
+  const updateStep = onStepChange ?? setInternalStep;
+
+  const setCurrentStep = (step: 1 | 2 | 3 | 4 | 5) => {
+    updateStep(step);
+    smoothScrollToTop();
+  };
 
   const [internalState, setInternalState] = useState<ProjectState>(initialState);
   const [activeCategory, setActiveCategory] = useState<string>('all');
@@ -347,7 +354,13 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
 
       {/* STEP 1: Overview & Value Proposition */}
       {currentStep === 1 && (
-        <div className="bg-white border border-[#DDE3E7] rounded-2xl p-6 sm:p-8 shadow-sm space-y-8">
+        <motion.div
+          key="wizard-step-1"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.22, ease: 'easeOut' }}
+          className="bg-white border border-[#DDE3E7] rounded-2xl p-6 sm:p-8 shadow-sm space-y-8"
+        >
           {/* Encouraging Hero Card */}
           <div className="p-6 sm:p-7 rounded-xl bg-[#082A1C] text-white space-y-3">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-lg text-xs font-bold text-[#082A1C] bg-[#CDFF8C]">
@@ -601,12 +614,18 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* STEP 2: Foundations & Platforms */}
       {currentStep === 2 && (
-        <div className="bg-white border border-[#DDE3E7] rounded-2xl p-6 sm:p-8 shadow-sm space-y-8">
+        <motion.div
+          key="wizard-step-2"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.22, ease: 'easeOut' }}
+          className="bg-white border border-[#DDE3E7] rounded-2xl p-6 sm:p-8 shadow-sm space-y-8"
+        >
           <div>
             <h2 className="text-xl font-bold text-[#082A1C] lb-heading flex items-center space-x-2">
               <Layers className="w-5 h-5 text-[#082A1C]" />
@@ -835,12 +854,18 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* STEP 3: Feature Modules Catalog */}
       {currentStep === 3 && (
-        <div className="bg-white border border-[#DDE3E7] rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
+        <motion.div
+          key="wizard-step-3"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.22, ease: 'easeOut' }}
+          className="bg-white border border-[#DDE3E7] rounded-2xl p-6 sm:p-8 shadow-sm space-y-6"
+        >
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
               <h2 className="text-xl font-bold text-[#082A1C] lb-heading flex items-center space-x-2">
@@ -975,12 +1000,18 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* STEP 4: Squad Composition & Regional Rate Benchmark */}
       {currentStep === 4 && (
-        <div className="bg-white border border-[#DDE3E7] rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
+        <motion.div
+          key="wizard-step-4"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.22, ease: 'easeOut' }}
+          className="bg-white border border-[#DDE3E7] rounded-2xl p-6 sm:p-8 shadow-sm space-y-6"
+        >
           <div>
             <h2 className="text-xl font-bold text-[#082A1C] lb-heading flex items-center space-x-2">
               <Globe2 className="w-5 h-5 text-[#082A1C]" />
@@ -1210,12 +1241,18 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* STEP 5: Complimentary Lead Form & Calculation Reveal */}
       {currentStep === 5 && (
-        <div className="bg-white border border-[#DDE3E7] rounded-2xl p-6 sm:p-10 shadow-sm space-y-8">
+        <motion.div
+          key="wizard-step-5"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.22, ease: 'easeOut' }}
+          className="bg-white border border-[#DDE3E7] rounded-2xl p-6 sm:p-10 shadow-sm space-y-8"
+        >
           {/* Trust Guarantee Card */}
           <div className="p-6 rounded-xl bg-[#082A1C] text-white space-y-3">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-lg text-xs font-bold text-[#082A1C] bg-[#CDFF8C]">
@@ -1504,7 +1541,7 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
               </button>
             </div>
           </form>
-        </div>
+        </motion.div>
       )}
 
       {/* Privacy Policy Modal */}
