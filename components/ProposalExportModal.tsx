@@ -52,7 +52,6 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
   const [activeTab, setActiveTab] = useState<ExportTab>('sow');
   const [copiedFormat, setCopiedFormat] = useState<string | null>(null);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
-  const [vettingRequested, setVettingRequested] = useState(false);
 
   if (!isOpen) return null;
 
@@ -101,20 +100,6 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
     }
     const html = generateHtmlReport(state, estimate, currencySymbol, exchangeRate);
     printHtmlReport(html);
-  };
-
-  const handleRequestArchitectReview = async () => {
-    if (leadProfile) {
-      setVettingRequested(true);
-      await sendLeadToGHL(
-        { ...leadProfile, wantsOptionalPaidReview: true },
-        state,
-        estimate,
-        'scope_updated',
-        'request_architect_review'
-      );
-      setTimeout(() => setVettingRequested(false), 5000);
-    }
   };
 
   const handleDownloadHtml = () => {
@@ -299,19 +284,6 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
                   <Printer className="w-3.5 h-3.5" />
                   <span>Print Dialog</span>
                 </button>
-
-                {leadProfile && (
-                  <button
-                    type="button"
-                    onClick={handleRequestArchitectReview}
-                    disabled={vettingRequested}
-                    className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-[#082A1C] bg-[#CDFF8C] hover:bg-[#b8ef73] border border-[#082A1C]/20 transition-all duration-200 active:scale-[0.98]"
-                    title="Request an experienced Solutions Architect to formally review your scope"
-                  >
-                    <Sparkles className="w-3.5 h-3.5 text-[#082A1C]" />
-                    <span>{vettingRequested ? 'Review Requested!' : 'Request Architect Vetting'}</span>
-                  </button>
-                )}
               </div>
             </div>
 
@@ -357,7 +329,7 @@ export const ProposalExportModal: React.FC<ProposalExportModalProps> = ({
                   </div>
                   <div>
                     <span className="text-[#64707A] block text-[10px] uppercase font-semibold">Contingency Buffer ({state.contingencyBufferPercent}%)</span>
-                    <span className="font-mono font-bold text-sm text-amber-700 tabular-nums">
+                    <span className="font-mono font-bold text-sm text-[#B45309] tabular-nums">
                       {currencySymbol}{convertedContingency.toLocaleString()}
                     </span>
                   </div>

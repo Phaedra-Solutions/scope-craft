@@ -8,6 +8,7 @@ import { CombinedStudio } from '@/components/CombinedStudio';
 import { ScenarioComparison } from '@/components/ScenarioComparison';
 import { PresetSelectorModal } from '@/components/PresetSelectorModal';
 import { ProposalExportModal } from '@/components/ProposalExportModal';
+import { BookingConsultationModal } from '@/components/BookingConsultationModal';
 import { GuidedScopingWizard } from '@/components/GuidedScopingWizard';
 import { LiveEstimateSidebar } from '@/components/LiveEstimateSidebar';
 import { Footer } from '@/components/Footer';
@@ -17,7 +18,7 @@ import { CURRENCIES } from '@/lib/estimator-data';
 import { calculateEstimate, generateRecommendedTeam } from '@/lib/estimator-engine';
 import { smoothScrollToTop } from '@/lib/scroll-utils';
 import { motion, AnimatePresence } from 'motion/react';
-import { Clock, FileText } from 'lucide-react';
+import { Clock, FileText, CalendarCheck } from 'lucide-react';
 import Swal from 'sweetalert2';
 
 const storageListeners = new Set<() => void>();
@@ -119,9 +120,10 @@ export default function Home() {
   const storedLead = useStoredLeadProfile();
 
   const [isStudioUnlocked, setIsStudioUnlocked] = useState(false);
+  const [isWizardViewActive, setIsWizardViewActive] = useState(false);
   const [activeLead, setActiveLead] = useState<LeadProfile | null>(null);
 
-  const effectiveUnlocked = isStudioUnlocked || storedUnlocked;
+  const effectiveUnlocked = (isStudioUnlocked || storedUnlocked) && !isWizardViewActive;
   const effectiveLead = activeLead || storedLead;
 
   const [projectState, setProjectState] = useState<ProjectState>(() => {
@@ -136,6 +138,7 @@ export default function Home() {
   // Modals
   const [isPresetModalOpen, setIsPresetModalOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
   // Partial State Handler
   const handleUpdateProjectState = (updated: Partial<ProjectState>) => {
@@ -182,6 +185,7 @@ export default function Home() {
 
     notifyStorageListeners();
     setIsStudioUnlocked(false);
+    setIsWizardViewActive(false);
     setActiveLead(null);
     setActivePresetTitle(null);
     setWizardStep(1);
@@ -197,6 +201,7 @@ export default function Home() {
     setCurrency(CURRENCIES[0]);
     setIsPresetModalOpen(false);
     setIsExportModalOpen(false);
+    setIsBookingModalOpen(false);
     setResetCounter((prev) => prev + 1);
 
     void Swal.fire({
@@ -271,6 +276,7 @@ export default function Home() {
           projectName={projectState.projectName}
           onChangeProjectName={(projectName) => handleUpdateProjectState({ projectName })}
           onOpenWizard={effectiveUnlocked ? () => {
+            setIsWizardViewActive(true);
             setIsStudioUnlocked(false);
             smoothScrollToTop();
           } : undefined}
@@ -285,6 +291,7 @@ export default function Home() {
               initialState={projectState}
               onStateChange={handleUpdateProjectState}
               onOpenPresetModal={() => setIsPresetModalOpen(true)}
+              onOpenBookingModal={() => setIsBookingModalOpen(true)}
               activePresetTitle={activePresetTitle}
               onClearPreset={handleClearPreset}
               currentStep={wizardStep}
@@ -292,6 +299,7 @@ export default function Home() {
               onComplete={(lead, updatedState) => {
                 setActiveLead(lead);
                 setProjectState(updatedState);
+                setIsWizardViewActive(false);
                 setIsStudioUnlocked(true);
                 smoothScrollToTop();
               }}
@@ -335,6 +343,7 @@ export default function Home() {
                     currencySymbol={currency.symbol}
                     exchangeRate={currency.exchangeRate}
                     onOpenExportModal={() => setIsExportModalOpen(true)}
+                    onOpenBookingModal={() => setIsBookingModalOpen(true)}
                   />
                 )}
 
@@ -363,6 +372,7 @@ export default function Home() {
         isUnlocked={effectiveUnlocked}
         onOpenExportModal={() => setIsExportModalOpen(true)}
         onOpenPresetModal={() => setIsPresetModalOpen(true)}
+        onOpenBookingModal={() => setIsBookingModalOpen(true)}
       />
 
       {/* Mobile Sticky Bottom Estimate Bar */}
@@ -398,18 +408,26 @@ export default function Home() {
             )}
           </div>
 
-          {effectiveUnlocked && (
-            <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2">
+            <button
+              type="button"
+              onClick={() => setIsBookingModalOpen(true)}
+              className="inline-flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-bold lb-btn-lime active:scale-[0.98] whitespace-nowrap shrink-0"
+            >
+              <CalendarCheck className="w-3.5 h-3.5" />
+              <span>Book Call</span>
+            </button>
+            {effectiveUnlocked && (
               <button
                 type="button"
                 onClick={() => setIsExportModalOpen(true)}
-                className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-bold lb-btn-lime active:scale-[0.98]"
+                className="inline-flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-white bg-[#0F3827] border border-[#1E4F3A] active:scale-[0.98] whitespace-nowrap shrink-0"
               >
-                <FileText className="w-3.5 h-3.5" />
-                <span>Export SOW</span>
+                <FileText className="w-3.5 h-3.5 text-[#CDFF8C]" />
+                <span>SOW</span>
               </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
 
@@ -418,6 +436,16 @@ export default function Home() {
         isOpen={isPresetModalOpen}
         onClose={() => setIsPresetModalOpen(false)}
         onSelectPreset={handleSelectPreset}
+      />
+
+      <BookingConsultationModal
+        isOpen={isBookingModalOpen}
+        onClose={() => setIsBookingModalOpen(false)}
+        state={projectState}
+        estimate={estimate}
+        currencySymbol={currency.symbol}
+        exchangeRate={currency.exchangeRate}
+        isUnlocked={effectiveUnlocked}
       />
 
       {effectiveUnlocked && (

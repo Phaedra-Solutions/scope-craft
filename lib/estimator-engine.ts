@@ -43,11 +43,25 @@ export function calculateEffectiveMemberRate(
   return Math.round(baseRate * regionMultiplier * expConfig.rateMultiplier);
 }
 
+function getTeamMonthlyVelocityCapacity(team: TeamMemberConfig[]): number {
+  return team.reduce((sum, member) => {
+    let monthlyHours = 160;
+    if (member.engagement === 'parttime_50') monthlyHours = 80;
+    if (member.engagement === 'parttime_25') monthlyHours = 40;
+    const expConfig = EXPERIENCE_MULTIPLIERS[member.experienceLevel] || EXPERIENCE_MULTIPLIERS.senior;
+    return sum + monthlyHours * member.count * expConfig.velocityMultiplier;
+  }, 0);
+}
+
 export function generateRecommendedTeam(
   selectedFeatureIds: string[],
   platforms: ProjectState['platforms'],
   complexity: ComplexityLevel,
-  designLevel: ProjectState['designLevel']
+  designLevel: ProjectState['designLevel'],
+  options?: {
+    targetTimelineWeeks?: number;
+    totalHours?: number;
+  }
 ): TeamMemberConfig[] {
   const hasMobile = platforms.includes('ios') || platforms.includes('android') || platforms.includes('cross_platform');
   const hasWeb = platforms.includes('web') || platforms.includes('desktop');
@@ -146,6 +160,143 @@ export function generateRecommendedTeam(
     experienceLevel: 'mid',
     engagement: 'parttime_50'
   });
+
+  // Dynamically synchronize squad headcount & engagement to target delivery timeline when provided
+  if (options?.targetTimelineWeeks && options?.totalHours && options.totalHours > 0) {
+    const targetMonths = Math.max(0.75, options.targetTimelineWeeks / 4.33);
+    const requiredMonthlyCapacity = options.totalHours / targetMonths;
+    let currentCapacity = getTeamMonthlyVelocityCapacity(team);
+
+    const calcWeeks = (cap: number) => {
+      if (cap <= 0) return Infinity;
+      const months = Math.max(0.75, Math.round((options.totalHours! / cap) * 10) / 10);
+      return Math.round(months * 4.33);
+    };
+
+    // Scale UP if current baseline squad delivers slower than target timeline
+    if (calcWeeks(currentCapacity) > options.targetTimelineWeeks * 1.15) {
+      const upgradeOrder = ['tech_lead', 'devops_cloud', 'product_manager'];
+      for (const roleId of upgradeOrder) {
+        if (currentCapacity >= requiredMonthlyCapacity * 0.95) break;
+        const member = team.find((m) => m.roleId === roleId);
+        if (member && member.engagement !== 'fulltime') {
+          member.engagement = 'fulltime';
+          currentCapacity = getTeamMonthlyVelocityCapacity(team);
+        }
+      }
+
+      const scaleRoles = ['backend_dev', 'frontend_dev', 'mobile_dev', 'qa_engineer', 'ui_ux_designer'];
+      let guard = 0;
+      while (currentCapacity < requiredMonthlyCapacity * 0.95 && guard < 40) {
+        const roleId = scaleRoles[guard % scaleRoles.length];
+        const member = team.find((m) => m.roleId === roleId);
+        if (member && member.count < 8) {
+          member.count += 1;
+          currentCapacity = getTeamMonthlyVelocityCapacity(team);
+        }
+        guard++;
+      }
+    } else if (calcWeeks(currentCapacity) < options.targetTimelineWeeks * 0.78) {
+      // Scale DOWN excess capacity/burn for longer target timelines
+      const reduceCountRoles = ['backend_dev', 'frontend_dev', 'mobile_dev', 'ui_ux_designer', 'qa_engineer'];
+      for (const roleId of reduceCountRoles) {
+        if (calcWeeks(currentCapacity) >= options.targetTimelineWeeks * 0.78) break;
+        const member = team.find((m) => m.roleId === roleId);
+        if (member && member.count > 1) {
+          member.count = 1;
+          currentCapacity = getTeamMonthlyVelocityCapacity(team);
+        }
+      }
+
+      const reduceEngagementRoles: { roleId: string; target: TeamMemberConfig['engagement'] }[] = [
+        { roleId: 'ui_ux_designer', target: 'parttime_50' },
+        { roleId: 'qa_engineer', target: 'parttime_50' },
+        { roleId: 'product_manager', target: 'parttime_25' },
+        { roleId: 'tech_lead', target: 'parttime_25' },
+        { roleId: 'frontend_dev', target: 'parttime_50' },
+        { roleId: 'mobile_dev', target: 'parttime_50' },
+        { roleId: 'backend_dev', target: 'parttime_50' }
+      ];
+
+      for (const step of reduceEngagementRoles) {
+        if (calcWeeks(currentCapacity) >= options.targetTimelineWeeks * 0.78) break;
+        const member = team.find((m) => m.roleId === step.roleId);
+        if (member) {
+          const prevEngagement = member.engagement;
+          member.engagement = step.target;
+          const nextCapacity = getTeamMonthlyVelocityCapacity(team);
+          if (calcWeeks(nextCapacity) <= options.targetTimelineWeeks * 1.2) {
+            currentCapacity = nextCapacity;
+          } else {
+            member.engagement = prevEngagement;
+          }
+        }
+      }
+
+      // If still delivering much faster than a relaxed target timeline, consolidate into a lean squad
+      const trimOptionalRoles = ['product_manager', 'devops_cloud', 'qa_engineer', 'ui_ux_designer', 'tech_lead'];
+      for (const roleId of trimOptionalRoles) {
+        if (calcWeeks(currentCapacity) >= options.targetTimelineWeeks * 0.78) break;
+        const idx = team.findIndex((m) => m.roleId === roleId);
+        if (idx > -1 && team.length > 1) {
+          const [removed] = team.splice(idx, 1);
+          const nextCapacity = getTeamMonthlyVelocityCapacity(team);
+          if (nextCapacity > 0 && calcWeeks(nextCapacity) <= options.targetTimelineWeeks * 1.25) {
+            currentCapacity = nextCapacity;
+          } else {
+            team.splice(idx, 0, removed);
+          }
+        }
+      }
+
+      // Consolidate separate frontend + backend into a single full-stack engineer if still faster than target
+      if (calcWeeks(currentCapacity) < options.targetTimelineWeeks * 0.78) {
+        const feIdx = team.findIndex((m) => m.roleId === 'frontend_dev');
+        const beIdx = team.findIndex((m) => m.roleId === 'backend_dev');
+        if (feIdx > -1 && beIdx > -1) {
+          const snapshot = team.map((m) => ({ ...m }));
+          const withoutFeBe = team.filter((m) => m.roleId !== 'frontend_dev' && m.roleId !== 'backend_dev');
+          withoutFeBe.push({
+            id: 'rec_fullstack',
+            roleId: 'fullstack_dev',
+            count: 1,
+            experienceLevel: 'senior',
+            engagement: 'fulltime'
+          });
+          const nextCapacity = getTeamMonthlyVelocityCapacity(withoutFeBe);
+          if (calcWeeks(nextCapacity) <= options.targetTimelineWeeks * 1.25) {
+            team.splice(0, team.length, ...withoutFeBe);
+            currentCapacity = nextCapacity;
+          } else {
+            team.splice(0, team.length, ...snapshot);
+          }
+        }
+      }
+
+      // Fine-tune remaining core engineer engagement down to 50% or 25% if needed for long timelines
+      const leanCoreOrder: { roleId: string; target: TeamMemberConfig['engagement'] }[] = [
+        { roleId: 'fullstack_dev', target: 'parttime_50' },
+        { roleId: 'mobile_dev', target: 'parttime_25' },
+        { roleId: 'backend_dev', target: 'parttime_25' },
+        { roleId: 'frontend_dev', target: 'parttime_25' },
+        { roleId: 'fullstack_dev', target: 'parttime_25' }
+      ];
+      for (const step of leanCoreOrder) {
+        if (calcWeeks(currentCapacity) >= options.targetTimelineWeeks * 0.78) break;
+        const member = team.find((m) => m.roleId === step.roleId);
+        if (member && member.engagement !== step.target) {
+          const prevEngagement = member.engagement;
+          member.engagement = step.target;
+          const nextCapacity = getTeamMonthlyVelocityCapacity(team);
+          if (nextCapacity > 0 && calcWeeks(nextCapacity) <= options.targetTimelineWeeks * 1.25) {
+            currentCapacity = nextCapacity;
+          } else {
+            member.engagement = prevEngagement;
+          }
+        }
+      }
+    }
+  }
 
   return team;
 }

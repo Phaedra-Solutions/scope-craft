@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
     if (triggerAction === 'export_sow' || triggerAction === 'download_pdf') {
       tags.push('scopecraft-scope-exported');
     }
-    if (triggerAction === 'request_architect_review' || leadProfile.wantsOptionalPaidReview) {
+    if (leadProfile.wantsOptionalPaidReview) {
       tags.push('scopecraft-architect-vetting-requested');
     }
 

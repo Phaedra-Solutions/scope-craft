@@ -1,11 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { motion, useReducedMotion } from 'motion/react';
 import { ProjectState, EstimateResult } from '@/types/estimator';
 import { CostCharts } from './CostCharts';
 import { GanttTimelineBreakdown } from './GanttTimelineBreakdown';
 import { FEATURE_CATALOG, TEAM_ROLES, REGIONS } from '@/lib/estimator-data';
-import { generateRecommendedTeam } from '@/lib/estimator-engine';
+import { calculateEstimate, generateRecommendedTeam } from '@/lib/estimator-engine';
 import {
   DollarSign,
   Clock,
@@ -16,7 +17,9 @@ import {
   RefreshCw,
   Layers,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  CalendarCheck,
+  Check
 } from 'lucide-react';
 
 interface CombinedStudioProps {
@@ -26,6 +29,7 @@ interface CombinedStudioProps {
   currencySymbol: string;
   exchangeRate: number;
   onOpenExportModal: () => void;
+  onOpenBookingModal: () => void;
 }
 
 export const CombinedStudio: React.FC<CombinedStudioProps> = ({
@@ -34,20 +38,57 @@ export const CombinedStudio: React.FC<CombinedStudioProps> = ({
   onChange,
   currencySymbol,
   exchangeRate,
-  onOpenExportModal
+  onOpenExportModal,
+  onOpenBookingModal
 }) => {
+  const shouldReduceMotion = useReducedMotion();
+  const [syncFeedback, setSyncFeedback] = useState<string | null>(null);
+  const syncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (syncTimerRef.current) {
+        clearTimeout(syncTimerRef.current);
+      }
+    };
+  }, []);
+
   const convertedGrandTotal = Math.round(estimate.grandTotalCost * exchangeRate);
   const convertedMonthlyBurn = Math.round(estimate.teamMonthlyBurnRate * exchangeRate);
   const region = REGIONS.find((r) => r.id === state.regionId) || REGIONS[0];
 
   const handleAutoSyncTeam = () => {
+    const prevCount = state.team.reduce((acc, m) => acc + m.count, 0);
+    const prevWeeks = estimate.estimatedTimelineWeeks;
     const recommended = generateRecommendedTeam(
       state.selectedFeatureIds,
       state.platforms,
       state.complexity,
-      state.designLevel
+      state.designLevel,
+      {
+        targetTimelineWeeks: state.targetTimelineWeeks,
+        totalHours: estimate.totalHours
+      }
     );
+    const nextEstimate = calculateEstimate({ ...state, team: recommended });
+    const nextCount = recommended.reduce((acc, m) => acc + m.count, 0);
+
     onChange({ team: recommended });
+
+    if (nextCount !== prevCount || nextEstimate.estimatedTimelineWeeks !== prevWeeks || nextEstimate.teamMonthlyBurnRate !== estimate.teamMonthlyBurnRate) {
+      setSyncFeedback(
+        `Synced: ${nextCount} roles · ${nextEstimate.estimatedTimelineWeeks}w delivery`
+      );
+    } else {
+      setSyncFeedback(`Already optimal for ${state.targetTimelineWeeks}w goal`);
+    }
+    if (syncTimerRef.current) {
+      clearTimeout(syncTimerRef.current);
+    }
+    syncTimerRef.current = setTimeout(() => {
+      setSyncFeedback(null);
+      syncTimerRef.current = null;
+    }, 3200);
   };
 
   return (
@@ -124,6 +165,55 @@ export const CombinedStudio: React.FC<CombinedStudioProps> = ({
         </div>
       </div>
 
+      {/* Next Step: Prominent Animated Booking Consultation CTA */}
+      <motion.div
+        initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        className="relative overflow-hidden bg-white border-2 border-[#082A1C] rounded-2xl p-5 sm:p-6 shadow-sm"
+      >
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
+          <div className="space-y-1.5 max-w-2xl">
+            <div className="text-[11px] font-semibold uppercase tracking-wider text-[#144731]">
+              Next Step · Project Development &amp; Solutions Architect Services
+            </div>
+            <h3 className="text-base sm:text-lg font-bold text-[#082A1C] lb-heading">
+              Book an Appointment to Review Your Scope or Engage a Solutions Architect
+            </h3>
+            <p className="text-xs text-[#64707A] leading-relaxed">
+              Lock in delivery milestones, discuss full-cycle project development with our engineering leads, or schedule a technical vetting session with a Principal Solutions Architect.
+            </p>
+          </div>
+
+          <motion.button
+            type="button"
+            onClick={onOpenBookingModal}
+            whileHover={shouldReduceMotion ? undefined : { y: -2, scale: 1.02 }}
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+            transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+            className="group relative overflow-hidden inline-flex items-center justify-center space-x-2.5 px-6 py-3.5 rounded-xl text-xs sm:text-sm font-bold bg-[#082A1C] text-[#CDFF8C] hover:bg-[#0F3827] border border-[#082A1C] shadow-md cursor-pointer whitespace-nowrap shrink-0"
+          >
+            {!shouldReduceMotion && (
+              <motion.span
+                aria-hidden="true"
+                initial={{ x: '-120%' }}
+                animate={{ x: '220%' }}
+                transition={{
+                  repeat: Infinity,
+                  repeatDelay: 3.2,
+                  duration: 1.15,
+                  ease: 'easeInOut'
+                }}
+                className="pointer-events-none absolute inset-y-0 w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-[#CDFF8C]/25 to-transparent"
+              />
+            )}
+            <CalendarCheck className="w-4 h-4 text-[#CDFF8C] flex-shrink-0" />
+            <span>Book Consultation</span>
+            <ArrowRight className="w-4 h-4 text-[#CDFF8C] transition-transform duration-200 group-hover:translate-x-1 flex-shrink-0" />
+          </motion.button>
+        </div>
+      </motion.div>
+
       {/* 2. Timeline Target & Velocity Synchronization Gauge */}
       <div className="bg-[#F4F7F9] p-6 rounded-2xl border border-[#DDE3E7] space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -140,10 +230,23 @@ export const CombinedStudio: React.FC<CombinedStudioProps> = ({
           <button
             type="button"
             onClick={handleAutoSyncTeam}
-            className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-semibold lb-btn-primary active:scale-[0.98] whitespace-nowrap shrink-0"
+            className={`inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-semibold active:scale-[0.98] whitespace-nowrap shrink-0 cursor-pointer transition-all duration-200 ${
+              syncFeedback
+                ? 'bg-[#CDFF8C] text-[#082A1C] border border-[#082A1C]/20 shadow-sm'
+                : 'lb-btn-primary'
+            }`}
           >
-            <RefreshCw className="w-3.5 h-3.5" />
-            <span>Auto-Optimize Team to Scope</span>
+            {syncFeedback ? (
+              <>
+                <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                <span>{syncFeedback}</span>
+              </>
+            ) : (
+              <>
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>Auto-Optimize Team to Scope</span>
+              </>
+            )}
           </button>
         </div>
 

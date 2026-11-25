@@ -17,6 +17,138 @@ export function downloadFile(filename: string, content: string, mimeType: string
   URL.revokeObjectURL(url);
 }
 
+const UNSUPPORTED_COLOR_FN_RE = /(oklch|oklab|lab|lch|color-mix|color)\(/i;
+
+const COLOR_STYLE_PROPERTIES = [
+  'color',
+  'background-color',
+  'background-image',
+  'border-top-color',
+  'border-right-color',
+  'border-bottom-color',
+  'border-left-color',
+  'outline-color',
+  'text-decoration-color',
+  '-webkit-text-stroke-color',
+  'box-shadow',
+  'text-shadow',
+  'list-style-image',
+  'fill',
+  'stroke'
+] as const;
+
+function sanitizeClonedDocumentColors(clonedDoc: Document, rootEl: HTMLElement) {
+  const view = clonedDoc.defaultView || window;
+  const cache = new Map<string, string>();
+  const canvas = clonedDoc.createElement('canvas');
+  canvas.width = 1;
+  canvas.height = 1;
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  const probe = clonedDoc.createElement('span');
+  probe.style.display = 'none';
+  clonedDoc.body?.appendChild(probe);
+
+  const resolveSingleColor = (expr: string): string => {
+    const cached = cache.get(expr);
+    if (cached !== undefined) return cached;
+
+    let candidate = expr;
+    try {
+      probe.style.color = '';
+      probe.style.color = expr;
+      const computed = view.getComputedStyle(probe).color;
+      if (computed) {
+        candidate = computed;
+      }
+    } catch {
+      // fall back to canvas resolution of the original expression
+    }
+
+    let resolved = 'rgb(0, 0, 0)';
+    if (ctx) {
+      try {
+        ctx.clearRect(0, 0, 1, 1);
+        ctx.fillStyle = '#000000';
+        ctx.fillStyle = candidate;
+        ctx.fillRect(0, 0, 1, 1);
+        const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1).data;
+        if (a === 255) {
+          resolved = `rgb(${r}, ${g}, ${b})`;
+        } else if (a === 0) {
+          resolved = 'rgba(0, 0, 0, 0)';
+        } else {
+          resolved = `rgba(${r}, ${g}, ${b}, ${Number((a / 255).toFixed(3))})`;
+        }
+      } catch {
+        resolved = 'rgb(0, 0, 0)';
+      }
+    }
+
+    cache.set(expr, resolved);
+    return resolved;
+  };
+
+  const replaceUnsupportedColors = (value: string): string => {
+    let output = value;
+    let searchFrom = 0;
+    let iterations = 0;
+
+    while (iterations < 32) {
+      iterations += 1;
+      const slice = output.slice(searchFrom);
+      const match = UNSUPPORTED_COLOR_FN_RE.exec(slice);
+      if (!match || match.index === undefined) break;
+
+      const start = searchFrom + match.index;
+      if (start > 0 && /[a-z0-9_-]/i.test(output[start - 1])) {
+        searchFrom = start + match[0].length;
+        continue;
+      }
+
+      const openParenIdx = start + match[0].length - 1;
+      let depth = 1;
+      let idx = openParenIdx + 1;
+      while (idx < output.length && depth > 0) {
+        if (output[idx] === '(') depth += 1;
+        else if (output[idx] === ')') depth -= 1;
+        idx += 1;
+      }
+      if (depth !== 0) break;
+
+      const fullExpr = output.slice(start, idx);
+      const resolved = resolveSingleColor(fullExpr);
+      output = output.slice(0, start) + resolved + output.slice(idx);
+      searchFrom = start + resolved.length;
+    }
+
+    return output;
+  };
+
+  try {
+    const targets: HTMLElement[] = [];
+    if (clonedDoc.documentElement) targets.push(clonedDoc.documentElement);
+    if (clonedDoc.body && clonedDoc.body !== clonedDoc.documentElement) targets.push(clonedDoc.body);
+    targets.push(rootEl);
+    rootEl.querySelectorAll('*').forEach((node) => {
+      if (node instanceof view.HTMLElement || node instanceof view.SVGElement || 'style' in node) {
+        targets.push(node as HTMLElement);
+      }
+    });
+
+    for (const el of targets) {
+      const computed = view.getComputedStyle(el);
+      for (const prop of COLOR_STYLE_PROPERTIES) {
+        const val = computed.getPropertyValue(prop);
+        if (val && UNSUPPORTED_COLOR_FN_RE.test(val)) {
+          el.style.setProperty(prop, replaceUnsupportedColors(val), 'important');
+        }
+      }
+    }
+  } finally {
+    probe.remove();
+  }
+}
+
 /**
  * Export HTML element directly as a downloadable PDF file
  */
@@ -38,7 +170,10 @@ export async function exportToPdf(elementId: string, filename: string): Promise<
       scale: 2,
       useCORS: true,
       logging: false,
-      backgroundColor: '#ffffff'
+      backgroundColor: '#ffffff',
+      onclone: (clonedDoc, clonedElement) => {
+        sanitizeClonedDocumentColors(clonedDoc, clonedElement);
+      }
     });
 
     const imgData = canvas.toDataURL('image/png');

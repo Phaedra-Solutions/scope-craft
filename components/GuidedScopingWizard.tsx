@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import {
   ProjectState,
   ProjectPlatform,
@@ -47,7 +47,9 @@ import {
   Sliders,
   RotateCcw,
   Zap,
-  TrendingDown
+  TrendingDown,
+  AlertTriangle,
+  CalendarCheck
 } from 'lucide-react';
 
 interface GuidedScopingWizardProps {
@@ -55,6 +57,7 @@ interface GuidedScopingWizardProps {
   onComplete: (lead: LeadProfile, updatedState: ProjectState) => void;
   onStateChange?: (updated: Partial<ProjectState>) => void;
   onOpenPresetModal?: () => void;
+  onOpenBookingModal?: () => void;
   activePresetTitle?: string | null;
   onClearPreset?: () => void;
   currentStep?: 1 | 2 | 3 | 4 | 5;
@@ -68,6 +71,7 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
   onComplete,
   onStateChange,
   onOpenPresetModal,
+  onOpenBookingModal,
   activePresetTitle = null,
   onClearPreset,
   currentStep: controlledStep,
@@ -75,6 +79,7 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
   currencySymbol,
   exchangeRate
 }) => {
+  const shouldReduceMotion = useReducedMotion();
   const [internalStep, setInternalStep] = useState<1 | 2 | 3 | 4 | 5>(1);
   const currentStep = controlledStep ?? internalStep;
   const updateStep = onStepChange ?? setInternalStep;
@@ -109,8 +114,8 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
     phoneCountry: 'US',
     phone: '',
     company: '',
-    role: 'Founder / C-Level Executive',
-    budgetRange: '$50k - $100k',
+    role: '',
+    budgetRange: '',
     wantsOptionalPaidReview: false,
     consentGiven: false
   });
@@ -183,9 +188,19 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
     updateState({ team: currentTeam });
   };
 
-  // Validate Step 4 Lead Form
+  // Validate Step 5 Lead Form & Required Scope Selections
   const validateForm = () => {
     const errors: Record<string, string> = {};
+
+    const missingParts: string[] = [];
+    if (state.platforms.length === 0) missingParts.push('target platform');
+    if (state.selectedFeatureIds.length === 0) missingParts.push('feature module');
+    if (state.team.reduce((sum, m) => sum + m.count, 0) === 0) missingParts.push('engineering role');
+
+    if (missingParts.length > 0) {
+      errors.scope = `Please select at least one ${missingParts.join(', ')} before unlocking your scope breakdown and estimate.`;
+    }
+
     if (!leadForm.fullName.trim()) errors.fullName = 'Full Name is required';
     if (!leadForm.email.trim()) {
       errors.email = 'Work Email is required';
@@ -199,6 +214,8 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
     }
 
     if (!leadForm.company.trim()) errors.company = 'Company name is required';
+    if (!leadForm.role.trim()) errors.role = 'Please select your primary role';
+    if (!leadForm.budgetRange.trim()) errors.budgetRange = 'Please select your planned budget range';
     if (!leadForm.consentGiven) {
       errors.consent = 'Please confirm consent to proceed with your estimate';
     }
@@ -274,6 +291,19 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
   ];
 
   const activeRegion = REGIONS.find((r) => r.id === state.regionId) || REGIONS[0];
+
+  const totalHeadcount = state.team.reduce((acc, m) => acc + m.count, 0);
+  const missingScopeItems: { label: string; step: 2 | 3 | 4; stepLabel: string }[] = [];
+  if (state.platforms.length === 0) {
+    missingScopeItems.push({ label: 'Target Platform', step: 2, stepLabel: 'Select Platform (Step 2)' });
+  }
+  if (state.selectedFeatureIds.length === 0) {
+    missingScopeItems.push({ label: 'Feature Module', step: 3, stepLabel: 'Select Modules (Step 3)' });
+  }
+  if (totalHeadcount === 0) {
+    missingScopeItems.push({ label: 'Engineering Role', step: 4, stepLabel: 'Select Roles (Step 4)' });
+  }
+  const isScopeReady = missingScopeItems.length === 0;
 
   return (
     <div className="max-w-5xl mx-auto py-6 px-4 sm:px-6">
@@ -466,14 +496,42 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
                   scoping to full-scale development and launch.
                 </p>
               </div>
-              <div className="pt-1">
+              <div className="pt-2 flex flex-wrap items-center gap-3">
+                {onOpenBookingModal && (
+                  <motion.button
+                    type="button"
+                    onClick={onOpenBookingModal}
+                    whileHover={shouldReduceMotion ? undefined : { y: -1.5, scale: 1.015 }}
+                    whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+                    transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+                    className="group relative overflow-hidden inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-[#082A1C] text-[#CDFF8C] hover:bg-[#0F3827] shadow-sm cursor-pointer whitespace-nowrap shrink-0"
+                  >
+                    {!shouldReduceMotion && (
+                      <motion.span
+                        aria-hidden="true"
+                        initial={{ x: '-120%' }}
+                        animate={{ x: '220%' }}
+                        transition={{
+                          repeat: Infinity,
+                          repeatDelay: 3.5,
+                          duration: 1.15,
+                          ease: 'easeInOut'
+                        }}
+                        className="pointer-events-none absolute inset-y-0 w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-[#CDFF8C]/25 to-transparent"
+                      />
+                    )}
+                    <CalendarCheck className="w-3.5 h-3.5 text-[#CDFF8C] flex-shrink-0" />
+                    <span>Book Consultation</span>
+                    <ArrowRight className="w-3.5 h-3.5 text-[#CDFF8C] transition-transform duration-200 group-hover:translate-x-0.5 flex-shrink-0" />
+                  </motion.button>
+                )}
                 <a
                   href="https://www.phaedrasolutions.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center space-x-1.5 text-xs font-bold text-[#082A1C] hover:underline underline-offset-4"
                 >
-                  <span>Explore delivery services at Phaedra Solutions</span>
+                  <span>Explore delivery services</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
               </div>
@@ -1279,8 +1337,42 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
             </div>
           </div>
 
+          {!isScopeReady && (
+            <div className="p-4 sm:p-5 rounded-xl bg-amber-50 border-2 border-amber-300 text-amber-950 space-y-3">
+              <div className="flex items-start space-x-3">
+                <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <h3 className="text-sm font-bold text-amber-950">
+                    Scope Selections Required Before Unlocking Estimates
+                  </h3>
+                  <p className="text-xs text-amber-900 leading-relaxed">
+                    Please select at least one{' '}
+                    <strong className="font-semibold">
+                      {missingScopeItems.map((item) => item.label).join(', ')}
+                    </strong>{' '}
+                    before getting your estimates and unlocking the scope breakdown.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 pl-8">
+                {missingScopeItems.map((item) => (
+                  <button
+                    key={item.step}
+                    type="button"
+                    onClick={() => setCurrentStep(item.step)}
+                    className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-[#082A1C] border border-amber-300 hover:border-[#082A1C] transition-all duration-200 active:scale-[0.98] cursor-pointer"
+                  >
+                    <span>{item.stepLabel}</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Form Grid */}
-          <form onSubmit={handleSubmitLeadAndReveal} className="space-y-6">
+          <form onSubmit={handleSubmitLeadAndReveal} noValidate className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Full Name */}
               <div>
@@ -1293,7 +1385,13 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
                     type="text"
                     required
                     value={leadForm.fullName}
-                    onChange={(e) => setLeadForm({ ...leadForm, fullName: e.target.value })}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setLeadForm({ ...leadForm, fullName: val });
+                      if (formErrors.fullName && val.trim()) {
+                        setFormErrors((errs) => ({ ...errs, fullName: '' }));
+                      }
+                    }}
                     placeholder="e.g. Jordan Lee"
                     className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-[#082A1C] bg-[#F4F7F9] focus:bg-white placeholder:text-[#64707A]/60 focus:outline-none focus:border-[#082A1C] transition-all duration-200 ${
                       formErrors.fullName ? 'border-red-600' : 'border-[#DDE3E7]'
@@ -1314,7 +1412,13 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
                     type="email"
                     required
                     value={leadForm.email}
-                    onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setLeadForm({ ...leadForm, email: val });
+                      if (formErrors.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim())) {
+                        setFormErrors((errs) => ({ ...errs, email: '' }));
+                      }
+                    }}
                     placeholder="e.g. jordan@company.com"
                     className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-[#082A1C] bg-[#F4F7F9] focus:bg-white placeholder:text-[#64707A]/60 focus:outline-none focus:border-[#082A1C] transition-all duration-200 ${
                       formErrors.email ? 'border-red-600' : 'border-[#DDE3E7]'
@@ -1382,7 +1486,13 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
                     type="text"
                     required
                     value={leadForm.company}
-                    onChange={(e) => setLeadForm({ ...leadForm, company: e.target.value })}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setLeadForm({ ...leadForm, company: val });
+                      if (formErrors.company && val.trim()) {
+                        setFormErrors((errs) => ({ ...errs, company: '' }));
+                      }
+                    }}
                     placeholder="e.g. Acme Innovations Corp"
                     className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-[#082A1C] bg-[#F4F7F9] focus:bg-white placeholder:text-[#64707A]/60 focus:outline-none focus:border-[#082A1C] transition-all duration-200 ${
                       formErrors.company ? 'border-red-600' : 'border-[#DDE3E7]'
@@ -1395,15 +1505,27 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
               {/* Role / Job Title */}
               <div>
                 <label className="block text-xs font-bold text-[#082A1C] mb-1.5">
-                  Your Primary Role
+                  Your Primary Role *
                 </label>
                 <div className="relative">
                   <Briefcase className="w-4 h-4 text-[#64707A] absolute left-3.5 top-3" />
                   <select
+                    required
                     value={leadForm.role}
-                    onChange={(e) => setLeadForm({ ...leadForm, role: e.target.value })}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#DDE3E7] text-sm text-[#082A1C] bg-[#F4F7F9] focus:bg-white focus:outline-none focus:border-[#082A1C] transition-all duration-200"
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setLeadForm({ ...leadForm, role: val });
+                      if (formErrors.role) {
+                        setFormErrors((errs) => ({ ...errs, role: val ? '' : 'Please select your primary role' }));
+                      }
+                    }}
+                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm bg-[#F4F7F9] focus:bg-white focus:outline-none focus:border-[#082A1C] transition-all duration-200 ${
+                      leadForm.role === '' ? 'text-[#64707A]/70' : 'text-[#082A1C]'
+                    } ${formErrors.role ? 'border-red-600' : 'border-[#DDE3E7]'}`}
                   >
+                    <option value="" disabled>
+                      Select your primary role...
+                    </option>
                     <option value="Founder / C-Level Executive">Founder / C-Level Executive</option>
                     <option value="VP of Product / Head of Product">VP of Product / Head of Product</option>
                     <option value="VP of Engineering / CTO">VP of Engineering / CTO</option>
@@ -1412,20 +1534,33 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
                     <option value="Other Stakeholder">Other Stakeholder</option>
                   </select>
                 </div>
+                {formErrors.role && <p className="text-[11px] text-red-600 mt-1">{formErrors.role}</p>}
               </div>
 
               {/* Planned Budget Range */}
               <div>
                 <label className="block text-xs font-bold text-[#082A1C] mb-1.5">
-                  Planned Budget Range
+                  Planned Budget Range *
                 </label>
                 <div className="relative">
                   <DollarSign className="w-4 h-4 text-[#64707A] absolute left-3.5 top-3" />
                   <select
+                    required
                     value={leadForm.budgetRange}
-                    onChange={(e) => setLeadForm({ ...leadForm, budgetRange: e.target.value })}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#DDE3E7] text-sm text-[#082A1C] bg-[#F4F7F9] focus:bg-white focus:outline-none focus:border-[#082A1C] transition-all duration-200"
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setLeadForm({ ...leadForm, budgetRange: val });
+                      if (formErrors.budgetRange) {
+                        setFormErrors((errs) => ({ ...errs, budgetRange: val ? '' : 'Please select your planned budget range' }));
+                      }
+                    }}
+                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm bg-[#F4F7F9] focus:bg-white focus:outline-none focus:border-[#082A1C] transition-all duration-200 ${
+                      leadForm.budgetRange === '' ? 'text-[#64707A]/70' : 'text-[#082A1C]'
+                    } ${formErrors.budgetRange ? 'border-red-600' : 'border-[#DDE3E7]'}`}
                   >
+                    <option value="" disabled>
+                      Select planned budget range...
+                    </option>
                     <option value="Under $25k">
                       Under {currencySymbol}{Math.round(25000 * exchangeRate).toLocaleString()}
                     </option>
@@ -1443,6 +1578,7 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
                     </option>
                   </select>
                 </div>
+                {formErrors.budgetRange && <p className="text-[11px] text-red-600 mt-1">{formErrors.budgetRange}</p>}
               </div>
             </div>
 
@@ -1482,7 +1618,13 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
                   role="checkbox"
                   aria-checked={leadForm.consentGiven}
                   aria-label="Agree to Privacy Policy"
-                  onClick={() => setLeadForm({ ...leadForm, consentGiven: !leadForm.consentGiven })}
+                  onClick={() => {
+                    const nextConsent = !leadForm.consentGiven;
+                    setLeadForm({ ...leadForm, consentGiven: nextConsent });
+                    if (formErrors.consent && nextConsent) {
+                      setFormErrors((errs) => ({ ...errs, consent: '' }));
+                    }
+                  }}
                   className={`mt-0.5 w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 transition-all duration-200 active:scale-[0.98] cursor-pointer ${
                     leadForm.consentGiven ? 'bg-[#082A1C] border-[#082A1C] text-[#CDFF8C]' : 'border-[#DDE3E7] bg-white'
                   }`}
@@ -1503,6 +1645,13 @@ export const GuidedScopingWizard: React.FC<GuidedScopingWizardProps> = ({
               </div>
               {formErrors.consent && <p className="text-[11px] text-red-600 mt-1.5 pl-7">{formErrors.consent}</p>}
             </div>
+
+            {formErrors.scope && !isScopeReady && (
+              <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-start space-x-2.5">
+                <AlertTriangle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+                <span>{formErrors.scope}</span>
+              </div>
+            )}
 
             {submitError && (
               <div className="p-3 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-800">
